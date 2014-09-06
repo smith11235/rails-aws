@@ -3,11 +3,20 @@
 Tooling and templates for instantiating production and development environments in AWS.
 
 ## Phase 1
-* Key: development
+* Key: branch_name
+	* create in console.  
+	* download 
+	* move to ./keys/
+
+* add gem Rake, colorize, rails-aws
+
+* Task: rake create_branch[branch_name]
+* Task: rake delete_branch[branch_name]
+* Task: rake rebuild_branch[branch_name]
+
 * Security Group: ports: 80/443/22
-* Create Task: rake create_branch[branch_name]
-* Delete Task: rake delete_branch[branch_name]
-* Rebuild Task: rake rebuild_branch[branch_name]
+	* also push server port?
+
 * Tag resources with branch_name
 
 ## Phase 2
