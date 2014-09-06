@@ -5,41 +5,46 @@ Tooling and templates for instantiating production and development environments 
 ## Phase 1
 * Key: development
 * Security Group: ports: 80/443/22
-* EC2: t2.micro
-* Elastic IP, on ec2
-* Login: chec lockin
-
-## Phase 
-* cloud-init:
-  * Rails install (development,sqlite) project running
-* external access at http://[IP] 
-
-## Phase
-ip for route 53
+* Create Task: rake create_branch[branch_name]
+* Delete Task: rake delete_branch[branch_name]
+* Rebuild Task: rake rebuild_branch[branch_name]
+* Tag resources with branch_name
 
 ## Phase 2
-* rds
-* or:
-	* ec2:
-		* ami
-		* postgres
-		* redis
+* EC2: t2.micro
+* Elastic IP, on ec2
+* key Login
+
+## Phase 2
+* snapshot of target database
+* create RDBS from snapshot
 
 ## Phase 3
-* services host
-	* resque worker
-	* push server
-		* or should this be on the web server
+* cloud-init:
+	* rails install
+	* git branch
+	* Gemfile
 
 ## Phase 4
+* external access at http://[IP] 
+
+## Phase 5
+* domain name to ip in route 53
+
+## Phase 6
 * subnets
 * vpc
 
-## Phase 
+## Phase 7
 * ssl support
 
-## AWS Resources
+## Phase 6
+* app server
+	* redis
+	* resque?
+	* push server
 
+## AWS Resources
 * Key
 * VPC
 * subnet:
