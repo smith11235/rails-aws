@@ -2,21 +2,26 @@
 
 Tooling and templates for instantiating production and development environments in AWS.
 
+## Usage
+
+* clone repo
+* sh build_ruby_env.sh
+* cd RailsAws
+* bundle install --deployment
+* rails g rails_a_w_s:setup
+	* enter aws key information
+
 ## Phase 1
-* build_env: install aws api/rubygem
-* load_env_script
-* rails-aws gem
-
 ### gem: rails-aws
-* thor task, set keys
-
 * Task: rake aws:build_branch[branch_name]
 	* branch exists?
 	* create key
 		* http://docs.aws.amazon.com/AWSRubySDK/latest/AWS/EC2/KeyPair.html
 		* save to **./aws-keys/**
+
 * Task: rake aws:delete_branch[branch_name]
 	* delete key in cloud and locally
+
 * Task: rake aws:status[branch_name(optional)]
 	* show keys
 	* show stacks
