@@ -1,4 +1,8 @@
 module RailsAWS
+	require 'rails'
 	require 'colorize'
-	require 'rails-aws/railtie' if defined?(Rails)
+	require 'haml'
+	require 'haml-rails'
+	require 'aws-sdk'
+	require 'rails-aws/railtie'
 end
