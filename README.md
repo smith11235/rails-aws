@@ -3,30 +3,52 @@
 Tooling and templates for instantiating production and development environments in AWS.
 
 ## Phase 1
-* Key: branch_name
-	* create in console.  
-	* download 
-	* move to ./keys/
+* build_env: install aws api/rubygem
+* load_env_script
 
-* add gem Rake, colorize, rails-aws
+* gems: rails, colorize, rails-aws
 
-* Task: rake create_branch[branch_name]
-* Task: rake delete_branch[branch_name]
-* Task: rake rebuild_branch[branch_name]
+### gem: rails-aws
+* Task: rake aws:build_branch[branch_name]
+	* branch exists?
+	* create key
+		* http://docs.aws.amazon.com/AWSRubySDK/latest/AWS/EC2/KeyPair.html
+		* save to **./aws-keys/**
+* Task: rake aws:delete_branch[branch_name]
+	* delete key
+* Task: rake aws:status[branch_name(optional)]
+	* show keys
+	* show stacks
+	* show single stack
 
-* Security Group: ports: 80/443/22
-	* also push server port?
+### Cloudformation
+* templates expected at cloudformation/*.json.erb
+	* vars:
+		* branch_name
+		* deployer
 
-* Tag resources with branch_name
+* Security Group: 
+	* ports: 80/443/22
+* Tag resources with:
+	* branch_name
+	* deployer (USER)
 
 ## Phase 2
 * EC2: t2.micro
+* also push server port?
+* also push redis/resque?
 * Elastic IP, on ec2
 * key Login
 
-## Phase 2
+## Phase 3
 * snapshot of target database
 * create RDBS from snapshot
+
+## Phase 4
+* Rails setup
+
+## Shutdown/startup
+* ttl/cost savings
 
 ## Phase 3
 * cloud-init:
