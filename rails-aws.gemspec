@@ -5,7 +5,7 @@ $:.unshift lib unless $:.include?(lib)
 require 'rails-aws/version'
  
 Gem::Specification.new do |s|
-  s.name        = "bundler"
+  s.name        = "rails-aws"
   s.version     = RailsAWS::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = [ "Michael Smith"]

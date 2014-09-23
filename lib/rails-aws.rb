@@ -1,0 +1,4 @@
+module RailsAWS
+
+
+end
