@@ -20,6 +20,8 @@ Gem::Specification.new do |s|
   s.add_dependency "aws-sdk"
 	s.add_dependency "rails"
 	s.add_dependency "colorize"
+	s.add_dependency "haml"
+	s.add_dependency "haml-rails"
 
   s.files        = Dir.glob("{bin,lib}/**/*") + %w(README.md)
   s.executables  = []

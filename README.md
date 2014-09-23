@@ -6,20 +6,31 @@ Tooling and templates for instantiating production and development environments 
 * build_env: install aws api/rubygem
 * load_env_script
 
-* gems: rails, colorize, rails-aws
-
 ### gem: rails-aws
-* Task: rake aws:build_branch[branch_name]
-	* branch exists?
-	* create key
-		* http://docs.aws.amazon.com/AWSRubySDK/latest/AWS/EC2/KeyPair.html
-		* save to **./aws-keys/**
-* Task: rake aws:delete_branch[branch_name]
-	* delete key
-* Task: rake aws:status[branch_name(optional)]
-	* show keys
-	* show stacks
-	* show single stack
+* lib/rails-aws
+
+* railtie: lib/rails-aws/railtie.rb
+	* ```
+			class BackupTask < Rails::Railtie
+	  		rake_tasks do
+		    	Dir[File.join(File.dirname(__FILE__),'*.rake')].each { |f| load f }
+				end
+			end
+		```
+
+* rake:
+	* add rake from gem
+  * Task: rake aws:build_branch[branch_name]
+  	* branch exists?
+  	* create key
+  		* http://docs.aws.amazon.com/AWSRubySDK/latest/AWS/EC2/KeyPair.html
+  		* save to **./aws-keys/**
+  * Task: rake aws:delete_branch[branch_name]
+  	* delete key
+  * Task: rake aws:status[branch_name(optional)]
+  	* show keys
+  	* show stacks
+  	* show single stack
 
 ### Cloudformation
 * templates expected at cloudformation/*.json.erb

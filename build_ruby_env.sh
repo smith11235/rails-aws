@@ -12,10 +12,11 @@
 
 rm -rf .rvm
 export rvm_path=`pwd`/.rvm
-\curl -sSL https://get.rvm.io | bash -s stable --ruby-1.9.3
-source $rvm_path/scripts/rvm
-which rvm
-rvm install ruby-1.9.3
-rvm use ruby-1.9.3
-gem install bundler
-bundle install
+\curl -sSL https://get.rvm.io | bash -s stable --ruby --gems=bundler --ignore-dotfiles
+
+#source $rvm_path/scripts/rvm
+#which rvm
+#rvm install ruby-1.9.3
+#rvm use ruby-1.9.3
+#gem install bundler
+#bundle install
