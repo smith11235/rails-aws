@@ -60,6 +60,10 @@ module RailsAWS
 				msg = "Stack: #{@branch_name} Failed to Delete. Status: #{stack.status}".red
 				puts msg
 				Rails.logger.info( msg )
+			else
+				msg = "Stack: #{@branch_name} Deleted".green
+				puts msg
+				Rails.logger.info( msg )
 			end
 		end
 
@@ -81,6 +85,7 @@ module RailsAWS
 				@stack.outputs.each do |output|
 					msg = "Output: #{output.key}: #{output.value} # #{output.description}".green
 					Rails.logger.info( msg )
+					puts msg
 				end
 			end
 		end
