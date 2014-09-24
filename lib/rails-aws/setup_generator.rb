@@ -4,7 +4,7 @@ module RailsAWS
 
 		def aws_keys_config_file
 			create_file "config/aws-keys.yml" do
-				keys = %w(access_key secret_access_key)
+				keys = [ :access_key_id, :secret_access_key ]
 				values = Hash.new
 				keys.each do |key|
 					values[key] = ask "What is the '#{key}'?" 

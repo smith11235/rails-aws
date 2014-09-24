@@ -13,6 +13,7 @@ Tooling and templates for instantiating production and development environments 
 
 ## Phase 1
 ### gem: rails-aws
+
 * Task: rake aws:build_branch[branch_name]
 	* branch exists?
 	* create key
