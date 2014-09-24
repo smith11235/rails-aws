@@ -9,7 +9,9 @@ Tooling and templates for instantiating production and development environments 
 * sh build_ruby_env.sh
 * cd RailsAws
 * bundle install --deployment
-* rails g rails_a_w_s:setup
+* zues start
+* zues rails g rails_a_w_s:setup
+
 
 ### Stack Management
 * rake aws:[create|delete]_stack[branch_name]
