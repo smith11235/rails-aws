@@ -94,7 +94,7 @@
   "Outputs" : {
     "Login" : {
       "Description" : "The ssh command for the newly created server",
-			"Value" : { "Fn::Join" : ["", [ "ssh -i config/keys/<%= @branch_name %>.private_key root@", { "Fn::GetAtt" : [ "<%= @branch_name + "ec2" %>", "PublicIp" ] } ]]}
+			"Value" : { "Fn::Join" : ["", [ "ssh -i config/keys/<%= @branch_name %>.private_key ubuntu@", { "Fn::GetAtt" : [ "<%= @branch_name + "ec2" %>", "PublicIp" ] } ]]}
     },
     "WebsiteURL" : {
       "Description" : "The URL for the newly created Rails application",
