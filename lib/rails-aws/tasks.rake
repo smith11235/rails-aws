@@ -31,12 +31,12 @@ namespace :aws do
 		key_pair_file = "config/keys/#{branch_name}.private_key"
 		FileUtils.rm( key_pair_file )
 		puts "Deleted KeyPair: #{branch_name} and removed: #{key_pair_file}".green
+
 	end
 
 	desc "Show status for all stacks"
 	task :status => :setup_rails_aws do 
 		status = Hash.new
-		status[ :key_pairs ] = Array.new
 		status[ :key_pairs ] = $ec2.key_pairs.collect do |key_pair|
 			key_pair.name
 		end
