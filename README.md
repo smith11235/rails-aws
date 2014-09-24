@@ -38,6 +38,16 @@ rvm use 2.1.3 --default
 which ruby && ruby -v
 echo "gem: --no-ri --no-rdoc" > ~/.gemrc
 
+# get codebase: (capistrano later?)
+git clone https://github.com/smith11235/rails-aws.git
+cd rails-aws
+git checkout -b phase_1
+git pull origin phase_1
+cd RailsAws
+bundle install --deployment
+bundle exec rake db:create
+
+
 # install nginx
 gpg --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7
 gpg --armor --export 561F9B9CAC40B2F7 | sudo apt-key add -
@@ -74,12 +84,41 @@ passenger_root /usr/lib/ruby/vendor_ruby/phusion_passenger/locations.ini;
 
 * restart: ```sudo service nginx restart```
 
-* get codebase: (capistrano later?)
-	* git clone
+
+* then routing
+
+```
+@domain_name = "partyshuffle.com"
+@deploy_user = "ubuntu"
+
+sudo vim /etc/nginx/sites-enabled/default
+server {   
+	listen 80;   
+	server_name 54.165.219.61; 
+  rails_env    development;  
+	passenger_enabled on;   
+	root /home/ubuntu/rails-aws/RailsAws/public; 
+  # redirect server error pages to the static page /50x.html  
+	error_page   500 502 503 504  /50x.html;
+  location = /50x.html {
+      root   html;
+  }
+}
+```
+
+
+* then:
+	* ```
+			mkdir /home/ubuntu/rails-aws/RailsAws/tmp
+			touch /home/ubuntu/rails-aws/RailsAws/tmp/restart.txt
+		```
+
+* visit: http://54.165.219.61/
+* visit: http://54.165.219.61:3000 # rails
 
 
 * process: https://gorails.com/deploy/ubuntu/14.04
-	* install everything as root, no sudo
+	* install everything as ubuntu
 	* manually execute install getting process down
 	* rails server -e development -p 3000
 * website access
@@ -100,6 +139,16 @@ passenger_root /usr/lib/ruby/vendor_ruby/phusion_passenger/locations.ini;
 * rake aws:access_info[branch_name]
 	* start and stop commands
 * partyshuffle git codebase installed
+
+## SSL
+
+```
+server {       
+  listen         80;
+  server_name 54.165.219.61;       
+  rewrite        ^ https://$server_name$request_uri? permanent;
+}
+```
 
 ## Dashboard
 * what do i have
