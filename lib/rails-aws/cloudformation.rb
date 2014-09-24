@@ -28,14 +28,8 @@ module RailsAWS
 				Rails.logger.info msg
 				raise msg 
 			end
-			stack = @cfm.stacks[@branch_name]
-			stack.delete
-			while stack.status == "DELETE_IN_PROGRESS"
-				msg = "Stack: #{@branch_name} - DELETE_IN_PROGRESS".yellow
-				puts msg
-				Rails.logger.info( msg )
-				sleep( 5 )
-			end
+
+			delete_stack
 		end
 
 		def create!
@@ -51,6 +45,23 @@ module RailsAWS
 		end
 
 		private 
+
+		def delete_stack
+			stack = @cfm.stacks[@branch_name]
+			stack.delete
+			while stack.exists? && stack.status == "DELETE_IN_PROGRESS"
+				msg = "Stack: #{@branch_name} Status: #{stack.status}".yellow
+				puts msg
+				Rails.logger.info( msg )
+				sleep( 5 )
+			end
+
+			if stack.exists?
+				msg = "Stack: #{@branch_name} Failed to Delete. Status: #{stack.status}".red
+				puts msg
+				Rails.logger.info( msg )
+			end
+		end
 
 		def create_stack
 			template = File.open( rendered_file ).read
@@ -68,7 +79,7 @@ module RailsAWS
 			end
 			if @stack.status == "CREATE_COMPLETE"
 				@stack.outputs.each do |output|
-					msg = "Output: #{output.key}: #{output.value} # #{output.description}"
+					msg = "Output: #{output.key}: #{output.value} # #{output.description}".green
 					Rails.logger.info( msg )
 				end
 			end

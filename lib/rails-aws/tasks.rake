@@ -23,8 +23,12 @@ namespace :aws do
 		raise "Missing branch name".red if args[:branch_name].nil?
 		branch_name = args[:branch_name]
 
-		cloudformation = RailsAWS::Cloudformation.new( branch_name )
-		cloudformation.delete!
+		begin
+			cloudformation = RailsAWS::Cloudformation.new( branch_name )
+			cloudformation.delete!
+		rescue 
+			Rails.logger.info( "Failed to delete cloudformation, moving on to key".red )
+		end
 
 		key_pair = RailsAWS::KeyPair.new( branch_name )
 		key_pair.delete!

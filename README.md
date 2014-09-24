@@ -4,25 +4,26 @@ Tooling and templates for instantiating production and development environments 
 
 ## Usage
 
+### Project Setup
 * clone repo
 * sh build_ruby_env.sh
 * cd RailsAws
 * bundle install --deployment
 * rails g rails_a_w_s:setup
-	* enter aws key information
+
+### Stack Management
+* rake aws:[create|delete]_stack[branch_name]
+* rake aws:status
+* tail log/development.log
 
 ## Phase 1
 ### gem: rails-aws
 
-* Task: rake aws:build_branch[branch_name]
-	* create cloudformation stack
-
-* Task: rake aws:delete_branch[branch_name]
-	* cloudformation exists
-	* delete cloudformation
-
 ## Phase 2
-* rails install
+* add zues, save time
+* add pry, save time
+
+* rails install on ec2
 
 ```
             "yum -y install gcc-c++ make","\n",
