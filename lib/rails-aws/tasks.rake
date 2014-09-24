@@ -52,4 +52,8 @@ namespace :aws do
 		puts status.to_yaml.green
 	end
 
+	desc "Detail report for all infrastructure in account"
+	task :details => :environment do
+
+	end
 end

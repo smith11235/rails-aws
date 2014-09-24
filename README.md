@@ -16,32 +16,35 @@ Tooling and templates for instantiating production and development environments 
 * rake aws:status
 * tail log/development.log
 
-## Phase 1
-### gem: rails-aws
-
-## Phase 2
+## Phase 1.1
 * add zues, save time
 * add pry, save time
 
+## Phase 2
 * rails install on ec2
-
 ```
-            "yum -y install gcc-c++ make","\n",
-            "yum -y install mysql-devel sqlite-devel","\n",
-            "yum -y install ruby-rdoc rubygems ruby-mysql ruby-devel","\n",
-            "gem install --no-ri --no-rdoc rails","\n",
-            "gem install --no-ri --no-rdoc mysql","\n",
-            "gem install --no-ri --no-rdoc sqlite3","\n",
-            "rails new myapp","\n",
-            "cd myapp","\n",
-            "rails server -d","\n",
+  "yum -y install gcc-c++ make","\n",
+  "yum -y install mysql-devel sqlite-devel","\n",
+  "yum -y install ruby-rdoc rubygems ruby-mysql ruby-devel","\n",
+  "gem install --no-ri --no-rdoc rails","\n",
+  "gem install --no-ri --no-rdoc mysql","\n",
+  "gem install --no-ri --no-rdoc sqlite3","\n",
+  "rails new myapp","\n",
+  "cd myapp","\n",
+  "rails server -d","\n",
 ```
+* Login
+* website access
+* Elastic IP? or route53?
 
-* EC2: t2.micro
-* also push server port?
-* also push redis/resque?
-* Elastic IP, on ec2
-* key Login
+## Dashboard
+* what do i have
+* details rake task displayed
+* bootstrap
+* format:
+	* each top level section an accordion
+		* cloudformation, ec2, ebs, rds
+		* tied to a global search?
 
 ## Phase 3
 * snapshot of target database
@@ -49,6 +52,10 @@ Tooling and templates for instantiating production and development environments 
 
 ## Phase 4
 * Rails setup
+
+## Phase
+* also push server port?
+* also push redis/resque?
 
 ## Shutdown/startup
 * ttl/cost savings
