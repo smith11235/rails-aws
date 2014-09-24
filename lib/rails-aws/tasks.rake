@@ -19,7 +19,6 @@ namespace :aws do
 			f.write(key_pair.private_key)
 		end
 		puts "Created KeyPair: #{branch_name} and local file: #{key_pair_file}".green
-
 	end
 
 	desc "Delete a stack from [branch_name]"
@@ -31,7 +30,6 @@ namespace :aws do
 		key_pair_file = "config/keys/#{branch_name}.private_key"
 		FileUtils.rm( key_pair_file )
 		puts "Deleted KeyPair: #{branch_name} and removed: #{key_pair_file}".green
-
 	end
 
 	desc "Show status for all stacks"
