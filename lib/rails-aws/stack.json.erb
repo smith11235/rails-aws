@@ -23,7 +23,18 @@
                                                            "\"Reason\" : \"The application myapp is ready\",",
                                                            "\"UniqueId\" : \"myapp\",",
                                                            "\"Data\" : \"Done\"}' ",
-                  "\"", {"Ref" : "WaitForInstanceWaitHandle"},"\"\n" ]]}}
+																													 "\"", {"Ref" : "WaitForInstanceWaitHandle"},"\"\n" ]]}},
+				"Tags": [
+					{
+						"Key": "branch_name",
+						"Value": "<%= @branch_name %>"
+					},
+					{
+						"Key": "deployer",
+						"Value": "<%= ENV["USER"] %>"
+					}
+
+				]
       }
     },
 
@@ -51,7 +62,18 @@
           "FromPort" : "443",
           "ToPort" : "443",
           "CidrIp" : "0.0.0.0/0"
-        }]
+        }],
+				"Tags": [
+					{
+						"Key": "branch_name",
+						"Value": "<%= @branch_name %>"
+					},
+					{
+						"Key": "deployer",
+						"Value": "<%= ENV["USER"] %>"
+					}
+
+				]
       }
     },
     "WaitForInstanceWaitHandle" : {

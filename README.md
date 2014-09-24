@@ -28,9 +28,6 @@ Tooling and templates for instantiating production and development environments 
 	* vars:
 		* branch_name
 		* deployer
-
-* Security Group: 
-	* ports: 80/443/22
 * Tag resources with:
 	* branch_name
 	* deployer (USER)
