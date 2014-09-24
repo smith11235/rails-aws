@@ -12,4 +12,8 @@ module RailsAWS
 	require 'rails-aws/key_pair'
 	require 'rails-aws/cloudformation'
 
+	def self.region
+		'us-east-1'
+	end
+
 end

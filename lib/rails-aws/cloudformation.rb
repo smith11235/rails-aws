@@ -9,6 +9,11 @@ module RailsAWS
 			@template_file = File.expand_path( "../stack.json.erb", __FILE__ )
 
 			@output_dir = File.join( Rails.root, 'cloudformation' )
+
+			@region = RailsAWS.region
+			raise "update ami handling".red unless @region ==	"us-east-1"
+			@ami_id = "ami-22ed474a"
+			# from: http://cloud-images.ubuntu.com/locator/ec2/
 		end
 
 		def exists?
