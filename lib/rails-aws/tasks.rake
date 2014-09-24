@@ -24,7 +24,7 @@ namespace :aws do
 		branch_name = args[:branch_name]
 
 		cloudformation = RailsAWS::Cloudformation.new( branch_name )
-		# cloudformation.delete!
+		cloudformation.delete!
 
 		key_pair = RailsAWS::KeyPair.new( branch_name )
 		key_pair.delete!
@@ -37,6 +37,8 @@ namespace :aws do
 		status[ :key_pairs ] = $ec2.key_pairs.collect do |key_pair|
 			key_pair.name
 		end
+
+		status[ :local_keys ] = Dir.glob( File.join( Rails.root, 'config/keys/*' ) )
 
 		status[ :cloudformation ] = Hash.new
 		$cfm.stacks.collect do |stack|

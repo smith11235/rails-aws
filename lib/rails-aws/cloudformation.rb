@@ -15,7 +15,7 @@ module RailsAWS
 			@ami_id = "ami-22ed474a"
 			# from: http://cloud-images.ubuntu.com/locator/ec2/
 			@instance_type = "t2.micro"
-			@app_name = "partyshuffle-#{@branch_name}"
+			@name = "partyshuffle-#{@branch_name}"
 		end
 
 		def exists?
@@ -28,6 +28,7 @@ module RailsAWS
 				Rails.logger.info msg
 				raise msg 
 			end
+			@cfm.stacks[@branch_name].delete
 		end
 
 		def create!

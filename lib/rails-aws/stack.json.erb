@@ -28,7 +28,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "<%= @app_name %>"
+						"Value": "<%= @name %>"
 					},
 					{
 						"Key": "branch_name",
@@ -69,6 +69,10 @@
           "CidrIp" : "0.0.0.0/0"
         }],
 				"Tags": [
+					{
+						"Key": "Name",
+						"Value": "<%= @name %>"
+					},
 					{
 						"Key": "branch_name",
 						"Value": "<%= @branch_name %>"
