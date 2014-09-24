@@ -6,25 +6,21 @@
       "Type" : "AWS::EC2::Instance",
       "Properties" : {
 				"KeyName" : "test",
+				"InstanceType": "t2.micro",
 				"SecurityGroups" : [ { "Ref" : "testsg" } ],
-				"ImageId" : "ami-22ed474a",
+				"ImageId" : "ami-8afb51e2",
         "UserData" : { "Fn::Base64" : { "Fn::Join" : ["",[
             "#!/bin/bash -ex","\n",
-            "yum -y install gcc-c++ make","\n",
-            "yum -y install mysql-devel sqlite-devel","\n",
-            "yum -y install ruby-rdoc rubygems ruby-mysql ruby-devel","\n",
-            "gem install --no-ri --no-rdoc rails","\n",
-            "gem install --no-ri --no-rdoc mysql","\n",
-            "gem install --no-ri --no-rdoc sqlite3","\n",
-            "rails new myapp","\n",
-            "cd myapp","\n",
-            "rails server -d","\n",
             "curl -X PUT -H 'Content-Type:' --data-binary '{\"Status\" : \"SUCCESS\",",
                                                            "\"Reason\" : \"The application myapp is ready\",",
                                                            "\"UniqueId\" : \"myapp\",",
                                                            "\"Data\" : \"Done\"}' ",
 																													 "\"", {"Ref" : "WaitForInstanceWaitHandle"},"\"\n" ]]}},
 				"Tags": [
+					{
+						"Key": "Name",
+						"Value": "partyshuffle-test"
+					},
 					{
 						"Key": "branch_name",
 						"Value": "test"
@@ -64,6 +60,10 @@
           "CidrIp" : "0.0.0.0/0"
         }],
 				"Tags": [
+					{
+						"Key": "Name",
+						"Value": "partyshuffle-test"
+					},
 					{
 						"Key": "branch_name",
 						"Value": "test"

@@ -22,6 +22,20 @@ Tooling and templates for instantiating production and development environments 
 	* delete cloudformation
 
 ## Phase 2
+* rails install
+
+```
+            "yum -y install gcc-c++ make","\n",
+            "yum -y install mysql-devel sqlite-devel","\n",
+            "yum -y install ruby-rdoc rubygems ruby-mysql ruby-devel","\n",
+            "gem install --no-ri --no-rdoc rails","\n",
+            "gem install --no-ri --no-rdoc mysql","\n",
+            "gem install --no-ri --no-rdoc sqlite3","\n",
+            "rails new myapp","\n",
+            "cd myapp","\n",
+            "rails server -d","\n",
+```
+
 * EC2: t2.micro
 * also push server port?
 * also push redis/resque?

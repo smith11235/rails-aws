@@ -12,7 +12,7 @@ module RailsAWS
 
 			@region = RailsAWS.region
 			raise "update ami handling".red unless @region ==	"us-east-1"
-			@ami_id = "ami-22ed474a"
+			@ami_id = "ami-8afb51e2"
 			# from: http://cloud-images.ubuntu.com/locator/ec2/
 			@instance_type = "t2.micro"
 			@name = "partyshuffle-#{@branch_name}"
@@ -56,7 +56,7 @@ module RailsAWS
 			end
 			Rails.logger.info( "Stack State: #{@stack.status}" )
 			@stack.events.each do |event|
-				msg = "Event: #{event.logical_resource_id} - #{event.resource_status} - #{event.resource_status_resason}"
+				msg = "Event: #{event.logical_resource_id} - #{event.resource_status} - #{event.resource_status_reason}"
 				Rails.logger.info( msg )
 			end
 		end
