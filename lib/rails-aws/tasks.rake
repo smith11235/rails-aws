@@ -14,7 +14,7 @@ namespace :aws do
 		key_pair = RailsAWS::KeyPair.new( branch_name )
 		cloudformation = RailsAWS::Cloudformation.new( branch_name )
 
-		# key_pair.create!
+		key_pair.create!
 		cloudformation.create!
 	end
 

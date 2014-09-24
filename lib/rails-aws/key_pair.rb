@@ -11,8 +11,8 @@ module RailsAWS
 		end
 
 		def create!
-			raise "Key exists: #{@branch_name}".red unless exists?
-			raise "Key Pair File exists: #{key_pair_file}".red unless File.file? key_pair_file
+			raise "Key exists: #{@branch_name}".red if exists?
+			raise "Key Pair File exists: #{key_pair_file}".red if File.file? key_pair_file
 
   		FileUtils.mkdir_p keys_dir unless File.directory?( keys_dir )
   

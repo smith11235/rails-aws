@@ -37,9 +37,26 @@ module RailsAWS
 
 			render_erb
 
+			create_stack
 		end
 
 		private 
+
+		def create_stack
+			template = File.open( rendered_file ).read
+			@stack = @cfm.stacks.create( @branch_name, template)
+			while @stack.status == "CREATE_IN_PROGRESS"
+				msg = "Stack: #{@branch_name} - CREATE_IN_PROGRESS"
+				puts msg.yellow
+				Rails.logger.info( msg )
+				sleep( 5 )
+			end
+			Rails.logger.info( "Stack State: #{@stack.status}" )
+			@stack.events.each do |event|
+				msg = "Event: #{event.logical_resource_id} - #{event.resource_status} - #{event.resource_status_resason}"
+				Rails.logger.info( msg )
+			end
+		end
 
 		def rendered_file
 			File.join( @output_dir, "#{@branch_name}.json" )

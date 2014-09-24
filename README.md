@@ -15,22 +15,11 @@ Tooling and templates for instantiating production and development environments 
 ### gem: rails-aws
 
 * Task: rake aws:build_branch[branch_name]
-	* cloudformation exists
-	* render cloudformation
-	* create cloudformation
+	* create cloudformation stack
 
 * Task: rake aws:delete_branch[branch_name]
 	* cloudformation exists
 	* delete cloudformation
-
-### Cloudformation
-* templates expected at cloudformation/*.json.erb
-	* vars:
-		* branch_name
-		* deployer
-* Tag resources with:
-	* branch_name
-	* deployer (USER)
 
 ## Phase 2
 * EC2: t2.micro
