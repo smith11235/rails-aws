@@ -14,6 +14,7 @@ module RailsAWS
 			raise "update ami handling".red unless @region ==	"us-east-1"
 			@ami_id = "ami-22ed474a"
 			# from: http://cloud-images.ubuntu.com/locator/ec2/
+			@instance_type = "t2.micro"
 		end
 
 		def exists?
