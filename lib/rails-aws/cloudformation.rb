@@ -15,6 +15,7 @@ module RailsAWS
 			@ami_id = "ami-22ed474a"
 			# from: http://cloud-images.ubuntu.com/locator/ec2/
 			@instance_type = "t2.micro"
+			@app_name = "partyshuffle-#{@branch_name}"
 		end
 
 		def exists?
