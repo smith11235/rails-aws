@@ -16,6 +16,7 @@ Tooling and templates for instantiating production and development environments 
 
 * Task: rake aws:build_branch[branch_name]
 	* cloudformation exists
+	* render cloudformation
 	* create cloudformation
 
 * Task: rake aws:delete_branch[branch_name]

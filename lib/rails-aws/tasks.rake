@@ -12,12 +12,10 @@ namespace :aws do
 		branch_name = args[:branch_name]
 
 		key_pair = RailsAWS::KeyPair.new( branch_name )
-		raise "Key already exists: #{branch_name}".red if key_pair.exists? 
-
 		cloudformation = RailsAWS::Cloudformation.new( branch_name )
-		raise "Cloudformation stack exists: #{branch_name}".red if cloudformation.exists?
 
-		key_pair.create!
+		# key_pair.create!
+		cloudformation.create!
 	end
 
 	desc "Delete a stack from [branch_name]"
