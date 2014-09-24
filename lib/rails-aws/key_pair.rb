@@ -11,8 +11,16 @@ module RailsAWS
 		end
 
 		def create!
-			raise "Key exists: #{@branch_name}".red if exists?
-			raise "Key Pair File exists: #{key_pair_file}".red if File.file? key_pair_file
+			if exists?
+				msg = "Key exists: #{@branch_name}".red
+				Rails.logger.fatal msg
+				raise msg
+			end
+			if File.file? key_pair_file
+				msg = "Key Pair File exists: #{key_pair_file}".red 
+				Rails.logger.fatal msg
+				raise msg
+			end
 
   		FileUtils.mkdir_p keys_dir unless File.directory?( keys_dir )
   
@@ -21,6 +29,12 @@ module RailsAWS
   		File.open( key_pair_file, "wb") do |f|
   			f.write( key_pair.private_key )
   		end
+			
+			unless system( "chmod 400 #{key_pair_file}" )
+				msg = "Error: Unable to chmod 400 #{key_pair_file}".red
+				Rails.logger.fatal msg
+				raise msg
+			end
   
   		Rails.logger.info "Created KeyPair: #{@branch_name} and local file: #{key_pair_file}".green
 		end

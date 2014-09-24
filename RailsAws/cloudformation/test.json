@@ -92,6 +92,10 @@
   },
 
   "Outputs" : {
+    "Login" : {
+      "Description" : "The ssh command for the newly created server",
+			"Value" : { "Fn::Join" : ["", [ "ssh -i config/keys/test.private_key root@", { "Fn::GetAtt" : [ "testec2", "PublicIp" ] } ]]}
+    },
     "WebsiteURL" : {
       "Description" : "The URL for the newly created Rails application",
 			"Value" : { "Fn::Join" : ["", [ "http://", { "Fn::GetAtt" : [ "testec2", "PublicIp" ] }, ":3000" ]]}

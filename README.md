@@ -12,32 +12,35 @@ Tooling and templates for instantiating production and development environments 
 * zues start
 * zues rails g rails_a_w_s:setup
 
-
 ### Stack Management
-* rake aws:[create|delete]_stack[branch_name]
-* rake aws:status
+* zeus rake aws:[create|delete]_stack[branch_name]
+* zeus rake aws:status
 * tail log/development.log
 
-## Phase 1.1
-* add zues, save time
-* add pry, save time
-
 ## Phase 2
-* rails install on ec2
+* root login with key after creation
+	* ```ssh -i config/keys/[branch_name].private_key root@ip.add.re.ss```
+
+* process: https://gorails.com/deploy/ubuntu/14.04
+	* install everything as root, no sudo
+	* manually execute install getting process down
+	* rails server -e development -p 3000
+* website access
+
+* install with cloud-init
+
 ```
   "yum -y install gcc-c++ make","\n",
   "yum -y install mysql-devel sqlite-devel","\n",
   "yum -y install ruby-rdoc rubygems ruby-mysql ruby-devel","\n",
-  "gem install --no-ri --no-rdoc rails","\n",
-  "gem install --no-ri --no-rdoc mysql","\n",
-  "gem install --no-ri --no-rdoc sqlite3","\n",
+	"bundle install", "\n",
   "rails new myapp","\n",
   "cd myapp","\n",
-  "rails server -d","\n",
+  "rails server","\n",
 ```
-* Login
-* website access
-* Elastic IP? or route53?
+
+## Phase 3
+* partyshuffle git codebase installed
 
 ## Dashboard
 * what do i have
