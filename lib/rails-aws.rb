@@ -8,5 +8,8 @@ module RailsAWS
 
 	require 'rails-aws/railtie'
 	require 'rails-aws/ec2_client'
+	require 'rails-aws/cfm_client'
+	require 'rails-aws/key_pair'
+	require 'rails-aws/cloudformation'
 
 end

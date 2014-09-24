@@ -15,18 +15,12 @@ Tooling and templates for instantiating production and development environments 
 ### gem: rails-aws
 
 * Task: rake aws:build_branch[branch_name]
-	* branch exists?
-	* create key
-		* http://docs.aws.amazon.com/AWSRubySDK/latest/AWS/EC2/KeyPair.html
-		* save to **./aws-keys/**
+	* cloudformation exists
+	* create cloudformation
 
 * Task: rake aws:delete_branch[branch_name]
-	* delete key in cloud and locally
-
-* Task: rake aws:status[branch_name(optional)]
-	* show keys
-	* show stacks
-	* show single stack
+	* cloudformation exists
+	* delete cloudformation
 
 ### Cloudformation
 * templates expected at cloudformation/*.json.erb
