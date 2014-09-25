@@ -16,14 +16,19 @@
             "export package_list='git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties'", "\n",
             "apt-get install $package_list -y", "\n",
 						"apt-get install libgdbm-dev libncurses5-dev automake libtool bison libffi-dev -y", "\n",
-"curl -L https://get.rvm.io | bash -s stable", "\n",
-"source ~/.rvm/scripts/rvm", "\n",
-"echo 'source ~/.rvm/scripts/rvm' >> ~/.bashrc", "\n",
-"rvm install 2.1.3", "\n",
 
-"rvm use 2.1.3 --default", "\n",
-"echo 'gem: --no-ri --no-rdoc' > ~/.gemrc", "\n",
-						"whoami && pwd && which rails", "\n",
+          "adduser --disabled-password --gecos '' deploy", "\n",
+          "mkdir /home/deploy/.ssh", "\n",
+          "chown -R deploy:deploy /home/deploy/.ssh", "\n",
+					"chmod -R 700 /home/deploy/.ssh", "\n",
+          "cp /home/ubuntu/.ssh/authorized_keys /home/deploy/.ssh/authorized_keys", "\n",
+          "chown -R deploy:deploy /home/deploy/.ssh/authorized_keys", "\n",
+          "chmod 600 /home/deploy/.ssh/authorized_keys", "\n",
+
+ 					"sed -i 's/PermitRootLogin\\swithout-password/PermitRootLogin no/' /etc/ssh/sshd_config", "\n",
+  				"sed -i 's/UsePAM\\syes/UsePAM no/' /etc/ssh/sshd_config", "\n",
+					"service ssh restart", "\n",
+
             "curl -X PUT -H 'Content-Type:' --data-binary '{\"Status\" : \"SUCCESS\",",
                                                            "\"Reason\" : \"The application myapp is ready\",",
                                                            "\"UniqueId\" : \"myapp\",",
@@ -107,7 +112,7 @@
   "Outputs" : {
     "Login" : {
       "Description" : "The ssh command for the newly created server",
-			"Value" : { "Fn::Join" : ["", [ "ssh -i config/keys/test.private_key ubuntu@", { "Fn::GetAtt" : [ "testec2", "PublicIp" ] } ]]}
+			"Value" : { "Fn::Join" : ["", [ "ssh -i config/keys/test.private_key deploy@", { "Fn::GetAtt" : [ "testec2", "PublicIp" ] } ]]}
     },
     "WebsiteURL" : {
       "Description" : "The URL for the newly created Rails application",
