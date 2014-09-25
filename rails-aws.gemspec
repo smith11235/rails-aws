@@ -22,6 +22,10 @@ Gem::Specification.new do |s|
 	s.add_dependency "colorize"
 	s.add_dependency "haml"
 	s.add_dependency "haml-rails"
+	s.add_dependency "capistrano"
+	s.add_dependency "capistrano-bundler"
+	s.add_dependency "capistrano-rails"
+	s.add_dependency "capistrano-rvm"
 
   s.files        = Dir.glob("{bin,lib}/**/*") + %w(README.md)
   s.executables  = []
