@@ -23,9 +23,11 @@ Tooling and templates for instantiating production and development environments 
 	* ssh -i config/keys/test.private_key root@54.165.219.61
 
 	```
-# base update
-sudo apt-get update
-sudo apt-get install git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties
+# base update - as root
+# apt-get update
+# apt-get upgrade -y
+# export package_list="git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties"
+# apt-get install $package_list -y
 
 # rvm
 sudo apt-get install libgdbm-dev libncurses5-dev automake libtool bison libffi-dev
