@@ -1,13 +1,8 @@
 namespace :aws do
 
-	desc "Setup RailsAWS environment"
-	task :setup_rails_aws => :environment do
-		$ec2 = RailsAWS::EC2Client.get
-		$cfm = RailsAWS::CFMClient.get
-	end
 
 	desc "Create a new stack from [branch_name]"
-	task :create_stack, [:branch_name] => :setup_rails_aws do |t,args|
+	task :create_stack, [:branch_name] => :environment do |t,args|
 		raise "Missing branch name".red if args[:branch_name].nil?
 		branch_name = args[:branch_name]
 
@@ -19,7 +14,7 @@ namespace :aws do
 	end
 
 	desc "Delete a stack from [branch_name]"
-	task :delete_stack, [:branch_name] => :setup_rails_aws do |t,args|
+	task :delete_stack, [:branch_name] => :environment do |t,args|
 		raise "Missing branch name".red if args[:branch_name].nil?
 		branch_name = args[:branch_name]
 
@@ -41,26 +36,38 @@ namespace :aws do
 		end
 
 		if failed
-			raise "Something failed, check logs".red
+			msg = "delete_stack[#{branch_name}] FAILED".red
+			Rails.logger.info( msg )
+			raise msg 
 		end
+		msg = "delete_stack[#{branch_name}] successful".green
+		Rails.logger.info( msg )
+		puts msg
 	end
 
 	desc "Show status for all stacks"
-	task :status => :setup_rails_aws do 
+	task :status => :environment do 
 		status = Hash.new
 
-		status[ :key_pairs ] = $ec2.key_pairs.collect do |key_pair|
+		status[ :key_pairs ] = RailsAWS::EC2Client.new().key_pairs.collect do |key_pair|
 			key_pair.name
 		end
 
 		status[ :local_keys ] = Dir.glob( File.join( Rails.root, 'config/keys/*' ) )
 
 		status[ :cloudformation ] = Hash.new
-		$cfm.stacks.collect do |stack|
+		RailsAws::CFMClient.new().stacks.each do |stack|
 			status[ :cloudformation ][ stack.name ] = stack.status
 		end
 
 		puts status.to_yaml.green
+	end
+
+	desc "Show stack status, useful for monitoring"
+	task :stack_status, [:branch_name] => :environment do |t,args|
+		raise "Missing branch name".red if args[:branch_name].nil?
+		branch_name = args[:branch_name]
+		RailsAWS::Cloudformation.new( branch_name ).show_stack_status
 	end
 
 	desc "Detail report for all infrastructure in account"

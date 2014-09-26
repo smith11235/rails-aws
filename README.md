@@ -38,6 +38,9 @@ Tooling and templates for instantiating production and development environments 
 
 * get deploy account setup in cloud init
 	* notes
+* add to create:
+	* get ec2 instances
+	* get instance, show console_output
 * run as deploy
 
 
@@ -47,11 +50,10 @@ Tooling and templates for instantiating production and development environments 
 curl -L https://get.rvm.io | bash -s stable
 source ~/.rvm/scripts/rvm
 echo "source ~/.rvm/scripts/rvm" >> ~/.bashrc
+echo "gem: --no-ri --no-rdoc" > ~/.gemrc
 rvm install 2.1.3
-
 rvm use 2.1.3 --default
 which ruby && ruby -v
-echo "gem: --no-ri --no-rdoc" > ~/.gemrc
 
 # get codebase: (capistrano later?)
 git clone https://github.com/smith11235/rails-aws.git

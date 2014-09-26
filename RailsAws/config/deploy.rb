@@ -2,13 +2,15 @@
 lock '3.2.1'
 
 set :application, 'rails-aws'
-set :repo_url, 'git@github.com:smith11235/rails-aws.git'
+set :repo_url, "git@github.com:smith11235/rails-aws.git"
 
 # Default branch is :master
-set :branch, fetch( :branch, "master" )
+set :branch, fetch( :branch )
 
 # Default deploy_to directory is /var/www/my_app
 set :deploy_to, '/home/deploy/rails-aws'
+	
+set :default_shell, '/bin/bash --login'
 
 # Default value for :scm is :git
 # set :scm, :git

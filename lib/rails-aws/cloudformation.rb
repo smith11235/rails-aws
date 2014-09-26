@@ -5,6 +5,7 @@ module RailsAWS
 			@branch_name = branch_name
 
 			@cfm = RailsAWS::CFMClient.get
+			@ec2 = RailsAWS::EC2Client.get
 
 			@template_file = File.expand_path( "../stack.json.erb", __FILE__ )
 
@@ -16,6 +17,8 @@ module RailsAWS
 			# from: http://cloud-images.ubuntu.com/locator/ec2/
 			@instance_type = "t2.micro"
 			@name = "partyshuffle-#{@branch_name}"
+
+			@stack = @cfm.stacks[ @branch_name ] 
 		end
 
 		def exists?
@@ -44,20 +47,48 @@ module RailsAWS
 			create_stack
 		end
 
+		def show_stack_status
+			msg = "Stack: #{@branch_name} - #{@stack.status}".yellow
+			puts msg
+			Rails.logger.info( msg )
+			@stack.resources.each do |resource|
+				msg = "#{resource.resource_type}: #{resource.resource_status} # #{resource.resource_status_reason}"
+				puts msg
+				if resource.resource_type == "AWS::EC2::Instance" && resource.resource_status == "CREATE_COMPLETE"
+					instance = @ec2.instances[ resource.physical_resource_id ]
+					console_output = instance.console_output
+					unless console_output.nil?
+						tailing = console_output
+						puts "vvvvvvvvvvvvvvvvvv Console Output vvvvvvvvvvvvvvvv".yellow
+						puts "Class: #{tailing.class} and size: #{tailing.size}".red
+						tailing = tailing.split( /\n/ )
+						puts "Class: #{tailing.class} and size: #{tailing.size}".red
+						if tailing.size > 50
+							tailing = tailing[ (tailing.size - 50)..tailing.size ]
+						end
+						puts tailing.to_yaml.green
+						puts "^^^^^^^^^^^^^^^^^^ Console Output ^^^^^^^^^^^^^^^^".yellow
+					end
+				end
+			end
+		end
+
 		private 
 
 		def delete_stack
-			stack = @cfm.stacks[@branch_name]
-			stack.delete
-			while stack.exists? && stack.status == "DELETE_IN_PROGRESS"
-				msg = "Stack: #{@branch_name} Status: #{stack.status}".yellow
+			msg = "Stack: #{@branch_name}:#{@stack.status} Deleting...".green
+			puts msg
+			Rails.logger.info( msg )
+			@stack.delete
+			while @stack.exists? && @stack.status == "DELETE_IN_PROGRESS"
+				msg = "Stack: #{@branch_name} Status: #{@stack.status}".yellow
 				puts msg
 				Rails.logger.info( msg )
 				sleep( 5 )
 			end
 
-			if stack.exists?
-				msg = "Stack: #{@branch_name} Failed to Delete. Status: #{stack.status}".red
+			if @stack.exists?
+				msg = "Stack: #{@branch_name} Failed to Delete. Status: #{@stack.status}".red
 				puts msg
 				Rails.logger.info( msg )
 			else
@@ -71,12 +102,10 @@ module RailsAWS
 			template = File.open( rendered_file ).read
 			@stack = @cfm.stacks.create( @branch_name, template)
 			while @stack.status == "CREATE_IN_PROGRESS"
-				msg = "Stack: #{@branch_name} - CREATE_IN_PROGRESS".yellow
-				puts msg
-				Rails.logger.info( msg )
+				show_stack_status
 				sleep( 5 )
 			end
-			Rails.logger.info( "Stack State: #{@stack.status}" )
+			Rails.logger.info( "Post CREATE_IN_PROGRESS Stack State: #{@stack.status}" )
 			@stack.events.each do |event|
 				msg = "Event: #{event.logical_resource_id} - #{event.resource_status} - #{event.resource_status_reason}"
 				Rails.logger.info( msg )
@@ -87,8 +116,13 @@ module RailsAWS
 					Rails.logger.info( msg )
 					puts msg
 				end
+			else 
+				msg = "Stack Creation Error: Stack '#{@branch_name}' has status: #{@stack.status}".red
+				Rails.logger.info( msg )
+				raise msg
 			end
 		end
+
 
 		def rendered_file
 			File.join( @output_dir, "#{@branch_name}.json" )

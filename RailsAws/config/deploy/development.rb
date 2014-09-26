@@ -4,9 +4,11 @@
 # is considered to be the first unless any hosts have the primary
 # property set.  Don't declare `role :all`, it's a meta role.
 
-role :app, [ fetch( :ipaddress ) ]
-role :web, [ fetch( :ipaddress ) ]
-role :db, [ fetch( :ipaddress ) ]
+ipaddress = ENV["ipaddress"]
+
+role :app, [ ipaddress ]
+role :web, [ ipaddress ]
+role :db, [ ipaddress ]
 
 # Extended Server Syntax
 # ======================
@@ -14,7 +16,7 @@ role :db, [ fetch( :ipaddress ) ]
 # server list. The second argument is a, or duck-types, Hash and is
 # used to set extended properties on the server.
 
-server fetch(:ipaddress), user: 'deploy', roles: %w{web app}, my_property: :my_value
+server ipaddress, user: 'deploy', roles: %w{web app}, my_property: :my_value
 
 
 # Custom SSH Options
@@ -25,7 +27,7 @@ server fetch(:ipaddress), user: 'deploy', roles: %w{web app}, my_property: :my_v
 # Global options
 # --------------
 set :ssh_options, {
-  keys: "config/keys/#{fetch(:branch)}.private_key",
+  keys: "config/keys/test.private_key",
   forward_agent: false
 }
 #
