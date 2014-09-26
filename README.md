@@ -36,30 +36,12 @@ Tooling and templates for instantiating production and development environments 
 
 ## Capistrano
 
-* get deploy account setup in cloud init
-	* notes
-* add to create:
-	* get ec2 instances
-	* get instance, show console_output
 * run as deploy
-
-
-* as deploy user:
-* execute curl rvm install
-
-curl -L https://get.rvm.io | bash -s stable
-source ~/.rvm/scripts/rvm
-echo "source ~/.rvm/scripts/rvm" >> ~/.bashrc
-echo "gem: --no-ri --no-rdoc" > ~/.gemrc
-rvm install 2.1.3
-rvm use 2.1.3 --default
-which ruby && ruby -v
-
 # get codebase: (capistrano later?)
 git clone https://github.com/smith11235/rails-aws.git
 cd rails-aws
-git checkout -b phase_1
-git pull origin phase_1
+git checkout -b branch_name
+git pull origin branch_name 
 cd RailsAws
 bundle install --deployment
 bundle exec rake db:create

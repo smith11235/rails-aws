@@ -5,6 +5,7 @@
 # property set.  Don't declare `role :all`, it's a meta role.
 
 ipaddress = ENV["ipaddress"]
+branch_name = ENV["branch_name"]
 
 role :app, [ ipaddress ]
 role :web, [ ipaddress ]
@@ -27,7 +28,7 @@ server ipaddress, user: 'deploy', roles: %w{web app}, my_property: :my_value
 # Global options
 # --------------
 set :ssh_options, {
-  keys: "config/keys/test.private_key",
+  keys: "config/keys/#{branch_name}.private_key",
   forward_agent: false
 }
 #
