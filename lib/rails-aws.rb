@@ -26,7 +26,7 @@ module RailsAWS
 	# replace these with user config settings, have cheap defaults
 	def self.config( key )
 		@config ||= YAML.load_file( File.join( Rails.root, 'config/rails-aws.yml' ) )
-		@config.fetch( key )
+		@config.fetch( key.to_s )
 	end
 
 	def self.environment
