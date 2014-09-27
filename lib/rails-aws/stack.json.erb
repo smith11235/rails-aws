@@ -55,11 +55,15 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "<%= @application %>"
+						"Value": "<%= "#{@application}-#{@branch_name}-#{environment}" %>"
 					},
 					{
 						"Key": "branch_name",
 						"Value": "<%= @branch_name %>"
+					},
+					{
+						"Key": "environment",
+						"Value": "<%= @environment %>"
 					},
 					{
 						"Key": "deployer",
@@ -98,11 +102,15 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "<%= @name %>"
+						"Value": "<%= "#{@application}-#{@branch_name}-#{environment}" %>"
 					},
 					{
 						"Key": "branch_name",
 						"Value": "<%= @branch_name %>"
+					},
+					{
+						"Key": "environment",
+						"Value": "<%= @environment %>"
 					},
 					{
 						"Key": "deployer",

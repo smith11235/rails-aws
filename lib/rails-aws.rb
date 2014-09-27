@@ -23,6 +23,10 @@ module RailsAWS
 		"ami-8afb51e2"
 	end
 
+	def self.environment
+		"development"
+	end
+
 	# replace these with user config settings, have cheap defaults
 
 	def self.deploy_key

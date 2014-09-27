@@ -1,7 +1,7 @@
 # config valid only for Capistrano 3.1
 lock '3.2.1'
 
-%w( application repo_url branch deploy_key ).each do |setting|
+%w( application repo_url branch deploy_key rails_env ).each do |setting|
 	setting_value = ENV[setting]
 	raise "Missing setting: #{setting}" if setting_value.nil?
 	puts "Setting: #{setting}, Value: #{setting_value}"
@@ -50,6 +50,7 @@ namespace :deploy do
 			ssh_config = "/home/deploy/.ssh/config"
 
       upload! fetch( :deploy_key ), remote_key
+
 			execute :touch, ssh_config
 			execute "echo '# Github' >> #{ssh_config}"
 			execute "echo 'Host github.com' >> #{ssh_config}"
@@ -62,16 +63,7 @@ namespace :deploy do
 	desc 'Start Rails Server'
 	task :start_rails_server do
     on roles(:app), in: :sequence, wait: 5 do
-			nohup_out = File.join( current_path, 'nohup.out' )
-			begin
-				execute "rm #{nohup_out}"
-			rescue
-			end
-			execute "source ~/.rvm/scripts/rvm && rvm use 2.1.3 && cd #{current_path} && ( nohup bundle exec rails server > log/rails_server.log &) && sleep 3 && echo 'Rails Server Started' && ps x", :pty => true
-			begin
-				#execute "tail #{nohup_out}"
-			rescue
-			end
+			execute "source ~/.rvm/scripts/rvm && rvm use 2.1.3 && cd #{current_path} && ( nohup bundle exec rails server -e #{fetch(:rails_env)} -p 3000 > log/rails_server.log &) && sleep 3 && echo 'Rails Server Started' && ps x", :pty => true
     end
 	end
 

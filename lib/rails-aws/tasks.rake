@@ -31,8 +31,9 @@ namespace :aws do
 		cmd_prefix << " repo_url=#{RailsAWS.repo_url}"
 		cmd_prefix << " application=#{RailsAWS.application}"
 		cmd_prefix << " deploy_key=#{RailsAWS.deploy_key}"
+		cmd_prefix << " rails_env=#{RailsAWS.environment}"
 
-		cmd_prefix << " development " # environment
+		cmd_prefix << " #{RailsAWS.environment} " # environment
 		cmd = cmd_prefix + task
 
 		puts "Executing: #{cmd}".green

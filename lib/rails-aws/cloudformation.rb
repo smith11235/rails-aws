@@ -27,6 +27,7 @@ module RailsAWS
 			@ami_id = RailsAWS.ami_id
 			@instance_type = RailsAWS.instance_type
 			@application = RailsAWS.application
+			@environment = RailsAWS.environment
 
 			@stack = @cfm.stacks[ @branch_name ] 
 		end
