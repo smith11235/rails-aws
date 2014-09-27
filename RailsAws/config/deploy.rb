@@ -10,7 +10,7 @@ set :branch, fetch( :branch )
 # Default deploy_to directory is /var/www/my_app
 set :deploy_to, '/home/deploy/rails-aws'
 	
-set :default_shell, '/bin/bash --login'
+set :default_shell, '/bin/bash'
 
 # Default value for :scm is :git
 # set :scm, :git
