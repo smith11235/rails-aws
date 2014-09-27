@@ -1,16 +1,18 @@
 # config valid only for Capistrano 3.1
 lock '3.2.1'
 
-set :application, 'rails-aws'
-set :repo_url, "git@github.com:smith11235/rails-aws.git"
-
-# Default branch is :master
-branch_name = ENV['branch'] 
-set :branch, branch_name
-puts "Branch: #{branch_name}"
+%w( application repo_url branch ).each do |setting|
+	setting_value = ENV[setting]
+	raise "Missing setting: #{setting}" if setting_value.nil?
+	puts "Setting: #{setting}, Value: #{setting_value}"
+	set setting.to_sym, setting_value
+end
 
 # Default deploy_to directory is /var/www/my_app
-set :deploy_to, '/home/deploy/rails-aws'
+deploy_to = "/home/deploy/#{application}"
+set :deploy_to, deploy_to
+puts "Deploy To: #{deploy_to}"
+
 	
 set :default_shell, '/bin/bash'
 

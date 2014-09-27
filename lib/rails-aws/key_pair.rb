@@ -1,6 +1,10 @@
 module RailsAWS
 	class KeyPair
 
+		def self.file( branch_name )
+  		File.join( RailsAws.branch_dir, "#{branch_name}.private_key" )
+		end
+
 		def initialize( branch_name )
 			@branch_name = branch_name
 			@ec2 = RailsAWS::EC2Client.get
@@ -16,13 +20,12 @@ module RailsAWS
 				Rails.logger.fatal msg
 				raise msg
 			end
+
 			if File.file? key_pair_file
 				msg = "Key Pair File exists: #{key_pair_file}".red 
 				Rails.logger.fatal msg
 				raise msg
 			end
-
-  		FileUtils.mkdir_p keys_dir unless File.directory?( keys_dir )
   
   		key_pair = @ec2.key_pairs.create( @branch_name )
 
@@ -59,12 +62,8 @@ module RailsAWS
 
 		private
 
-		def keys_dir
-			File.join( Rails.root, "config/keys" )
-		end
-
 		def key_pair_file
-  		File.join( keys_dir, "#{@branch_name}.private_key" )
+			KeyPair.file( @branch_name )
 		end
 	end
 end

@@ -27,6 +27,5 @@ pickle-email-*.html
 *.sw*
 /**/*.sw*
 
-
 /config/aws-keys.yml
-/config/keys/*
+/config/branch/*/*.private_key

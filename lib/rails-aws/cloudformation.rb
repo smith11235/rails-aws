@@ -9,14 +9,12 @@ module RailsAWS
 
 			@template_file = File.expand_path( "../stack.json.erb", __FILE__ )
 
-			@output_dir = File.join( Rails.root, 'cloudformation' )
+			@output_dir = RailsAWS.branch_dir( @branch_name )
 
 			@region = RailsAWS.region
-			raise "update ami handling".red unless @region ==	"us-east-1"
-			@ami_id = "ami-8afb51e2"
-			# from: http://cloud-images.ubuntu.com/locator/ec2/
-			@instance_type = "t2.micro"
-			@name = "partyshuffle-#{@branch_name}"
+			@ami_id = RailsAWS.ami_id
+			@instance_type = RailsAWS.instance_type
+			@application = RailsAWS.application
 
 			@stack = @cfm.stacks[ @branch_name ] 
 		end
@@ -109,27 +107,42 @@ module RailsAWS
 		def create_stack
 			template = File.open( rendered_file ).read
 			@stack = @cfm.stacks.create( @branch_name, template)
+
 			while @stack.status == "CREATE_IN_PROGRESS"
 				show_stack_status
 				sleep( 5 )
 			end
-			Rails.logger.info( "Post CREATE_IN_PROGRESS Stack State: #{@stack.status}" )
 
+			show_stack_status
 			show_stack_events
 
-			if @stack.status == "CREATE_COMPLETE"
-				@stack.outputs.each do |output|
-					msg = "Output: #{output.key}: #{output.value} # #{output.description}".green
-					Rails.logger.info( msg )
-					puts msg
-				end
-			else 
-				msg = "Stack Creation Error: Stack '#{@branch_name}' has status: #{@stack.status}".red
+			successful_stack?
+
+			log_stack_outputs
+		end
+
+		def log_stack_outputs
+			outputs_file = File.join( @output_dir, "#{@branch_name}-outputs.yml" )
+			outputs = Hash.new
+			@stack.outputs.each do |output|
+				outputs[ output.key ] = output.value
+			end
+
+			Rails.logger.info( outputs.to_yaml.green )
+			puts outputs.to_yaml.green
+
+			File.open( outputs_file, 'w' ) do |f|
+				f.puts outputs.to_yaml
+			end
+		end
+
+		def successful_stack?
+			unless @stack.status == "CREATE_COMPLETE"
+				msg = "Stack Creation FAILED: '#{@branch_name}': #{@stack.status}".red
 				Rails.logger.info( msg )
 				raise msg
 			end
 		end
-
 
 		def rendered_file
 			File.join( @output_dir, "#{@branch_name}.json" )

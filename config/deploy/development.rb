@@ -27,8 +27,9 @@ server ipaddress, user: 'deploy', roles: %w{web app}, my_property: :my_value
 #
 # Global options
 # --------------
-key_file = "config/keys/#{branch_name}.private_key"
+key_file = RailsAWS::KeyFile.file( branch_name )
 puts "Key File: #{key_file}"
+
 set :ssh_options, {
   keys: [ key_file ],
   forward_agent: false,

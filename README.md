@@ -18,21 +18,26 @@ Tooling and templates for instantiating production and development environments 
 * create deploy key:
 	* ssh-keygen -t rsa -f ~/.ssh/deploy_id_rsa
 	* add the public key to github repo you are deploying
-		* 'deploy: [repo-name]'
+		* ~/.ssh/deploy_id_rsa.pub
+		* Key attached to github repo: 'deploy: [repo-name]'
 * bundle exec rails g rails_a_w_s:setup
 
 
-### Config Values
-    ```       
-      PermitRootLogin no      
-      UsePAM no      
-      RSAAuthentication yes       
-      PubkeyAuthentication yes       
-      ChallengeResponseAuthentication no  
-      PasswordAuthentication no  
-    ``` 
+### Config Values For Login
+
+File: **/etc/ssh/sshd_config**
+
+```       
+  PermitRootLogin no      
+  UsePAM no      
+  RSAAuthentication yes # default      
+  PubkeyAuthentication yes       # default
+  ChallengeResponseAuthentication no  # default
+  PasswordAuthentication no  # default
+``` 
 
 ### Stack Management
+* rake aws:check_setup
 * rake aws:[create|delete]_stack[branch_name]
 * rake aws:status
 * cap_cmd deploy:publish_deploy_key
@@ -40,7 +45,6 @@ Tooling and templates for instantiating production and development environments 
 * tail log/development.log
 
 ## Phase: Capistrano
-
 
 ## Phase: install nginx
 gpg --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7
