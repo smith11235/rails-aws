@@ -40,6 +40,13 @@ set :default_shell, '/bin/bash'
 
 namespace :deploy do
 
+	desc 'Publish Deploy Uey For Git To Host'
+	task :publish_deploy_key do
+    on roles(:app), in: :sequence, wait: 5 do
+      upload! "~/.ssh/deploy_id_rsa", "/home/deploy/.ssh/deploy_id_rsa"
+    end
+	end
+
   desc 'Restart application'
   task :restart do
     on roles(:app), in: :sequence, wait: 5 do

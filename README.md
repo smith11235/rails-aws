@@ -15,7 +15,12 @@ Tooling and templates for instantiating production and development environments 
 * clone repo
 * sh build_ruby_env.sh
 * bundle install --deployment
+* create deploy key:
+	* ssh-keygen -t rsa -f ~/.ssh/deploy_id_rsa
+	* add the public key to github repo you are deploying
+		* 'deploy: [repo-name]'
 * bundle exec rails g rails_a_w_s:setup
+
 
 ### Config Values
     ```       
@@ -30,6 +35,8 @@ Tooling and templates for instantiating production and development environments 
 ### Stack Management
 * rake aws:[create|delete]_stack[branch_name]
 * rake aws:status
+* cap_cmd deploy:publish_deploy_key
+* cap_cmd deploy
 * tail log/development.log
 
 ## Phase: Capistrano

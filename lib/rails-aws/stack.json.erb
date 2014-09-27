@@ -48,6 +48,11 @@
 					 "echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Which Ruby VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
 			     "sudo -i -u $new_user sh -c \"bash -c 'source ~/.rvm/scripts/rvm && which ruby && ruby -v'\"", "\n",
 
+					 "sudo -u $new_user echo '# Github' >> ~/.ssh/config", "\n",
+					 "sudo -u $new_user echo 'Host github.com' >> ~/.ssh/config", "\n",
+					 "sudo -u $new_user echo 'User git' >> ~/.ssh/config", "\n",
+					 "sudo -u $new_user echo 'IdentityFile ~/.ssh/deploy_id_rsa' >> ~/.ssh/config", "\n",
+
             "curl -X PUT -H 'Content-Type:' --data-binary '{\"Status\" : \"SUCCESS\",",
                                                            "\"Reason\" : \"The application myapp is ready\",",
                                                            "\"UniqueId\" : \"myapp\",",
