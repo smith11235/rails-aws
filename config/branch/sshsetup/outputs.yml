@@ -1,0 +1,4 @@
+---
+IP: 54.85.87.66
+Login: ssh -i config/keys/sshsetup.private_key deploy@54.85.87.66
+WebsiteURL: http://54.85.87.66:3000
