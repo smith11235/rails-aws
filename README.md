@@ -11,10 +11,10 @@ Tooling and templates for instantiating production and development environments 
 * gem 'capistrano-rails', '~> 1.1.1'
 * gem 'capistrano-rvm', github: "capistrano/rvm"k
 
-### Project Setup
+### Project Setup: from dev/coordination server
 * clone repo
 * sh build_ruby_env.sh
-* bundle install --deployment
+* bundle install 
 * create deploy key:
 	* ssh-keygen -t rsa -f ~/.ssh/deploy_id_rsa
 	* add the public key to github repo you are deploying
@@ -22,44 +22,62 @@ Tooling and templates for instantiating production and development environments 
 		* Key attached to github repo: 'deploy: [repo-name]'
 * bundle exec rails g rails_a_w_s:setup
 
-
-### Config Values For Login
-
-File: **/etc/ssh/sshd_config**
-
-```       
-  PermitRootLogin no      
-  UsePAM no      
-  RSAAuthentication yes # default      
-  PubkeyAuthentication yes       # default
-  ChallengeResponseAuthentication no  # default
-  PasswordAuthentication no  # default
-``` 
-
 ### Stack Management
-* rake aws:check_setup
-* rake aws:[create|delete]_stack[branch_name]
-* rake aws:status
-* rake aws:cap_deploy
-* tail log/development.log
+
+```
+  rake aws:check_setup
+  rake aws:[create|delete]_stack[branch_name]
+  rake aws:status
+  rake aws:stack_status[branch_name]
+  rake aws:cap_deploy[branch_name]
+  rake aws:cap_start[branch_name]
+  rake aws:login[branch_name]
+
+  tail log/development.log
+```
 
 ## Phase: Capistrano
+- as deploy: https://gorails.com/deploy/ubuntu/14.04
 
-## Phase: install nginx
-gpg --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7
-gpg --armor --export 561F9B9CAC40B2F7 | sudo apt-key add -
+- add to rails-aws.yml
+	- repo_url
+	- application
+	- region
+	- deploy_key
+	- instance_type
 
-sudo apt-get install apt-transport-https
 
-sudo sh -c "echo 'deb https://oss-binaries.phusionpassenger.com/apt/passenger trusty main' >> /etc/apt/sources.list.d/passenger.list"
-sudo chown root: /etc/apt/sources.list.d/passenger.list
-sudo chmod 600 /etc/apt/sources.list.d/passenger.list
+- rails g rails_a_w_s:setup:
+  - capistrano files need moving to gem/generator process
+  - create: Capfile, config/deploy.rb, config/deploy/[development|production]
+  - check Gemfile for needed lines
 
-sudo apt-get update
-sudo apt-get install nginx-full passenger
+## Phase: install nginx, open to 80
 
-sudo service nginx start
-	```
+- nginx setup: https://gorails.com/deploy/ubuntu/14.04
+
+```
+  gpg --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7
+  gpg --armor --export 561F9B9CAC40B2F7 | sudo apt-key add -
+  
+  sudo apt-get install apt-transport-https
+  
+  sudo sh -c "echo 'deb https://oss-binaries.phusionpassenger.com/apt/passenger trusty main' >> /etc/apt/sources.list.d/passenger.list"
+  sudo chown root: /etc/apt/sources.list.d/passenger.list
+  sudo chmod 600 /etc/apt/sources.list.d/passenger.list
+  
+  sudo apt-get update
+  sudo apt-get install nginx-full passenger
+  
+  sudo service nginx start
+```
+
+- allow production environment deployment
+  - make sure settings are tuned properly
+
+- rake aws:check_setup (rails-aws.yml)
+  - and clean up documentation
+
 
 * visit: http://54.165.219.61/
 
@@ -222,6 +240,15 @@ server {
 * test
 * migrate route 53
 
-## AWS Example
+### Config Values For Login
 
-[example](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-waitcondition-article.html)
+File: **/etc/ssh/sshd_config**
+
+```       
+  PermitRootLogin no      
+  UsePAM no      
+  RSAAuthentication yes # default      
+  PubkeyAuthentication yes       # default
+  ChallengeResponseAuthentication no  # default
+  PasswordAuthentication no  # default
+``` 
