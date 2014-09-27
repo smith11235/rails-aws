@@ -22,10 +22,7 @@ namespace :aws do
 		system( login_cmd )
 	end
 
-	desc "Cap Deploy This Stack"
-	task :cap_deploy, [:branch_name] => :environment do |t,args|
-		branch_name = args[:branch_name]
-		raise "Missing branch name".red if branch_name.nil?
+	def cap_cmd( branch_name, task )
 		cmd_prefix = "cap"
 		cmd_prefix << " branch=#{branch_name}"
 		cmd_prefix << " ipaddress=#{RailsAWS::Cloudformation.outputs(branch_name).fetch("IP")}"
@@ -36,17 +33,39 @@ namespace :aws do
 		cmd_prefix << " deploy_key=#{RailsAWS.deploy_key}"
 
 		cmd_prefix << " development " # environment
+		cmd = cmd_prefix + task
+
+		puts "Executing: #{cmd}".green
+		unless system( cmd )
+			msg = "Failed Executing: #{cmd}".red
+			Rails.logger.info( msg )
+			raise msg
+		end
+	end
+
+	def website( branch_name )
+		puts "Website: " + RailsAWS::Cloudformation.outputs(branch_name).fetch("WebsiteURL")
+	end
+
+	desc "Cap Deploy This Stack"
+	task :cap_deploy, [:branch_name] => :environment do |t,args|
+		branch_name = args[:branch_name]
+		raise "Missing branch name".red if branch_name.nil?
 
 		%w(deploy:publish_deploy_key deploy deploy:start_rails_server).each do |task|
-			cmd = cmd_prefix + task
-			puts "Executing: #{cmd}".green
-			unless system( cmd )
-				msg = "Failed Executing: #{cmd}".red
-				Rails.logger.info( msg )
-				raise msg
-			end
+			cap_cmd( branch_name, task )
 		end
 		puts "Capistrano Deployment Successful".green
+		website( branch_name )
+	end
+
+	desc "Start Rails"
+	task :cap_start, [:branch_name] => :environment do |t,args|
+		raise "Missing branch name".red if args[:branch_name].nil?
+		branch_name = args[:branch_name]
+
+		cap_cmd( branch_name, 'deploy:start_rails_server' )
+		website
 	end
 
 	desc "Delete a stack from [branch_name]"
@@ -110,6 +129,7 @@ namespace :aws do
 		cf = RailsAWS::Cloudformation.new( branch_name )
 		cf.show_stack_status
 		cf.show_stack_events( true )
+		puts RailsAWS::Cloudformation.outputs( branch_name ).to_yaml
 	end
 
 	desc "Detail report for all infrastructure in account"
