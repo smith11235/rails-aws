@@ -1,0 +1,4 @@
+---
+IP: 54.210.130.168
+Login: ssh -i config/keys/master.private_key deploy@54.210.130.168
+WebsiteURL: http://54.210.130.168:3000

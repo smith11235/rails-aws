@@ -37,7 +37,20 @@ Tooling and templates for instantiating production and development environments 
 ```
 
 ## Phase: Capistrano
-- as deploy: https://gorails.com/deploy/ubuntu/14.04
+
+- make development a variable for environment
+	- add environment to cloudformation keys
+	- start command needs vars
+	- pass environment to cap cmds
+
+- rails g rails_a_w_s:setup:
+  - capistrano files need moving to gem/generator process
+		- lib/rails-aws/[deploy.rb|development.rb|production.rb]
+  - create: 
+		- Capfile
+		- config/deploy.rb
+		- config/deploy/[development|production].rb
+  - check Gemfile for needed gem includes/versions lines
 
 - add to rails-aws.yml
 	- repo_url
@@ -46,11 +59,11 @@ Tooling and templates for instantiating production and development environments 
 	- deploy_key
 	- instance_type
 
+## Try breifly: production environment
 
-- rails g rails_a_w_s:setup:
-  - capistrano files need moving to gem/generator process
-  - create: Capfile, config/deploy.rb, config/deploy/[development|production]
-  - check Gemfile for needed lines
+- add environment to cloudformation keys
+	- add port setting based on env? 
+	- prob wont work...
 
 ## Phase: install nginx, open to 80
 
