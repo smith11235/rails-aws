@@ -30,5 +30,5 @@ config/secrets.yml
 /**/*.sw*
 
 
-/RailsAws/config/aws-keys.yml
-/RailsAws/config/keys/*
+/config/aws-keys.yml
+/config/keys/*
