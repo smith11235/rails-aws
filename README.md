@@ -21,6 +21,13 @@ Tooling and templates for instantiating production and development environments 
 		* ~/.ssh/deploy_id_rsa.pub
 		* Key attached to github repo: 'deploy: [repo-name]'
 * bundle exec rails g rails_a_w_s:setup
+	- enter aws key information
+	- region: us-east-1
+	- application: rails-aws
+	- repo_url: git@github.com:smith11235/rails-aws.git
+	- deploy_key: /root/.ssh/deploy_id_rsa
+	- environment: development
+	- instance_type: t2.micro
 
 ### Stack Management
 
@@ -37,11 +44,13 @@ Tooling and templates for instantiating production and development environments 
 ```
 
 ## Phase: Capistrano
-- in testing
-  - make development a variable for environment
-  	- add environment to cloudformation keys
-  	- start command needs vars
-  	- pass environment to cap cmds
+- generator: add to rails-aws.yml
+	- region
+	- repo_url
+	- application
+	- deploy_key 
+	- environment
+	- instance_type
 
 - rails g rails_a_w_s:setup:
   - capistrano files need moving to gem/generator process
@@ -52,12 +61,7 @@ Tooling and templates for instantiating production and development environments 
 		- config/deploy/[development|production].rb
   - check Gemfile for needed gem includes/versions lines
 
-- add to rails-aws.yml
-	- repo_url
-	- application
-	- region
-	- deploy_key
-	- instance_type
+## rails_a_w_s:setup validation logic
 
 ## Try breifly: production environment
 

@@ -1,0 +1,7 @@
+---
+region: us-east-1
+application: rails-aws
+repo_url: git@github.com:smith11235/rails-aws.git
+deploy_key: "/root/.ssh/deploy_id_rsa"
+environment: development
+instance_type: t2.micro

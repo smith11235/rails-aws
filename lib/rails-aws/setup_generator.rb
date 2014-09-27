@@ -12,6 +12,18 @@ module RailsAWS
 				end
 				values.to_yaml
 			end
+
+		end
+
+		def rails_aws_settings
+			create_file "config/rails-aws.yml" do
+				values = Hash.new
+				%w( region application repo_url deploy_key environment instance_type ).each do |key|
+					values[ key ] = ask "What is the '#{key}'?"
+				end
+
+				values.to_yaml
+			end
 		end
 	end
 
