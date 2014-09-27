@@ -14,10 +14,8 @@ Tooling and templates for instantiating production and development environments 
 ### Project Setup
 * clone repo
 * sh build_ruby_env.sh
-* cd RailsAws
 * bundle install --deployment
-* zues start
-* zues rails g rails_a_w_s:setup
+* bundle exec rails g rails_a_w_s:setup
 
 ### Config Values
     ```       
@@ -30,24 +28,14 @@ Tooling and templates for instantiating production and development environments 
     ``` 
 
 ### Stack Management
-* zeus rake aws:[create|delete]_stack[branch_name]
-* zeus rake aws:status
+* rake aws:[create|delete]_stack[branch_name]
+* rake aws:status
 * tail log/development.log
 
-## Capistrano
-
-* run as deploy
-# get codebase: (capistrano later?)
-git clone https://github.com/smith11235/rails-aws.git
-cd rails-aws
-git checkout -b branch_name
-git pull origin branch_name 
-cd RailsAws
-bundle install --deployment
-bundle exec rake db:create
+## Phase: Capistrano
 
 
-# install nginx
+## Phase: install nginx
 gpg --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7
 gpg --armor --export 561F9B9CAC40B2F7 | sudo apt-key add -
 

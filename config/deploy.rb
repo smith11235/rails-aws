@@ -5,7 +5,9 @@ set :application, 'rails-aws'
 set :repo_url, "git@github.com:smith11235/rails-aws.git"
 
 # Default branch is :master
-set :branch, fetch( :branch )
+branch_name = ENV['branch'] 
+set :branch, branch_name
+puts "Branch: #{branch_name}"
 
 # Default deploy_to directory is /var/www/my_app
 set :deploy_to, '/home/deploy/rails-aws'
