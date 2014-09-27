@@ -67,7 +67,7 @@ namespace :deploy do
 				execute "rm #{nohup_out}"
 			rescue
 			end
-			execute "cd #{current_path} && (bundle exec nohup rails server &) && sleep 3"
+			execute "rvm use 2.1.3 && cd #{current_path} && ( nohup bundle exec rails server &) && sleep 3"
 			execute "ps x"
 			begin
 				execute "tail #{nohup_out}"
