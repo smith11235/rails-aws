@@ -11,16 +11,19 @@
 				"ImageId" : "<%= @ami_id %>",
         "UserData" : { "Fn::Base64" : { "Fn::Join" : ["",[
             "#!/bin/bash -ex","\n",
+						"echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Installing Packages VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
             "apt-get update", "\n",
             "apt-get upgrade -y", "\n",
             "export package_list='git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties'", "\n",
             "apt-get install $package_list -y", "\n",
 						"apt-get install libgdbm-dev libncurses5-dev automake libtool bison libffi-dev -y", "\n",
 
+					"echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Setting Login Perms VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
  					"sed -i 's/PermitRootLogin\\swithout-password/PermitRootLogin no/' /etc/ssh/sshd_config", "\n",
   				"sed -i 's/UsePAM\\syes/UsePAM no/' /etc/ssh/sshd_config", "\n",
 					"service ssh restart", "\n",
 
+					"echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Adding deploy User VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
 					"export new_user=deploy", "\n",
           "adduser --disabled-password --gecos '' $new_user", "\n",
 					"chsh -s /bin/bash $new_user", "\n",
@@ -48,6 +51,7 @@
 					 "echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Which Ruby VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
 			     "sudo -i -u $new_user sh -c \"bash -c 'source ~/.rvm/scripts/rvm && which ruby && ruby -v'\"", "\n",
 
+					 "echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV SSH Git Config VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
 					 "sudo -u $new_user echo '# Github' >> ~/.ssh/config", "\n",
 					 "sudo -u $new_user echo 'Host github.com' >> ~/.ssh/config", "\n",
 					 "sudo -u $new_user echo 'User git' >> ~/.ssh/config", "\n",

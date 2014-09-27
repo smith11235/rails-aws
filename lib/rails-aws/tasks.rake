@@ -24,7 +24,9 @@ namespace :aws do
 			cloudformation.delete!
 		rescue 
 			failed = true
-			Rails.logger.info( "Failed to delete cloudformation, moving on...".red )
+			msg = "Failed to delete cloudformation, moving on...".red
+			puts msg
+			Rails.logger.info( msg )
 		end
 
 		begin
@@ -32,7 +34,9 @@ namespace :aws do
 			key_pair.delete!
 		rescue 
 			failed = true
-			Rails.logger.info( "Failed to delete key_pair, moving on...".red )
+			msg = "Failed to delete key_pair, moving on...".red
+			puts msg
+			Rails.logger.info( msg )
 		end
 
 		if failed
@@ -67,7 +71,9 @@ namespace :aws do
 	task :stack_status, [:branch_name] => :environment do |t,args|
 		raise "Missing branch name".red if args[:branch_name].nil?
 		branch_name = args[:branch_name]
-		RailsAWS::Cloudformation.new( branch_name ).show_stack_status
+		cf = RailsAWS::Cloudformation.new( branch_name )
+		cf.show_stack_status
+		cf.show_stack_events( true )
 	end
 
 	desc "Detail report for all infrastructure in account"

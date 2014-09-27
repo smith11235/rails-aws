@@ -47,6 +47,14 @@ module RailsAWS
 			create_stack
 		end
 
+		def show_stack_events( stdout = false )
+			@stack.events.each do |event|
+				msg = "Event: #{event.logical_resource_id} - #{event.resource_status} - #{event.resource_status_reason}"
+				Rails.logger.info( msg )
+				puts msg if stdout
+			end
+		end
+
 		def show_stack_status
 			msg = "Stack: #{@branch_name} - #{@stack.status}".yellow
 			puts msg
@@ -106,10 +114,9 @@ module RailsAWS
 				sleep( 5 )
 			end
 			Rails.logger.info( "Post CREATE_IN_PROGRESS Stack State: #{@stack.status}" )
-			@stack.events.each do |event|
-				msg = "Event: #{event.logical_resource_id} - #{event.resource_status} - #{event.resource_status_reason}"
-				Rails.logger.info( msg )
-			end
+
+			show_stack_events
+
 			if @stack.status == "CREATE_COMPLETE"
 				@stack.outputs.each do |output|
 					msg = "Output: #{output.key}: #{output.value} # #{output.description}".green
