@@ -1,0 +1,142 @@
+{
+ "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Resources" : {
+		"testec2" : {
+      "Type" : "AWS::EC2::Instance",
+      "Properties" : {
+				"KeyName" : "test",
+				"InstanceType": "t2.micro",
+				"SecurityGroups" : [ { "Ref" : "testsg" } ],
+				"ImageId" : "ami-8afb51e2",
+        "UserData" : { "Fn::Base64" : { "Fn::Join" : ["",[
+            "#!/bin/bash -ex","\n",
+            "apt-get update", "\n",
+            "apt-get upgrade -y", "\n",
+            "export package_list='git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties'", "\n",
+            "apt-get install $package_list -y", "\n",
+						"apt-get install libgdbm-dev libncurses5-dev automake libtool bison libffi-dev -y", "\n",
+
+ 					"sed -i 's/PermitRootLogin\\swithout-password/PermitRootLogin no/' /etc/ssh/sshd_config", "\n",
+  				"sed -i 's/UsePAM\\syes/UsePAM no/' /etc/ssh/sshd_config", "\n",
+					"service ssh restart", "\n",
+
+					"export new_user=deploy", "\n",
+          "adduser --disabled-password --gecos '' $new_user", "\n",
+					"chsh -s /bin/bash $new_user", "\n",
+          "mkdir /home/$new_user/.ssh", "\n",
+          "chown -R $new_user:$new_user /home/$new_user/.ssh", "\n",
+					"chmod -R 700 /home/$new_user/.ssh", "\n",
+          "cp /home/ubuntu/.ssh/authorized_keys /home/$new_user/.ssh/authorized_keys", "\n",
+          "chown -R $new_user:$new_user /home/$new_user/.ssh/authorized_keys", "\n",
+          "chmod 600 /home/$new_user/.ssh/authorized_keys", "\n",
+
+					 "echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Installing RVM VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
+			     "sudo -u $new_user sh -c '\\curl -sSL https://get.rvm.io | bash -s stable'", "\n",
+					 "echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Adding RVM To Bash VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
+			     "sudo -u $new_user sh -c 'echo \"source ~/.rvm/scripts/rvm\" >> ~/.bashrc'", "\n",
+					 "echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV No RDoc to ~/.gemrc VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
+			     "sudo -u $new_user sh -c 'echo \"gem: --no-ri --no-rdoc\" > ~/.gemrc'", "\n",
+
+					 "echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Which RVM VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
+			     "sudo -i -u $new_user sh -c \"bash -c 'which rvm'\"", "\n",
+
+					 "echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Installing Ruby VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
+			     "sudo -i -u $new_user sh -c \"bash -c 'source ~/.rvm/scripts/rvm && rvm install 2.1.3'\"", "\n",
+					 "echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Default Ruby VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
+			     "sudo -i -u $new_user sh -c \"bash -c 'source ~/.rvm/scripts/rvm && rvm use 2.1.3 --default'\"", "\n",
+					 "echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Which Ruby VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
+			     "sudo -i -u $new_user sh -c \"bash -c 'source ~/.rvm/scripts/rvm && which ruby && ruby -v'\"", "\n",
+
+            "curl -X PUT -H 'Content-Type:' --data-binary '{\"Status\" : \"SUCCESS\",",
+                                                           "\"Reason\" : \"The application myapp is ready\",",
+                                                           "\"UniqueId\" : \"myapp\",",
+                                                           "\"Data\" : \"Done\"}' ",
+																													 "\"", {"Ref" : "WaitForInstanceWaitHandle"},"\"\n" ]]}},
+				"Tags": [
+					{
+						"Key": "Name",
+						"Value": "partyshuffle-test"
+					},
+					{
+						"Key": "branch_name",
+						"Value": "test"
+					},
+					{
+						"Key": "deployer",
+						"Value": "root"
+					}
+
+				]
+      }
+    },
+
+    "testsg" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "Enable Access to Rails application via port 80, 443, 3000 and SSH access via port 22",
+        "SecurityGroupIngress" : [ {
+          "IpProtocol" : "tcp",
+          "FromPort" : "22",
+          "ToPort" : "22",
+          "CidrIp" : "0.0.0.0/0"
+        }, {
+          "IpProtocol" : "tcp",
+          "FromPort" : "3000",
+          "ToPort" : "3000",
+          "CidrIp" : "0.0.0.0/0"
+        }, {
+          "IpProtocol" : "tcp",
+          "FromPort" : "80",
+          "ToPort" : "80",
+          "CidrIp" : "0.0.0.0/0"
+        } , {
+          "IpProtocol" : "tcp",
+          "FromPort" : "443",
+          "ToPort" : "443",
+          "CidrIp" : "0.0.0.0/0"
+        }],
+				"Tags": [
+					{
+						"Key": "Name",
+						"Value": "partyshuffle-test"
+					},
+					{
+						"Key": "branch_name",
+						"Value": "test"
+					},
+					{
+						"Key": "deployer",
+						"Value": "root"
+					}
+
+				]
+      }
+    },
+    "WaitForInstanceWaitHandle" : {
+      "Type" : "AWS::CloudFormation::WaitConditionHandle",
+      "Properties" : {
+      }
+    },
+    "WaitForInstance" : {
+      "Type" : "AWS::CloudFormation::WaitCondition",
+			"DependsOn" : "testec2",
+      "Properties" : {
+        "Handle" : {"Ref" : "WaitForInstanceWaitHandle"},
+        "Timeout" : "600"
+      }
+    }
+  },
+
+  "Outputs" : {
+    "Login" : {
+      "Description" : "The ssh command for the newly created server",
+			"Value" : { "Fn::Join" : ["", [ "ssh -i config/keys/test.private_key deploy@", { "Fn::GetAtt" : [ "testec2", "PublicIp" ] } ]]}
+    },
+    "WebsiteURL" : {
+      "Description" : "The URL for the newly created Rails application",
+			"Value" : { "Fn::Join" : ["", [ "http://", { "Fn::GetAtt" : [ "testec2", "PublicIp" ] }, ":3000" ]]}
+    }
+  }
+}
+
