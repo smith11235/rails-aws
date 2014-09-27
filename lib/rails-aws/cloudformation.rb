@@ -122,7 +122,8 @@ module RailsAWS
 		end
 
 		def log_stack_outputs
-			outputs_file = File.join( @output_dir, "#{@branch_name}-outputs.yml" )
+			outputs_file = File.join( @output_dir, "outputs.yml" )
+
 			outputs = Hash.new
 			@stack.outputs.each do |output|
 				outputs[ output.key ] = output.value
@@ -145,7 +146,7 @@ module RailsAWS
 		end
 
 		def rendered_file
-			File.join( @output_dir, "#{@branch_name}.json" )
+			File.join( @output_dir, "cloudformation.json" )
 		end
 
 		def render_erb

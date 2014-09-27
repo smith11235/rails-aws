@@ -13,7 +13,7 @@ module RailsAWS
 	require 'rails-aws/cloudformation'
 
 	def self.branch_dir( branch )
-		branch_dir = join( Rails.root, 'config/branch', branch )
+		branch_dir = File.join( Rails.root, 'config/branch', branch )
   	FileUtils.mkdir_p branch_dir unless File.directory?( branch_dir )
 		branch_dir
 	end
