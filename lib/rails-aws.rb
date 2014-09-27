@@ -5,7 +5,6 @@ module RailsAWS
 	require 'haml-rails'
 	require 'aws-sdk'
 
-
 	require 'rails-aws/railtie'
 	require 'rails-aws/ec2_client'
 	require 'rails-aws/cfm_client'
@@ -18,7 +17,6 @@ module RailsAWS
 		branch_dir
 	end
 
-
 	# make a hash based on region
 	def self.ami_id
 		# from: http://cloud-images.ubuntu.com/locator/ec2/
@@ -26,6 +24,15 @@ module RailsAWS
 	end
 
 	# replace these with user config settings, have cheap defaults
+
+	def self.deploy_key
+		"/root/.ssh/deploy_id_rsa"
+	end
+
+	def self.repo_url
+		"git@github.com:smith11235/rails-aws.git"
+	end
+
 	def self.region
 		'us-east-1'
 	end

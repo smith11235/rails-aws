@@ -2,13 +2,13 @@
  "AWSTemplateFormatVersion" : "2010-09-09",
 
   "Resources" : {
-		"<%= @branch_name + "ec2" %>" : {
+		"sshsetupec2" : {
       "Type" : "AWS::EC2::Instance",
       "Properties" : {
-				"KeyName" : "<%= @branch_name %>",
-				"InstanceType": "<%= @instance_type %>",
-				"SecurityGroups" : [ { "Ref" : "<%= @branch_name + "sg" %>" } ],
-				"ImageId" : "<%= @ami_id %>",
+				"KeyName" : "sshsetup",
+				"InstanceType": "t2.micro",
+				"SecurityGroups" : [ { "Ref" : "sshsetupsg" } ],
+				"ImageId" : "ami-8afb51e2",
         "UserData" : { "Fn::Base64" : { "Fn::Join" : ["",[
             "#!/bin/bash -ex","\n",
 						"echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Installing Packages VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
@@ -51,6 +51,11 @@
 					 "echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Which Ruby VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
 			     "sudo -i -u $new_user sh -c \"bash -c 'source ~/.rvm/scripts/rvm && which ruby && ruby -v'\"", "\n",
 
+					 "echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV SSH Git Config VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
+					 "sudo -u $new_user echo '# Github' >> ~/.ssh/config", "\n",
+					 "sudo -u $new_user echo 'Host github.com' >> ~/.ssh/config", "\n",
+					 "sudo -u $new_user echo 'User git' >> ~/.ssh/config", "\n",
+					 "sudo -u $new_user echo 'IdentityFile ~/.ssh/deploy_id_rsa' >> ~/.ssh/config", "\n",
 
             "curl -X PUT -H 'Content-Type:' --data-binary '{\"Status\" : \"SUCCESS\",",
                                                            "\"Reason\" : \"The application myapp is ready\",",
@@ -60,22 +65,22 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "<%= @application %>"
+						"Value": "rails-aws"
 					},
 					{
 						"Key": "branch_name",
-						"Value": "<%= @branch_name %>"
+						"Value": "sshsetup"
 					},
 					{
 						"Key": "deployer",
-						"Value": "<%= ENV["USER"] %>"
+						"Value": "root"
 					}
 
 				]
       }
     },
 
-    "<%= @branch_name + "sg" %>" : {
+    "sshsetupsg" : {
       "Type" : "AWS::EC2::SecurityGroup",
       "Properties" : {
         "GroupDescription" : "Enable Access to Rails application via port 80, 443, 3000 and SSH access via port 22",
@@ -103,15 +108,15 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "<%= @name %>"
+						"Value": ""
 					},
 					{
 						"Key": "branch_name",
-						"Value": "<%= @branch_name %>"
+						"Value": "sshsetup"
 					},
 					{
 						"Key": "deployer",
-						"Value": "<%= ENV["USER"] %>"
+						"Value": "root"
 					}
 
 				]
@@ -124,7 +129,7 @@
     },
     "WaitForInstance" : {
       "Type" : "AWS::CloudFormation::WaitCondition",
-			"DependsOn" : "<%= @branch_name + "ec2" %>",
+			"DependsOn" : "sshsetupec2",
       "Properties" : {
         "Handle" : {"Ref" : "WaitForInstanceWaitHandle"},
         "Timeout" : "600"
@@ -135,15 +140,15 @@
   "Outputs" : {
 		"IP" : {
       "Description" : "The IP for the newly created server",
-			"Value" : { "Fn::GetAtt" : [ "<%= @branch_name + "ec2" %>", "PublicIp" ] } 
+			"Value" : { "Fn::GetAtt" : [ "sshsetupec2", "PublicIp" ] } 
 		},
     "Login" : {
       "Description" : "The ssh command for the newly created server",
-			"Value" : { "Fn::Join" : ["", [ "ssh -i config/keys/<%= @branch_name %>.private_key deploy@", { "Fn::GetAtt" : [ "<%= @branch_name + "ec2" %>", "PublicIp" ] } ]]}
+			"Value" : { "Fn::Join" : ["", [ "ssh -i config/keys/sshsetup.private_key deploy@", { "Fn::GetAtt" : [ "sshsetupec2", "PublicIp" ] } ]]}
     },
     "WebsiteURL" : {
       "Description" : "The URL for the newly created Rails application",
-			"Value" : { "Fn::Join" : ["", [ "http://", { "Fn::GetAtt" : [ "<%= @branch_name + "ec2" %>", "PublicIp" ] }, ":3000" ]]}
+			"Value" : { "Fn::Join" : ["", [ "http://", { "Fn::GetAtt" : [ "sshsetupec2", "PublicIp" ] }, ":3000" ]]}
     }
   }
 }

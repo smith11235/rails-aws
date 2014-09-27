@@ -1,6 +1,20 @@
 module RailsAWS
 	class Cloudformation
 
+		def self.outputs( branch_name )
+			outputs_file = Cloudformation.outputs_file( branch_name )
+			unless File.file? outputs_file
+				msg = "Missing outputs file: #{outputs_file}".red
+				Rails.logger.info( msg )
+				raise msg
+			end
+			YAML.load_file( outputs_file )
+		end
+
+		def self.outputs_file( branch_name )
+			File.join( RailsAWS.branch_dir( branch_name ), "outputs.yml" )
+		end
+
 		def initialize( branch_name )
 			@branch_name = branch_name
 
@@ -8,8 +22,6 @@ module RailsAWS
 			@ec2 = RailsAWS::EC2Client.get
 
 			@template_file = File.expand_path( "../stack.json.erb", __FILE__ )
-
-			@output_dir = RailsAWS.branch_dir( @branch_name )
 
 			@region = RailsAWS.region
 			@ami_id = RailsAWS.ami_id
@@ -122,7 +134,7 @@ module RailsAWS
 		end
 
 		def log_stack_outputs
-			outputs_file = File.join( @output_dir, "outputs.yml" )
+			outputs_file = Cloudformation.outputs_file( @branch_name )
 
 			outputs = Hash.new
 			@stack.outputs.each do |output|
@@ -146,11 +158,10 @@ module RailsAWS
 		end
 
 		def rendered_file
-			File.join( @output_dir, "cloudformation.json" )
+			File.join( RailsAws.branch_dir( @branch_name ), "cloudformation.json" )
 		end
 
 		def render_erb
-			FileUtils.mkdir_p( @output_dir ) unless File.directory?( @output_dir )
 			Rails.logger.info "Cloudformation Template File: #{@template_file}".green
 
 			template = File.open( @template_file ).read

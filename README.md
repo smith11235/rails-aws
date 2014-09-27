@@ -40,8 +40,7 @@ File: **/etc/ssh/sshd_config**
 * rake aws:check_setup
 * rake aws:[create|delete]_stack[branch_name]
 * rake aws:status
-* cap_cmd deploy:publish_deploy_key
-* cap_cmd deploy
+* rake aws:cap_deploy
 * tail log/development.log
 
 ## Phase: Capistrano

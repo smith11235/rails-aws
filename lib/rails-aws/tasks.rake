@@ -13,6 +13,42 @@ namespace :aws do
 		cloudformation.create!
 	end
 
+	desc "Login to ec2"
+	task :login, [:branch_name] => :environment do |t,args|
+		branch_name = args[:branch_name]
+		raise "Missing branch name".red if branch_name.nil?
+		ip = RailsAWS::Cloudformation.outputs(branch_name).fetch "IP"
+		login_cmd = "ssh -i #{RailsAWS::KeyPair.file( branch_name )} deploy@#{ip}"
+		system( login_cmd )
+	end
+
+	desc "Cap Deploy This Stack"
+	task :cap_deploy, [:branch_name] => :environment do |t,args|
+		branch_name = args[:branch_name]
+		raise "Missing branch name".red if branch_name.nil?
+		cmd_prefix = "cap"
+		cmd_prefix << " branch=#{branch_name}"
+		cmd_prefix << " ipaddress=#{RailsAWS::Cloudformation.outputs(branch_name).fetch("IP")}"
+		cmd_prefix << " key_file=#{RailsAWS::KeyPair.file( branch_name )}"
+
+		cmd_prefix << " repo_url=#{RailsAWS.repo_url}"
+		cmd_prefix << " application=#{RailsAWS.application}"
+		cmd_prefix << " deploy_key=#{RailsAWS.deploy_key}"
+
+		cmd_prefix << " development " # environment
+
+		%w(deploy:publish_deploy_key deploy deploy:start_rails_server).each do |task|
+			cmd = cmd_prefix + task
+			puts "Executing: #{cmd}".green
+			unless system( cmd )
+				msg = "Failed Executing: #{cmd}".red
+				Rails.logger.info( msg )
+				raise msg
+			end
+		end
+		puts "Capistrano Deployment Successful".green
+	end
+
 	desc "Delete a stack from [branch_name]"
 	task :delete_stack, [:branch_name] => :environment do |t,args|
 		raise "Missing branch name".red if args[:branch_name].nil?

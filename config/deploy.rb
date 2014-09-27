@@ -1,7 +1,7 @@
 # config valid only for Capistrano 3.1
 lock '3.2.1'
 
-%w( application repo_url branch ).each do |setting|
+%w( application repo_url branch deploy_key ).each do |setting|
 	setting_value = ENV[setting]
 	raise "Missing setting: #{setting}" if setting_value.nil?
 	puts "Setting: #{setting}, Value: #{setting_value}"
@@ -9,7 +9,7 @@ lock '3.2.1'
 end
 
 # Default deploy_to directory is /var/www/my_app
-deploy_to = "/home/deploy/#{application}"
+deploy_to = "/home/deploy/#{fetch(:application)}"
 set :deploy_to, deploy_to
 puts "Deploy To: #{deploy_to}"
 
@@ -42,10 +42,27 @@ set :default_shell, '/bin/bash'
 
 namespace :deploy do
 
-	desc 'Publish Deploy Uey For Git To Host'
+	desc 'Publish Deploy Uey For Git'
 	task :publish_deploy_key do
     on roles(:app), in: :sequence, wait: 5 do
-      upload! "~/.ssh/deploy_id_rsa", "/home/deploy/.ssh/deploy_id_rsa"
+			puts "Setting Up Git Deploy Key"
+			remote_key = "/home/deploy/.ssh/deploy_id_rsa"
+			ssh_config = "/home/deploy/.ssh/config"
+
+      upload! fetch( :deploy_key ), remote_key
+			execute :touch, ssh_config
+			execute "echo '# Github' >> #{ssh_config}"
+			execute "echo 'Host github.com' >> #{ssh_config}"
+			execute "echo 'User git' >> #{ssh_config}"
+			execute "echo 'IdentityFile #{remote_key}' >> #{ssh_config}"
+			puts "Git Deploy Key Setup"
+    end
+	end
+
+	desc 'Start Rails Server'
+	task :start_rails_server do
+    on roles(:app), in: :sequence, wait: 5 do
+			execute "nohup rails server &"
     end
 	end
 
