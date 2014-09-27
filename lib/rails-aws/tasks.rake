@@ -65,7 +65,7 @@ namespace :aws do
 		branch_name = args[:branch_name]
 
 		cap_cmd( branch_name, 'deploy:start_rails_server' )
-		website
+		website( branch_name )
 	end
 
 	desc "Delete a stack from [branch_name]"

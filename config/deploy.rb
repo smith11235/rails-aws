@@ -14,7 +14,7 @@ set :deploy_to, deploy_to
 puts "Deploy To: #{deploy_to}"
 
 	
-set :default_shell, '/bin/bash'
+set :default_shell, '/bin/bash -l'
 
 # Default value for :scm is :git
 # set :scm, :git
@@ -67,10 +67,9 @@ namespace :deploy do
 				execute "rm #{nohup_out}"
 			rescue
 			end
-			execute "rvm use 2.1.3 && cd #{current_path} && ( nohup bundle exec rails server &) && sleep 3"
-			execute "ps x"
+			execute "source ~/.rvm/scripts/rvm && rvm use 2.1.3 && cd #{current_path} && ( nohup bundle exec rails server > log/rails_server.log &) && sleep 3 && echo 'Rails Server Started' && ps x", :pty => true
 			begin
-				execute "tail #{nohup_out}"
+				#execute "tail #{nohup_out}"
 			rescue
 			end
     end
