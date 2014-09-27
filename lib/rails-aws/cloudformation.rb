@@ -158,7 +158,7 @@ module RailsAWS
 		end
 
 		def rendered_file
-			File.join( RailsAws.branch_dir( @branch_name ), "cloudformation.json" )
+			File.join( RailsAWS.branch_dir( @branch_name ), "cloudformation.json" )
 		end
 
 		def render_erb
