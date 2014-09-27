@@ -62,7 +62,17 @@ namespace :deploy do
 	desc 'Start Rails Server'
 	task :start_rails_server do
     on roles(:app), in: :sequence, wait: 5 do
-			execute "nohup rails server &"
+			nohup_out = File.join( current_path, 'nohup.out' )
+			begin
+				execute "rm #{nohup_out}"
+			rescue
+			end
+			execute "cd #{current_path} && (bundle exec nohup rails server &) && sleep 3"
+			execute "ps x"
+			begin
+				execute "tail #{nohup_out}"
+			rescue
+			end
     end
 	end
 
