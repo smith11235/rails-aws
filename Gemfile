@@ -1,8 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'rails-aws', :path => "../"
+gemspec
 gem 'pry'
-gem 'zeus'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.6'
