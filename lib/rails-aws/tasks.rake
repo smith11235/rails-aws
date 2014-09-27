@@ -108,14 +108,14 @@ namespace :aws do
 	task :status => :environment do 
 		status = Hash.new
 
-		status[ :key_pairs ] = RailsAWS::EC2Client.new().key_pairs.collect do |key_pair|
+		status[ :key_pairs ] = RailsAWS::EC2Client.get.key_pairs.collect do |key_pair|
 			key_pair.name
 		end
 
 		status[ :local_keys ] = Dir.glob( File.join( Rails.root, 'config/keys/*' ) )
 
 		status[ :cloudformation ] = Hash.new
-		RailsAws::CFMClient.new().stacks.each do |stack|
+		RailsAWS::CFMClient.get.stacks.each do |stack|
 			status[ :cloudformation ][ stack.name ] = stack.status
 		end
 
