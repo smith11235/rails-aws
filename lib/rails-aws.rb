@@ -23,29 +23,33 @@ module RailsAWS
 		"ami-8afb51e2"
 	end
 
-	def self.environment
-		"development"
+	# replace these with user config settings, have cheap defaults
+	def self.config( key )
+		@config ||= YAML.load_file( File.join( Rails.root, 'config/rails-aws.yml' ) )
+		@config.fetch( key )
 	end
 
-	# replace these with user config settings, have cheap defaults
+	def self.environment
+		RailsAWS.config( :environment )
+	end
 
 	def self.deploy_key
-		"/root/.ssh/deploy_id_rsa"
+		RailsAWS.config( :deploy_key )
 	end
 
 	def self.repo_url
-		"git@github.com:smith11235/rails-aws.git"
+		RailsAWS.config( :repo_url )
 	end
 
 	def self.region
-		'us-east-1'
+		RailsAWS.config( :region )
 	end
 
 	def self.instance_type
-		"t2.micro"
+		RailsAWS.config( :instance_type )
 	end
 
 	def self.application
-		"rails-aws"
+		RailsAWS.config( :application )
 	end
 end
