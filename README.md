@@ -37,11 +37,11 @@ Tooling and templates for instantiating production and development environments 
 ```
 
 ## Phase: Capistrano
-
-- make development a variable for environment
-	- add environment to cloudformation keys
-	- start command needs vars
-	- pass environment to cap cmds
+- in testing
+  - make development a variable for environment
+  	- add environment to cloudformation keys
+  	- start command needs vars
+  	- pass environment to cap cmds
 
 - rails g rails_a_w_s:setup:
   - capistrano files need moving to gem/generator process
