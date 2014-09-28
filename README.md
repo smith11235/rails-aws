@@ -130,13 +130,11 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 	- rake aws:domain_delete[ branch ]
 
 - test gem in another project: whisperedsecrets.us
+	- generator
+	- build stack
+	- domain_create
+	- domain_delete
 
-- rails-aws settings to generator
-- RailsAWS.domain_enabled
-- rake aws:domain_create[ branch ]
-	- raise "Domain is not enabled, must have 'domain' and 'domain_branch' config" unless domain_enabled
-
-	- creates branch_domain
 - lib/rails-aws/route53.json.erb
 	- http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-route53.html
 		* hostedzonename - Rails.domain 

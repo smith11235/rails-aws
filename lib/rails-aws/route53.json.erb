@@ -1,0 +1,20 @@
+{
+	"AWSTemplateFormatVersion" : "2010-09-09",
+
+		"Resources" : {
+
+			"domaintorails" : {
+				"Type" : "AWS::Route53::RecordSet",
+				"Properties" : {
+					"HostedZoneName" : "<%= RailsAWS.domain %>.",
+					"Comment" : "A records for my frontend.",
+					"Name" : "<%= RailsAWS.domain %>.",
+					"Type" : "A",
+					"TTL" : "900",
+					"ResourceRecords" : [
+						"<%= Cloudformation.outputs.fetch( "IP" ) %>"
+						]
+				}
+			}
+		}
+}
