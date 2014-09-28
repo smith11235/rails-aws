@@ -4,6 +4,10 @@ Tooling and templates for instantiating production and development environments 
 
 Allows rapid, uniform, multi branch testing and production deployment with uniform environments.
 
+If it is not running on your local machine.
+
+You should be able to have any branch deployed in a production manner.
+
 ## Usage
 
 ### Have a Domain Name Ready?
@@ -140,7 +144,6 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 	- config/environments/production.rb
   	-	reset config.serve_static_assets = false
 
-
 ```
   gpg --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7
   gpg --armor --export 561F9B9CAC40B2F7 | sudo apt-key add -
@@ -158,12 +161,14 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 
 	# /etc/nginx/nginx.conf
  	#(maybe) passenger_root /usr/lib/ruby/vendor_ruby/phusion_passenger/locations.ini;
- 	passenger_ruby /home/deploy/.rvm/rubies/ruby-2.1.3/bin/ruby;
+	grep passenger_root /etc/nginx/nginx.conf
+	grep passenger_ruby /etc/nginx/nginx.conf
+ 	sed -i 's_passenger\_ruby.*;_passenger\_ruby /home/deploy/.rvm/rubies/ruby-2.1.3/bin/ruby;_' /etc/nginx/nginx.conf
+	grep passenger_ruby /etc/nginx/nginx.conf
 
   service nginx restart 
 
-	create: /etc/nginx/sites-enabled/default
-@domain = RailsAws.domain # default to IP
+	create with echo lines: /etc/nginx/sites-enabled/default
 
   server {
           listen 80 default_server;
@@ -180,7 +185,11 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
               root   html;
           }
   }
+
+	service nginx restart
 ```
+
+- task: cap_deploy should touch tmp/restart.txt
 
 ## Phase: partyshuffle v1
 * partyshuffle git codebase installed
