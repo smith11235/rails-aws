@@ -29,6 +29,8 @@ Or from a thumbdrive where you are able to run rails and have a local dashboard.
 
 Get the rails-aws project.
 
+The directory naming is based on the idea of having one instance of this for each application you deploy.
+
 ```
 	# this is meant to deploy [your-app-name] repo
   ~/ git clone git@github.com:smith11235/rails-aws.git rails-aws-[your-app-name]
