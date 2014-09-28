@@ -11,7 +11,14 @@ module RailsAWS
 	require 'rails-aws/key_pair'
 	require 'rails-aws/cloudformation'
 
+	def self.branch( branch = nil )
+		@@branch ||= branch
+		raise "Error: Branch is not set.".red if @@branch.nil?
+		@@branch
+	end
+
 	def self.branch_dir( branch )
+		RailsAWS.branch( branch )
 		branch_dir = File.join( Rails.root, 'config/branch', branch )
   	FileUtils.mkdir_p branch_dir unless File.directory?( branch_dir )
 		branch_dir
@@ -59,6 +66,13 @@ module RailsAWS
 		RailsAWS.config( :application )
 	end
 
+	def self.domain
+		if RailsAWS.config_hash.has_key? 'domain'
+			return RailsAWS.config( :domain )
+		else
+			return Cloudformation.outputs( RailsAWS.branch ).fetch["IP"]
+		end
+	end
 
 	private
 

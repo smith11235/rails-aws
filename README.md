@@ -150,6 +150,9 @@ j
  		#(maybe) passenger_root /usr/lib/ruby/vendor_ruby/phusion_passenger/locations.ini;
 	- # possibly remove default server stuff
 
+- domain should only be used in nginx if attach_domain_to_branch is set to branch_name
+	- ie: master
+
 ```
   gpg --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7
   gpg --armor --export 561F9B9CAC40B2F7 | sudo apt-key add -

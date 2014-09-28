@@ -1,7 +1,7 @@
 module RailsAWS
 	class Cloudformation
 
-		def self.outputs( branch_name )
+		def self.outputs( branch_name = RailsAWS.branch_name )
 			outputs_file = Cloudformation.outputs_file( branch_name )
 			unless File.file? outputs_file
 				msg = "Missing outputs file: #{outputs_file}".red
@@ -15,7 +15,7 @@ module RailsAWS
 			File.join( RailsAWS.branch_dir( branch_name ), "outputs.yml" )
 		end
 
-		def initialize( branch_name )
+		def initialize( branch_name = RailsAWS.branch_name )
 			@branch_name = branch_name
 
 			@cfm = RailsAWS::CFMClient.get

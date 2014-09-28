@@ -6,8 +6,10 @@ namespace :aws do
 		raise "Missing branch name".red if args[:branch_name].nil?
 		branch_name = args[:branch_name]
 
-		key_pair = RailsAWS::KeyPair.new( branch_name )
-		cloudformation = RailsAWS::Cloudformation.new( branch_name )
+		RailsAWS.branch( branch_name )
+
+		key_pair = RailsAWS::KeyPair.new
+		cloudformation = RailsAWS::Cloudformation.new
 
 		key_pair.create!
 		cloudformation.create!

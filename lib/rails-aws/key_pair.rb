@@ -5,7 +5,7 @@ module RailsAWS
 			File.join( RailsAWS.branch_dir( branch_name ), "private.key" )
 		end
 
-		def initialize( branch_name )
+		def initialize( branch_name = RailsAWS.branch_name )
 			@branch_name = branch_name
 			@ec2 = RailsAWS::EC2Client.get
 		end
