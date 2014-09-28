@@ -15,6 +15,34 @@ namespace :aws do
 		cloudformation.create!
 	end
 
+	desc "Assign a specified domain to your stack for that branch"
+	task :domain_create, [:branch_name] => :environment do |t,args|
+		raise "Missing branch name".red if args[:branch_name].nil?
+		branch_name = args[:branch_name]
+
+		RailsAWS.branch( branch_name )
+
+		raise "Domain is not enabled, must have 'domain' and 'domain_branch' config with this branch specified" unless RailsAWS.domain_enabled?
+
+		cloudformation = RailsAWS::Cloudformation.new( branch_name, :type => :domain )
+
+		cloudformation.create_stack!
+	end
+
+	desc "Remove a specified domain to your stack for that branch"
+	task :domain_delete, [:branch_name] => :environment do |t,args|
+		raise "Missing branch name".red if args[:branch_name].nil?
+		branch_name = args[:branch_name]
+
+		RailsAWS.branch( branch_name )
+
+		raise "Domain is not enabled, must have 'domain' and 'domain_branch' config with this branch specified" unless RailsAWS.domain_enabled?
+
+		cloudformation = RailsAWS::Cloudformation.new( branch_name, :type => :domain )
+
+		cloudformation.delete_stack!
+	end
+
 	desc "Login to ec2"
 	task :stack_login, [:branch_name] => :environment do |t,args|
 		branch_name = args[:branch_name]

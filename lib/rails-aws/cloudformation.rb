@@ -15,30 +15,41 @@ module RailsAWS
 			File.join( RailsAWS.branch_dir( branch_name ), "outputs.yml" )
 		end
 
-		def initialize( branch_name = RailsAWS.branch )
+		def initialize( branch_name = RailsAWS.branch, options = {} )
 			@branch_name = branch_name
-
 			@cfm = RailsAWS::CFMClient.get
 			@ec2 = RailsAWS::EC2Client.get
-
-			@template_file = File.expand_path( "../stack.json.erb", __FILE__ )
-
 			@region = RailsAWS.region
 			@ami_id = RailsAWS.ami_id
 			@instance_type = RailsAWS.instance_type
 			@application = RailsAWS.application
 			@environment = RailsAWS.environment
 
-			@stack = @cfm.stacks[ @branch_name ] 
+			options = options.reverse_merge :type => :stack
+			@type = options[:type]
+			raise "Invalid Type: #{@type}" unless [:stack, :domain].include? @type
+
+			case @type 
+			when :stack
+				@stack_name = @branch_name
+				@stack = @cfm.stacks[ @stack_name ] 
+				@rendered_file = File.join( RailsAWS.branch_dir( @branch_name ), "cloudformation.json" )
+				@template_file = File.expand_path( "../stack.json.erb", __FILE__ )
+			when :domain
+				@stack_name = @branch_name + "_domain"
+				@stack = @cfm.stacks[ @stack_name ] 
+				@rendered_file = File.join( RailsAWS.branch_dir( @branch_name ), "domain.json" )
+				@template_file = File.expand_path( "../route53.json.erb", __FILE__ )
+			end
 		end
 
 		def exists?
-			@cfm.stacks[ @branch_name ].exists?
+			@cfm.stacks[ @stack_name ].exists?
 		end
 
 		def delete!
 			unless exists?
-				msg = "Cloudformation stack does not exist: #{@branch_name}".red
+				msg = "Cloudformation stack does not exist: #{@stack_name}".red
 				Rails.logger.info msg
 				raise msg 
 			end
@@ -48,13 +59,12 @@ module RailsAWS
 
 		def create!
 			if exists?
-				msg = "Cloudformation stack exists: #{@branch_name}".red
+				msg = "Cloudformation stack exists: #{@stack_name}".red
 				Rails.logger.fatal msg
 				raise msg
 			end
 
 			render_erb
-
 			create_stack
 		end
 
@@ -67,7 +77,7 @@ module RailsAWS
 		end
 
 		def show_stack_status
-			msg = "Stack: #{@branch_name} - #{@stack.status}".yellow
+			msg = "Stack: #{@stack_name} - #{@stack.status}".yellow
 			puts msg
 			Rails.logger.info( msg )
 			@stack.resources.each do |resource|
@@ -95,31 +105,31 @@ module RailsAWS
 		private 
 
 		def delete_stack
-			msg = "Stack: #{@branch_name}:#{@stack.status} Deleting...".green
+			msg = "Stack: #{@stack_name}:#{@stack.status} Deleting...".green
 			puts msg
 			Rails.logger.info( msg )
 			@stack.delete
 			while @stack.exists? && @stack.status == "DELETE_IN_PROGRESS"
-				msg = "Stack: #{@branch_name} Status: #{@stack.status}".yellow
+				msg = "Stack: #{@stack_name} Status: #{@stack.status}".yellow
 				puts msg
 				Rails.logger.info( msg )
 				sleep( 5 )
 			end
 
 			if @stack.exists?
-				msg = "Stack: #{@branch_name} Failed to Delete. Status: #{@stack.status}".red
+				msg = "Stack: #{@stack_name} Failed to Delete. Status: #{@stack.status}".red
 				puts msg
 				Rails.logger.info( msg )
 			else
-				msg = "Stack: #{@branch_name} Deleted".green
+				msg = "Stack: #{@stack_name} Deleted".green
 				puts msg
 				Rails.logger.info( msg )
 			end
 		end
 
 		def create_stack
-			template = File.open( rendered_file ).read
-			@stack = @cfm.stacks.create( @branch_name, template)
+			template = File.open( @rendered_file ).read
+			@stack = @cfm.stacks.create( @stack_name, template)
 
 			while @stack.status == "CREATE_IN_PROGRESS"
 				show_stack_status
@@ -131,7 +141,7 @@ module RailsAWS
 
 			successful_stack?
 
-			log_stack_outputs
+			log_stack_outputs if @type == :domain
 		end
 
 		def log_stack_outputs
@@ -152,14 +162,10 @@ module RailsAWS
 
 		def successful_stack?
 			unless @stack.status == "CREATE_COMPLETE"
-				msg = "Stack Creation FAILED: '#{@branch_name}': #{@stack.status}".red
+				msg = "Stack Creation FAILED: '#{@stack_name}': #{@stack.status}".red
 				Rails.logger.info( msg )
 				raise msg
 			end
-		end
-
-		def rendered_file
-			File.join( RailsAWS.branch_dir( @branch_name ), "cloudformation.json" )
 		end
 
 		def render_erb
@@ -169,11 +175,11 @@ module RailsAWS
 
 			renderer = ERB.new( template, nil, '%' )
 
-			File.open( rendered_file, 'w' ) do |f|
+			File.open( @rendered_file, 'w' ) do |f|
 				f.puts renderer.result( binding )
 			end
 
-			Rails.logger.info "Generated cloudformation: #{rendered_file}".green
+			Rails.logger.info "Generated cloudformation: #{@rendered_file}".green
 		end
 	end
 end
