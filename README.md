@@ -8,6 +8,8 @@ If it is not running on your local machine.
 
 You should be able to have any branch deployed in a production manner.
 
+This is Ruby(2.1.3) and rails on RVM on Ubunto (14.04) with Passenger/Nginx as detailed [here](https://gorails.com/deploy/ubuntu/14.04)
+
 ## Usage
 
 ### Have a Domain Name Ready?
@@ -134,75 +136,8 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 		* IP from outputs
 		* to port 3000 seamlessly?
 			- probably not
-
-## Phase: prodport 
-- first try:  https://gorails.com/deploy/ubuntu/14.04
-	- then try: [PhusionPassenger](phusion_notes.md)
-
-- reset on failure
-	- removing deploy:start_rails_server, passenger should handle this...	
-	- config/environments/production.rb
-  	-	reset config.serve_static_assets = false
-j
-- might need
-	- rubygem passenger
-	- # /etc/nginx/nginx.conf
- 		#(maybe) passenger_root /usr/lib/ruby/vendor_ruby/phusion_passenger/locations.ini;
-	- # possibly remove default server stuff
-
-- domain should only be used in nginx if attach_domain_to_branch is set to branch_name
-	- ie: master
-	-  "echo '        server_name *;' >> $nginx_default", "\n",
-	- otherwise dont put anything
-		- or default to: server_name   ~^(.+)$;
-
-
-```
-  gpg --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7
-  gpg --armor --export 561F9B9CAC40B2F7 | sudo apt-key add -
-  
-  apt-get install apt-transport-https
-
-  echo 'deb https://oss-binaries.phusionpassenger.com/apt/passenger trusty main' >> /etc/apt/sources.list.d/passenger.list
-  chown root: /etc/apt/sources.list.d/passenger.list
-  chmod 600 /etc/apt/sources.list.d/passenger.list
-  
-  apt-get update
-  apt-get install nginx-full passenger
-  
-  service nginx start # IP-default page is available at this point
-
-	# /etc/nginx/nginx.conf
- 	#(maybe) passenger_root /usr/lib/ruby/vendor_ruby/phusion_passenger/locations.ini;
-	grep passenger_root /etc/nginx/nginx.conf
-	grep passenger_ruby /etc/nginx/nginx.conf
- 	sed -i 's_passenger\_ruby.*;_passenger\_ruby /home/deploy/.rvm/rubies/ruby-2.1.3/bin/ruby;_' /etc/nginx/nginx.conf
-	grep passenger_ruby /etc/nginx/nginx.conf
-
-  service nginx restart 
-
-	create with echo lines: /etc/nginx/sites-enabled/default
-
-  server {
-          listen 80 default_server;
-          listen [::]:80 default_server ipv6only=on; # possibly remove default server stuff
-  
-          server_name <%= RailsAWS.domain %>;
-          passenger_enabled on;
-          rails_env    <%= RailsAWS.environment %>;
-          root         /home/deploy/<%= RailsAWS.application %>/current/public;
-  
-          # redirect server error pages to the static page /50x.html
-          error_page   500 502 503 504  /50x.html;
-          location = /50x.html {
-              root   html;
-          }
-  }
-
-	service nginx restart
-```
-
-- task: cap_deploy should touch tmp/restart.txt
+	- stack.json.erb
+		- domain name should only be used in nginx if attach_domain_to_branch is set to branch_name
 
 ## Phase: partyshuffle v1
 * partyshuffle git codebase installed
@@ -212,6 +147,11 @@ j
   * mysql/postgres as per current db
   * db from a snapshot: parameter
 * access from rails
+
+## Phase: Update Stack
+- task: 
+	- cap_generate_secret: if file doesnt exist
+	- cap_start_rails_server: touch tmp/restart.txt
 
 ## Phase: Additional AWS Resources
 * EC2:
