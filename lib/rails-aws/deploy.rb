@@ -63,7 +63,7 @@ namespace :deploy do
 	desc 'Generate Rails Secret'
 	task :generate_secret do
     on roles(:app), in: :sequence, wait: 5 do
-			execute "source ~/.rvm/scripts/rvm && rvm use 2.1.3 && cd #{current_path} && rake secret > tmp/secret"
+			execute "source ~/.rvm/scripts/rvm && rvm use 2.1.3 && cd #{current_path} && bundle exec rake secret > tmp/secret"
     end
 	end
 

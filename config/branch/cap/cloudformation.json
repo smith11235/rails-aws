@@ -55,7 +55,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "rails-aws.git-cap-development"
+						"Value": "rails-aws.git-cap-production"
 					},
 					{
 						"Key": "branch_name",
@@ -63,7 +63,7 @@
 					},
 					{
 						"Key": "environment",
-						"Value": "development"
+						"Value": "production"
 					},
 					{
 						"Key": "deployer",
@@ -102,7 +102,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "rails-aws.git-cap-development"
+						"Value": "rails-aws.git-cap-production"
 					},
 					{
 						"Key": "branch_name",
@@ -110,7 +110,7 @@
 					},
 					{
 						"Key": "environment",
-						"Value": "development"
+						"Value": "production"
 					},
 					{
 						"Key": "deployer",

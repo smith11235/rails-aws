@@ -1,4 +1,4 @@
 ---
-IP: 54.86.5.0
-Login: ssh -i config/keys/cap.private_key deploy@54.86.5.0
-WebsiteURL: http://54.86.5.0:3000
+IP: 54.164.106.172
+Login: ssh -i config/keys/cap.private_key deploy@54.164.106.172
+WebsiteURL: http://54.164.106.172:3000

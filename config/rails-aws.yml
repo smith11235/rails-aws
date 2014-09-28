@@ -1,6 +1,6 @@
 ---
 repo_url: git@github.com:smith11235/rails-aws.git
-environment: development
+environment: production
 instance_type: t2.micro
 region: us-east-1
 ami_id: ami-8afb51e2

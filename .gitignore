@@ -40,3 +40,6 @@ pickle-email-*.html
 /config/aws-keys.yml
 /config/branch/*/private.key
 /config/deploy_key
+/config/aws-keys.yml
+/config/branch/*/private.key
+/config/deploy_key
