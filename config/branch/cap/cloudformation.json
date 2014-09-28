@@ -8,7 +8,7 @@
 				"KeyName" : "cap",
 				"InstanceType": "t2.micro",
 				"SecurityGroups" : [ { "Ref" : "capsg" } ],
-				"ImageId" : "development",
+				"ImageId" : "ami-8afb51e2",
         "UserData" : { "Fn::Base64" : { "Fn::Join" : ["",[
             "#!/bin/bash -ex","\n",
 						"echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Installing Packages VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",

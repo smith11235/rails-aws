@@ -32,7 +32,7 @@ module RailsAWS
 
 	def self.ami_id
 		# from: http://cloud-images.ubuntu.com/locator/ec2/
-		RailsAWS.config( :environment )
+		RailsAWS.config( :ami_id )
 	end
 
 	def self.environment

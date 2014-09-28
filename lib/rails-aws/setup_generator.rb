@@ -74,7 +74,7 @@ module RailsAWS
   		files = [
   			'Capfile',
   			'config/deploy.rb',
-  			'config/deploy/development.rb'
+  			'config/deploy/development.rb',
   			'config/deploy/production.rb'
   		]
 			files.each do |file|
@@ -100,11 +100,11 @@ module RailsAWS
 		end
 
 		def git_deploy_keys_doc
-			copy_file 'git_deploy_keys.md', File.join( Rails.root,'public' )
+			copy_file 'git_deploy_keys.md', File.join( Rails.root,'public/git_deploy_keys.md' )
 		end
 
 		def config_secrets
-			copy_file 'secrets.yml', File.join( Rails.root, 'config' )
+			copy_file 'secrets.yml', File.join( Rails.root, 'config/secrets.yml' )
 		end
 	end
 
