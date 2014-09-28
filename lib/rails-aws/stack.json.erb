@@ -177,13 +177,9 @@
       "Description" : "The IP for the newly created server",
 			"Value" : { "Fn::GetAtt" : [ "<%= @branch_name + "ec2" %>", "PublicIp" ] } 
 		},
-    "Login" : {
-      "Description" : "The ssh command for the newly created server",
-			"Value" : { "Fn::Join" : ["", [ "ssh -i config/keys/<%= @branch_name %>.private_key deploy@", { "Fn::GetAtt" : [ "<%= @branch_name + "ec2" %>", "PublicIp" ] } ]]}
-    },
     "WebsiteURL" : {
       "Description" : "The URL for the newly created Rails application",
-			"Value" : { "Fn::Join" : ["", [ "http://", { "Fn::GetAtt" : [ "<%= @branch_name + "ec2" %>", "PublicIp" ] }, ":3000" ]]}
+			"Value" : { "Fn::Join" : ["", [ "http://", { "Fn::GetAtt" : [ "<%= @branch_name + "ec2" %>", "PublicIp" ] } ]]}
     }
   }
 }

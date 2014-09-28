@@ -36,7 +36,7 @@ module RailsAWS
 				@rendered_file = File.join( RailsAWS.branch_dir( @branch_name ), "cloudformation.json" )
 				@template_file = File.expand_path( "../stack.json.erb", __FILE__ )
 			when :domain
-				@stack_name = @branch_name + "_domain"
+				@stack_name = @branch_name + "domain"
 				@stack = @cfm.stacks[ @stack_name ] 
 				@rendered_file = File.join( RailsAWS.branch_dir( @branch_name ), "domain.json" )
 				@template_file = File.expand_path( "../route53.json.erb", __FILE__ )
@@ -141,7 +141,7 @@ module RailsAWS
 
 			successful_stack?
 
-			log_stack_outputs if @type == :domain
+			log_stack_outputs if @type == :stack
 		end
 
 		def log_stack_outputs

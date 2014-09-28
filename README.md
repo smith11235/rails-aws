@@ -129,13 +129,13 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 	- rake aws:domain_create[ branch ]
 	- rake aws:domain_delete[ branch ]
 
+- http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-route53.html
 - test gem in another project: whisperedsecrets.us
-	- stack_create
+	- aws:stack_create[master]
 		- skip cap deploy, rails-aws path gem dependency will fail
-	- domain_create
-	- domain_delete
-	- stack_delete
-	- publish gem to master
+	- aws:domain_create[master]
+	- rails-aws:
+		- publish gem to master
 		- merge to master
 		- push
 	- use gem from github
@@ -143,23 +143,30 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 		- bundle install
 		- git push origin master
 		- r aws:cap_deploy
-
-- lib/rails-aws/route53.json.erb
-	- http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-route53.html
-		* hostedzonename - Rails.domain 
-		* IP from outputs
+	- domain_delete
+	- stack_delete
 
 - rake aws:domain_delete[ branch ]
 	- deletes branch_domain
 
-## Phase: RDS 
-* snapshot of target database
-  * mysql/postgres as per current db
-  * db from a snapshot: parameter
+## Phase: Fix stack name and secret
+Stack name needs application-branch
+secret should be kept local and unrevisioned in branch_dir
+uploaded by cap deploy, reuseable
+
+## Phase: RDS - Blank
+* what is PS running
+* new db to start
 * access from rails
+
+## Phase: RDS - Snapshot
+* db dependency on rails secret?
+* snapshot of target database
+* stand up against snapshot
 
 ## Phase: partyshuffle v1
 * partyshuffle git codebase installed
+* view history
 
 ## Push server on app server
 

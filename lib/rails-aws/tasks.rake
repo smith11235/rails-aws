@@ -26,7 +26,7 @@ namespace :aws do
 
 		cloudformation = RailsAWS::Cloudformation.new( branch_name, :type => :domain )
 
-		cloudformation.create_stack!
+		cloudformation.create!
 	end
 
 	desc "Remove a specified domain to your stack for that branch"
