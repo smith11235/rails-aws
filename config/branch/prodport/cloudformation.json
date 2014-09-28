@@ -2,13 +2,13 @@
  "AWSTemplateFormatVersion" : "2010-09-09",
 
   "Resources" : {
-		"<%= @branch_name + "ec2" %>" : {
+		"prodportec2" : {
       "Type" : "AWS::EC2::Instance",
       "Properties" : {
-				"KeyName" : "<%= @branch_name %>",
-				"InstanceType": "<%= @instance_type %>",
-				"SecurityGroups" : [ { "Ref" : "<%= @branch_name + "sg" %>" } ],
-				"ImageId" : "<%= @ami_id %>",
+				"KeyName" : "prodport",
+				"InstanceType": "t2.micro",
+				"SecurityGroups" : [ { "Ref" : "prodportsg" } ],
+				"ImageId" : "ami-8afb51e2",
         "UserData" : { "Fn::Base64" : { "Fn::Join" : ["",[
             "#!/bin/bash -ex","\n",
 						"echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Installing Packages VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
@@ -71,10 +71,10 @@
     "echo 'server {' > $nginx_default", "\n",
     "echo '        listen 80 default_server;' >> $nginx_default", "\n",
     "echo '        listen [::]:80 default_server ipv6only=on; ' >> $nginx_default", "\n",
-		"echo '        server_name <%= RailsAWS.domain %>;' >> $nginx_default", "\n",
+		"echo '        server_name ~^(.+)$;' >> $nginx_default", "\n",
     "echo '        passenger_enabled on;' >> $nginx_default", "\n",
-    "echo '        rails_env    <%= RailsAWS.environment %>;' >> $nginx_default", "\n",
-    "echo '        root         /home/deploy/<%= RailsAWS.application %>/current/public;' >> $nginx_default", "\n",
+    "echo '        rails_env    production;' >> $nginx_default", "\n",
+    "echo '        root         /home/deploy/rails-aws/current/public;' >> $nginx_default", "\n",
     "echo '        # redirect server error pages to the static page /50x.html' >> $nginx_default", "\n",
     "echo '        error_page   500 502 503 504  /50x.html;' >> $nginx_default", "\n",
     "echo '        location = /50x.html {' >> $nginx_default", "\n",
@@ -92,26 +92,26 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "<%= "#{@application}-#{@branch_name}-#{@environment}" %>"
+						"Value": "rails-aws-prodport-production"
 					},
 					{
 						"Key": "branch_name",
-						"Value": "<%= @branch_name %>"
+						"Value": "prodport"
 					},
 					{
 						"Key": "environment",
-						"Value": "<%= @environment %>"
+						"Value": "production"
 					},
 					{
 						"Key": "deployer",
-						"Value": "<%= ENV["USER"] %>"
+						"Value": "root"
 					}
 
 				]
       }
     },
 
-    "<%= @branch_name + "sg" %>" : {
+    "prodportsg" : {
       "Type" : "AWS::EC2::SecurityGroup",
       "Properties" : {
         "GroupDescription" : "Enable Access to Rails application via port 80, 443, 3000 and SSH access via port 22",
@@ -139,19 +139,19 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "<%= "#{@application}-#{@branch_name}-#{@environment}" %>"
+						"Value": "rails-aws-prodport-production"
 					},
 					{
 						"Key": "branch_name",
-						"Value": "<%= @branch_name %>"
+						"Value": "prodport"
 					},
 					{
 						"Key": "environment",
-						"Value": "<%= @environment %>"
+						"Value": "production"
 					},
 					{
 						"Key": "deployer",
-						"Value": "<%= ENV["USER"] %>"
+						"Value": "root"
 					}
 
 				]
@@ -164,7 +164,7 @@
     },
     "WaitForInstance" : {
       "Type" : "AWS::CloudFormation::WaitCondition",
-			"DependsOn" : "<%= @branch_name + "ec2" %>",
+			"DependsOn" : "prodportec2",
       "Properties" : {
         "Handle" : {"Ref" : "WaitForInstanceWaitHandle"},
         "Timeout" : "600"
@@ -175,15 +175,15 @@
   "Outputs" : {
 		"IP" : {
       "Description" : "The IP for the newly created server",
-			"Value" : { "Fn::GetAtt" : [ "<%= @branch_name + "ec2" %>", "PublicIp" ] } 
+			"Value" : { "Fn::GetAtt" : [ "prodportec2", "PublicIp" ] } 
 		},
     "Login" : {
       "Description" : "The ssh command for the newly created server",
-			"Value" : { "Fn::Join" : ["", [ "ssh -i config/keys/<%= @branch_name %>.private_key deploy@", { "Fn::GetAtt" : [ "<%= @branch_name + "ec2" %>", "PublicIp" ] } ]]}
+			"Value" : { "Fn::Join" : ["", [ "ssh -i config/keys/prodport.private_key deploy@", { "Fn::GetAtt" : [ "prodportec2", "PublicIp" ] } ]]}
     },
     "WebsiteURL" : {
       "Description" : "The URL for the newly created Rails application",
-			"Value" : { "Fn::Join" : ["", [ "http://", { "Fn::GetAtt" : [ "<%= @branch_name + "ec2" %>", "PublicIp" ] }, ":3000" ]]}
+			"Value" : { "Fn::Join" : ["", [ "http://", { "Fn::GetAtt" : [ "prodportec2", "PublicIp" ] }, ":3000" ]]}
     }
   }
 }

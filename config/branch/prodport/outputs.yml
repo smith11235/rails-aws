@@ -1,0 +1,4 @@
+---
+IP: 54.236.201.70
+Login: ssh -i config/keys/prodport.private_key deploy@54.236.201.70
+WebsiteURL: http://54.236.201.70:3000

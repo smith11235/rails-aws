@@ -70,7 +70,7 @@ module RailsAWS
 		if RailsAWS.config_hash.has_key? 'domain'
 			return RailsAWS.config( :domain )
 		else
-			return Cloudformation.outputs( RailsAWS.branch ).fetch["IP"]
+			return "~^(.+)$"
 		end
 	end
 

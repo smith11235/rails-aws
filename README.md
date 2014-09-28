@@ -152,6 +152,10 @@ j
 
 - domain should only be used in nginx if attach_domain_to_branch is set to branch_name
 	- ie: master
+	-  "echo '        server_name *;' >> $nginx_default", "\n",
+	- otherwise dont put anything
+		- or default to: server_name   ~^(.+)$;
+
 
 ```
   gpg --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7

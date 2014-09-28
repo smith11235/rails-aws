@@ -48,7 +48,7 @@ module RailsAWS
 
 					repo_url = values[ 'repo_url' ]
 					#raise "Unknown repo_url,\nexpecting [user]@[domain]:[project|accout]\nlike git@github.com:smith11235/rails-aws.git".red
-					application = File.basename repo_url
+					application = File.basename repo_url, ".*"
 					values[ 'application' ] = application
 
 					values.to_yaml

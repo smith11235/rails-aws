@@ -4,4 +4,4 @@ environment: production
 instance_type: t2.micro
 region: us-east-1
 ami_id: ami-8afb51e2
-application: rails-aws.git
+application: rails-aws
