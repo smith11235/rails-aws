@@ -143,6 +143,12 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 	- removing deploy:start_rails_server, passenger should handle this...	
 	- config/environments/production.rb
   	-	reset config.serve_static_assets = false
+j
+- might need
+	- rubygem passenger
+	- # /etc/nginx/nginx.conf
+ 		#(maybe) passenger_root /usr/lib/ruby/vendor_ruby/phusion_passenger/locations.ini;
+	- # possibly remove default server stuff
 
 ```
   gpg --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7
