@@ -2,9 +2,11 @@
 
 Tooling and templates for instantiating production and development environments in AWS.
 
+Allows rapid, uniform, multi branch testing and production deployment with uniform environments.
+
 ## Usage
 
-### DNS/Domains
+### Have a Domain Name Ready?
 * [GoDaddy Domain?](http://stackoverflow.com/questions/17568892/aws-ec2-godaddy-domain-how-to-point)
 * create a Route 53 Hosted Zone
 	* with name: yourdomain.com
@@ -14,46 +16,74 @@ Tooling and templates for instantiating production and development environments 
 	* go to your registrars website
 	* set the 4 nameservers to your domain
 
-### Gem Alone: to Gemfile
-* gem 'rails-aws'
-* gem 'capistrano', '~> 3.1.0'
-* gem 'capistrano-bundler', '~> 1.1.2'
-* gem 'capistrano-rails', '~> 1.1.1'
-* gem 'capistrano-rvm', github: "capistrano/rvm"k
+### Gem or Application
 
-### Project Setup: from dev/coordination server
+You can either clone the rails-aws project and run the included rails project.
 
-This is meant to be run on a dev or production server.
+Or use just the gem within your rails project.
 
-Or from a thumbdrive where you are able to run rails and have a local dashboard.
+Either way deployment is expected to run from a secure location.
 
-Get the rails-aws project.
+Or your local development machine.
 
-The directory naming is based on the idea of having one instance of this for each application you deploy.
+Or from a thumdrive will all your keys safely protected.
+
+#### Application Setup
+
+The directory name for the clone is based on a **1 rails-aws <=> 1 application to deploy** relationship.
+
+Later this will be 1 to many for easy cloud management from your local machine.
 
 ```
-	# this is meant to deploy [your-app-name] repo
-  ~/ git clone git@github.com:smith11235/rails-aws.git rails-aws-[your-app-name]
+	# where [your-app-name] is your repohost.com/username/your-app-name
+	# example
+  ~/ $ git clone git@github.com:smith11235/rails-aws.git rails-aws-[your-app-name]
 ```
 
-Build the ruby environment.  May require sudo.
+Build the rvm/ruby environment.  May require sudo for needed ruby libraries.
 
 ```
   sh build_ruby_env.sh
   source load_ruby_env.sh
-  bundle install 
 ```
 
-Execute the rails-aws generator.
+#### Gem Alone: to Gemfile
+
+Add to your projects Gemfile:
+
+```
+	gem 'rails-aws', github: "smith11235/rails-aws"
+```
+
+### Run rails-aws Rails Generator
+
+Execute the supplied generator and provide needed information.
+
+This will:
+
+* setup .gitignore
+* setup aws access key file: config/aws-keys.yml
+	* blocked in .gitignore
+* setup your deployment preferences: config/rails-aws.yml
+	* revisioned.  can be edited.
+* adds capistrano to your project: 
+	* Capfile, config/deploy.rb, config/deploy/[production|development].rb
+* modifies config/secret.yml to use host/branch specific secrets
+	* setup by deploy time logic
+* sets up a deploy key for pulling your project from your repository
 
 ```
   bundle exec rails g rails_a_w_s:setup
-	-> will ask for repo_url 
+	-> main thing it will ask for: repo_url 
 	  - example: git@github.com:smith11235/rails-aws.git
 		- clone url for ssh access
 ```
 
-Default settings can be modified later in **config/rails-aws.yml** but is not advised.
+#### Tweaking the Config 
+
+Default settings can be modified later in **config/rails-aws.yml**.
+
+This is not advised.
 
 ### Protected Keys
 
@@ -70,81 +100,60 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 ### Stack Management
 
 ```
-  rake aws:check_setup
-  rake aws:create_stack[branch_name]
-  rake aws:delete_stack[branch_name]
+	# create a stack and start server
+  rake aws:stack_create[branch_name] aws:cap_deploy[branch_name]
 
+	# teardown a server
+  rake aws:stack_delete[branch_name]
+
+	# status of stacks
   rake aws:status
   rake aws:stack_status[branch_name]
 
-  rake aws:cap_deploy[branch_name]
-  rake aws:cap_start[branch_name]
-
+	# logging into hosts as deploy user
   rake aws:login[branch_name]
 
-  tail log/development.log
+	# getting your execution information
+  tail log/development.log # or production as appropriate
 ```
 
-## Phase: production environment
-- Try briefly
-	- rails_a_w_s:setup
-	- deploy
-	- prob wont work...
-
 ## Phase: Deploy whisperedsecrets.us
+
 - test gem in another project: whisperedsecrets.us
+
 - figure out route 53
 	- secondary ebs file
+		- http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-route53.html
 	- route53.json
-		* domain name - add to rails-aws.yml
+		* hostedzonename - add to rails-aws.yml
+			* whisperedsecrets.us
 		* IP from outputs
 		* to port 3000 seamlessly?
 			- probably not
 
-## Phase: open port 80
-- http://serverfault.com/questions/208656/routing-to-various-node-js-servers-on-same-machine
-- config/environments/
- 	uncomment: config.serve_static_assets = false when nginx handles it
-  # config.force_ssl = true
-
-```
-server {
-    listen 80;
-    server_name example.com;
-
-    location /foo {
-        proxy_pass http://localhost:9000;
-    }
-
-    location /bar {
-        proxy_pass http://localhost:9001;
-    }
-
-    location /baz {
-        proxy_pass http://localhost:9002;
-    }
-}
-```
-
+## Phase: prodport 
 - nginx setup: https://gorails.com/deploy/ubuntu/14.04
+- https://www.phusionpassenger.com/documentation/Users%20guide%20Nginx.html
+	- [PhusionPassenger](phusion_notes.md)
+	
 
 ```
   gpg --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7
   gpg --armor --export 561F9B9CAC40B2F7 | sudo apt-key add -
   
-  sudo apt-get install apt-transport-https
+  apt-get install apt-transport-https
+
+  echo 'deb https://oss-binaries.phusionpassenger.com/apt/passenger trusty main' >> /etc/apt/sources.list.d/passenger.list
+  chown root: /etc/apt/sources.list.d/passenger.list
+  chmod 600 /etc/apt/sources.list.d/passenger.list
   
-  sudo sh -c "echo 'deb https://oss-binaries.phusionpassenger.com/apt/passenger trusty main' >> /etc/apt/sources.list.d/passenger.list"
-  sudo chown root: /etc/apt/sources.list.d/passenger.list
-  sudo chmod 600 /etc/apt/sources.list.d/passenger.list
+  apt-get update
+  apt-get install nginx-full passenger
   
-  sudo apt-get update
-  sudo apt-get install nginx-full passenger
-  
-  sudo service nginx start
+  service nginx start
 ```
 
-* visit: http://54.165.219.61/
+* visit: http://IP_OR_DOMAIN/
 
 * edit configs
 
@@ -165,26 +174,54 @@ passenger_root /usr/lib/ruby/vendor_ruby/phusion_passenger/locations.ini;
 * restart: ```sudo service nginx restart```
 
 
-* then routing
+* then routing: /etc/nginx/sites-enabled/default
+	* setup by root in cloud-init
+
+@server_name = RailsAws.domain # default to IP
+@public_root = File.join "/home/deploy/", @application, "public"
 
 ```
-@domain_name = "partyshuffle.com"
-@deploy_user = "ubuntu"
-
-sudo vim /etc/nginx/sites-enabled/default
-server {   
-	listen 80;   
-	server_name 54.165.219.61; 
-  rails_env    development;  
-	passenger_enabled on;   
-	root /home/ubuntu/rails-aws/RailsAws/public; 
-  # redirect server error pages to the static page /50x.html  
-	error_page   500 502 503 504  /50x.html;
-  location = /50x.html {
-      root   html;
+  server {   
+  	listen 80;   
+  	server_name @server_name; 
+    rails_env  RailsAWS.environment;  
+  	passenger_enabled on;   
+  	root @public_root; 
+    # redirect server error pages to the static page /50x.html  
+  	error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   html;
+    }
   }
+```
+
+- http://serverfault.com/questions/208656/routing-to-various-node-js-servers-on-same-machine
+	- has routing/proxy-pass info
+
+```
+server {
+    listen 80;
+    server_name example.com;
+
+    location /foo {
+        proxy_pass http://localhost:9000;
+    }
+
+    location /bar {
+        proxy_pass http://localhost:9001;
+    }
+
+    location /baz {
+        proxy_pass http://localhost:9002;
+    }
 }
 ```
+
+- config/environments/production.rb
+ 	uncomment: config.serve_static_assets = false when nginx handles it
+  # config.force_ssl = true
+
+
 
 ## Phase
 - rake aws:check_setup (rails-aws.yml)
