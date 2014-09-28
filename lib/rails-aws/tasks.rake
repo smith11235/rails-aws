@@ -40,7 +40,7 @@ namespace :aws do
 
 		cloudformation = RailsAWS::Cloudformation.new( branch_name, :type => :domain )
 
-		cloudformation.delete_stack!
+		cloudformation.delete!
 	end
 
 	desc "Login to ec2"

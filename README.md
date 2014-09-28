@@ -12,15 +12,6 @@ This is Ruby(2.1.3) and rails on RVM on Ubunto (14.04) with Passenger/Nginx as d
 
 ## Usage
 
-### Have a Domain Name Ready?
-* [GoDaddy Domain?](http://stackoverflow.com/questions/17568892/aws-ec2-godaddy-domain-how-to-point)
-* create a Route 53 Hosted Zone
-	* with name: yourdomain.com
-	* after creation, view recordsets
-	* in the NS record are 4 servers in the Value box
-* point nameservers in your registrarr
-	* go to your registrars website
-	* set the 4 nameservers to your domain
 
 ### Gem or Application
 
@@ -89,7 +80,7 @@ This will:
 
 Default settings can be modified later in **config/rails-aws.yml**.
 
-This is not advised.
+This is not advised. Other than **domain** settings.
 
 ### Protected Keys
 
@@ -108,9 +99,13 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 ```
 	# create a stack and start server
   rake aws:stack_create[branch_name] aws:cap_deploy[branch_name]
+	# if you have a domain
+	rake aws:domain_create[branch_name]
 
 	# teardown a server
   rake aws:stack_delete[branch_name]
+  # if you have a domain
+	rake aws:domain_delete[branch_name]
 
 	# status of stacks
   rake aws:status
@@ -123,31 +118,23 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
   tail log/development.log # or production as appropriate
 ```
 
-## Phase: Deploy whisperedsecrets.us
-- update docs for domain setup
-	- rails-aws: domain, domain_branch: default to nil, set after
-	- rake aws:domain_create[ branch ]
-	- rake aws:domain_delete[ branch ]
+#### Have a Domain Name Ready?
+* [GoDaddy Domain?](http://stackoverflow.com/questions/17568892/aws-ec2-godaddy-domain-how-to-point)
+* create a Route 53 Hosted Zone
+	* with name: yourdomain.com
+	* after creation, view recordsets
+	* in the NS record are 4 servers in the Value box
+* point nameservers in your registrarr
+	* go to your registrars website
+	* set the 4 nameservers to your domain
+* edit your config/rails-aws.yml file
+	* set domain to: example.com
+	* set domain_branch to 'master'
+		* or whatever you want to pair this domain to
 
-- http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-route53.html
-- test gem in another project: whisperedsecrets.us
-	- aws:stack_create[master]
-		- skip cap deploy, rails-aws path gem dependency will fail
-	- aws:domain_create[master]
-	- rails-aws:
-		- publish gem to master
-		- merge to master
-		- push
-	- use gem from github
-		- edit gemfile
-		- bundle install
-		- git push origin master
-		- r aws:cap_deploy
-	- domain_delete
-	- stack_delete
-
-- rake aws:domain_delete[ branch ]
-	- deletes branch_domain
+## Phase: stack and domain rebuild: whisperedsecrets.us
+- rake aws:domain_delete[master] aws:stack_delete[master]
+- rake aws:stack_create[master]aws: domain_create[master]
 
 ## Phase: Fix stack name and secret
 Stack name needs application-branch
