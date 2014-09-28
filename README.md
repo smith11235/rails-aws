@@ -48,12 +48,12 @@ Execute the rails-aws generator.
 
 ```
   bundle exec rails g rails_a_w_s:setup
-	-> will as for repo_url 
+	-> will ask for repo_url 
 	  - example: git@github.com:smith11235/rails-aws.git
 		- clone url for ssh access
 ```
 
-Default settings can be modified in **config/rails-aws.yml** but is not advised.
+Default settings can be modified later in **config/rails-aws.yml** but is not advised.
 
 ### Protected Keys
 
@@ -71,47 +71,34 @@ This is explained in [Git Deploy Keys](public/get_deploy_keys.md)
 
 ```
   rake aws:check_setup
-  rake aws:[create|delete]_stack[branch_name]
+  rake aws:create_stack[branch_name]
+  rake aws:delete_stack[branch_name]
+
   rake aws:status
   rake aws:stack_status[branch_name]
+
   rake aws:cap_deploy[branch_name]
   rake aws:cap_start[branch_name]
+
   rake aws:login[branch_name]
 
   tail log/development.log
 ```
 
 ## Phase: Capistrano
-- rails g rails_a_w_s:setup:
-		- ask: update?
-			- Rails.root, 'config/deploy_key/[repo_name]_id_rsa (and .pub)
-	  	- ssh-keygen -t rsa -f ~/.ssh/deploy_id_rsa
-		- print instructions for github
-			- in system(vim) on Rails.root, 'GIT_DEPLOY_KEY_[app-name].md'
-			- print website for viewing this
-			- suggest markdown viewer
-
-- gitignore append
-/config/aws-keys.yml
-/config/branch/*/private.key
-/config/deploy_key
-
-
-- make a security check on startup?
-	- for rake, generator, rails, capistrano
-## Phase: 
-
-## cleaned up 'setup' process
-
-## Deploy whisperedsecrets.us
-- get domain servers transfered
-- figure out route 53
 
 ## Try breifly: production environment
 
-- add environment to cloudformation keys
-	- add port setting based on env? 
+- test on dev server, prod should work
+	- for figuring out how at least
+- add config/deploy/production.rb
 	- prob wont work...
+- port 3000
+- then port 80
+
+## Deploy whisperedsecrets.us
+- figure out route 53
+- test gem in another project: whisperedsecrets.us
 
 ## Phase: install nginx, open to 80
 
@@ -256,9 +243,10 @@ server {
 ## Phase 4
 * external access at http://[IP] 
 
-## Phase 5
-* domain name to ip in route 53
 
+## Phase
+- make a security check on startup?
+	- for rake, generator, rails, capistrano
 ## Phase 6
 * subnets
 * vpc

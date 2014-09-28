@@ -68,9 +68,8 @@ module RailsAWS
 				deploy_dir = File.dirname file
 				FileUtils.mkdir deploy_dir unless File.directory? deploy_dir
 				system( "ssh-keygen -t rsa -f #{file}" )
-				puts "Now add this key as a deploy key to your repository".green
-				puts "Example git location: https://github.com/smith11235/rails-aws/settings/keys"
-				puts "Suggested naming is 'rails-aws'"
+				system( "vim #{File.join( Rails.root, 'public/git_deploy_keys.md' )}" )
+				puts "Deploy Key - Add Contents to Repository: #{file}".green
 				puts `cat #{file}.pub`.yellow
 			end
 		end
@@ -88,8 +87,17 @@ module RailsAWS
 			end
 		end
 		
+		def gitignore
+			ignore_file = File.join Rails.root, '.gitignore'
+			%w(
+      /config/aws-keys.yml
+      /config/branch/*/private.key
+      /config/deploy_key
+			).each do |ignore|
+				system( "echo #{ignore} >> #{ignore_file}" )
+			end
+		end
+
 	end
-
-
 
 end
