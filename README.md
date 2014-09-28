@@ -124,20 +124,43 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 ```
 
 ## Phase: Deploy whisperedsecrets.us
+- update docs for domain setup
 
 - test gem in another project: whisperedsecrets.us
 
-- figure out route 53
-	- secondary ebs file
-		- http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-route53.html
-	- route53.json
-		* hostedzonename - add to rails-aws.yml
-			* whisperedsecrets.us
+- rails-aws settings:
+	- domain: whisperedsecrets.us
+	- domain_branch: master
+- RailsAWS.domain_enabled
+	- if has_domain && RailsAws.config( :domain_branch ) == RailsAWS.branch
+- RailsAWS.domain
+	- if domain_enabled, use domain, else default
+
+- rake aws:domain_create[ branch ]
+	- raise "Domain is not enabled, must have 'domain' and 'domain_branch' config" unless domain_enabled
+	- creates branch_domain
+- lib/rails-aws/route53.json.erb
+	- http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-route53.html
+		* hostedzonename - Rails.domain 
 		* IP from outputs
-		* to port 3000 seamlessly?
-			- probably not
-	- stack.json.erb
-		- domain name should only be used in nginx if attach_domain_to_branch is set to branch_name
+
+	```
+			"domaintorails" : {
+            "Type" : "AWS::Route53::RecordSet",
+            "Properties" : {
+                "HostedZoneName" : "<%= RailsAWS.domain %>.",
+                "Comment" : "A records for my frontend.",
+                "Name" : "<%= RailsAWS.domain %>.",
+                "Type" : "A",
+                "TTL" : "900",
+                "ResourceRecords" : [
+                    "<%= Cloudformation.outputs.fetch( "IP" ) %>"
+                ]
+            }
+        }
+	```
+- rake aws:domain_delete[ branch ]
+	- deletes branch_domain
 
 ## Phase: RDS 
 * snapshot of target database
