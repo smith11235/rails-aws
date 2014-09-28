@@ -86,18 +86,10 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 ```
 
 ## Phase: production environment
-- to cap: bundle exec rake secret > tmp/secret
-- to generator: config/secrets.yml
-
 - Try briefly
-- test on dev server, prod should work
-	- assets compiled
-- add config/deploy/production.rb
+	- rails_a_w_s:setup
+	- deploy
 	- prob wont work...
-
-
-- port 3000
-	- then port 80 can be figured out later
 
 ## Phase: Deploy whisperedsecrets.us
 - test gem in another project: whisperedsecrets.us

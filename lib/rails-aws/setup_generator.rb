@@ -3,11 +3,6 @@ require 'rails-aws'
 module RailsAWS
 
 	class SetupGenerator < Rails::Generators::Base
-		@@files = [
-			'Capfile',
-			'config/deploy.rb',
-			'config/deploy/development.rb'
-		]
 
 		source_root File.expand_path("../", __FILE__)
 
@@ -76,7 +71,13 @@ module RailsAWS
 
 		def capistrano_files
 
-			@@files.each do |file|
+  		files = [
+  			'Capfile',
+  			'config/deploy.rb',
+  			'config/deploy/development.rb'
+  			'config/deploy/production.rb'
+  		]
+			files.each do |file|
 				yes = File.file?(file) ? ask("Do you wish to update: #{file} (y)") : 'y'
 				if yes == "y"
 					source = File.basename( file ) 
@@ -102,6 +103,9 @@ module RailsAWS
 			copy_file 'git_deploy_keys.md', File.join( Rails.root,'public' )
 		end
 
+		def config_secrets
+			copy_file 'secrets.yml', File.join( Rails.root, 'config' )
+		end
 	end
 
 end
