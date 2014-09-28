@@ -4,6 +4,16 @@ Tooling and templates for instantiating production and development environments 
 
 ## Usage
 
+### DNS/Domains
+* [GoDaddy Domain?](http://stackoverflow.com/questions/17568892/aws-ec2-godaddy-domain-how-to-point)
+* create a Route 53 Hosted Zone
+	* with name: yourdomain.com
+	* after creation, view recordsets
+	* in the NS record are 4 servers in the Value box
+* point nameservers in your registrarr
+	* go to your registrars website
+	* set the 4 nameservers to your domain
+
 ### Gem Alone: to Gemfile
 * gem 'rails-aws'
 * gem 'capistrano', '~> 3.1.0'
@@ -12,14 +22,12 @@ Tooling and templates for instantiating production and development environments 
 * gem 'capistrano-rvm', github: "capistrano/rvm"k
 
 ### Project Setup: from dev/coordination server
+
 * clone repo
 * sh build_ruby_env.sh
+* source load_ruby_env.sh
 * bundle install 
-* create deploy key:
-	* ssh-keygen -t rsa -f ~/.ssh/deploy_id_rsa
-	* add the public key to github repo you are deploying
-		* ~/.ssh/deploy_id_rsa.pub
-		* Key attached to github repo: 'deploy: [repo-name]'
+
 * bundle exec rails g rails_a_w_s:setup
 	- enter aws key information
 	- region: us-east-1
@@ -28,6 +36,11 @@ Tooling and templates for instantiating production and development environments 
 	- deploy_key: /root/.ssh/deploy_id_rsa
 	- environment: development
 	- instance_type: t2.micro
+* create deploy key:
+	* ssh-keygen -t rsa -f ~/.ssh/deploy_id_rsa
+	* add the public key to github repo you are deploying
+		* ~/.ssh/deploy_id_rsa.pub
+		* Key attached to github repo: 'deploy: [repo-name]'
 
 ### Stack Management
 
@@ -44,13 +57,6 @@ Tooling and templates for instantiating production and development environments 
 ```
 
 ## Phase: Capistrano
-- generator: add to rails-aws.yml
-	- region
-	- repo_url
-	- application
-	- deploy_key 
-	- environment
-	- instance_type
 
 - rails g rails_a_w_s:setup:
   - capistrano files need moving to gem/generator process
@@ -61,7 +67,14 @@ Tooling and templates for instantiating production and development environments 
 		- config/deploy/[development|production].rb
   - check Gemfile for needed gem includes/versions lines
 
-## rails_a_w_s:setup validation logic
+## cleaned up 'setup' process
+- generate deploy key from application/repo name
+	- generate 'application' from repo
+	- generate deploy key off of application
+
+## Deploy whisperedsecrets.us
+- get domain servers transfered
+- figure out route 53
 
 ## Try breifly: production environment
 
@@ -168,8 +181,6 @@ server {
 ```
 
 ## Phase 3
-* rake aws:access_info[branch_name]
-	* start and stop commands
 * partyshuffle git codebase installed
 
 ## SSL
