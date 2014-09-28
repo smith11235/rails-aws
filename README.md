@@ -139,19 +139,23 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 	- stack.json.erb
 		- domain name should only be used in nginx if attach_domain_to_branch is set to branch_name
 
-## Phase: partyshuffle v1
-* partyshuffle git codebase installed
-
 ## Phase: RDS 
 * snapshot of target database
   * mysql/postgres as per current db
   * db from a snapshot: parameter
 * access from rails
 
-## Phase: Update Stack
-- task: 
-	- cap_generate_secret: if file doesnt exist
-	- cap_start_rails_server: touch tmp/restart.txt
+## Phase: partyshuffle v1
+* partyshuffle git codebase installed
+
+## Push server on app server
+
+* rails-aws.yml:
+	* push_server: enabled
+* expect it to be present in Rails build
+	* expect default config?
+* security group port for push
+* cap logic starts it up
 
 ## Phase: Additional AWS Resources
 * EC2:
@@ -164,8 +168,11 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 		* both resque + private pub
   * web: 
   	* rails server through passenger 
-	* uber: everything on one server
 
+## Phase: Update Stack
+- task: 
+	- cap_generate_secret: if file doesnt exist
+	- cap_start_rails_server: touch tmp/restart.txt
 ## Phase
 - rake aws:check_setup (rails-aws.yml)
   - and clean up documentation
