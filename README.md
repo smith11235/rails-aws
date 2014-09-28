@@ -133,12 +133,19 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 		* or whatever you want to pair this domain to
 
 ## Phase: stack and domain rebuild: whisperedsecrets.us
-- rake aws:domain_delete[master] aws:stack_delete[master]
-- rake aws:stack_create[master]aws: domain_create[master]
+- rake aws:stack_create[master] aws:domain_create[master] aws:cap_deploy[master]
 
 ## Phase: Fix stack name and secret
-Stack name needs application-branch
-secret should be kept local and unrevisioned in branch_dir
+Stack name needs:
+	- application-branch
+	- Stack name needs special char filtering
+		- hmmm
+
+Secret
+* add secret to branch_dir/secret
+* upload with cap
+* add to .gitignore
+
 uploaded by cap deploy, reuseable
 
 ## Phase: RDS - Blank
