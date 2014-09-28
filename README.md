@@ -86,11 +86,15 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 ```
 
 ## Phase: production environment
-- Try briefly:
+- to cap: bundle exec rake secret > tmp/secret
+- to generator: config/secrets.yml
+
+- Try briefly
 - test on dev server, prod should work
-	- for figuring out how at least
+	- assets compiled
 - add config/deploy/production.rb
 	- prob wont work...
+
 - port 3000
 	- then port 80 can be figured out later
 
@@ -105,6 +109,26 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 			- probably not
 
 ## Phase: open port 80
+- http://serverfault.com/questions/208656/routing-to-various-node-js-servers-on-same-machine
+
+```
+server {
+    listen 80;
+    server_name example.com;
+
+    location /foo {
+        proxy_pass http://localhost:9000;
+    }
+
+    location /bar {
+        proxy_pass http://localhost:9001;
+    }
+
+    location /baz {
+        proxy_pass http://localhost:9002;
+    }
+}
+```
 
 - nginx setup: https://gorails.com/deploy/ubuntu/14.04
 

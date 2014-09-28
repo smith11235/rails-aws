@@ -8,7 +8,7 @@
 				"KeyName" : "cap",
 				"InstanceType": "t2.micro",
 				"SecurityGroups" : [ { "Ref" : "capsg" } ],
-				"ImageId" : "ami-8afb51e2",
+				"ImageId" : "development",
         "UserData" : { "Fn::Base64" : { "Fn::Join" : ["",[
             "#!/bin/bash -ex","\n",
 						"echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Installing Packages VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
@@ -55,7 +55,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "rails-aws-cap-development"
+						"Value": "rails-aws.git-cap-development"
 					},
 					{
 						"Key": "branch_name",
@@ -102,7 +102,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "rails-aws-cap-development"
+						"Value": "rails-aws.git-cap-development"
 					},
 					{
 						"Key": "branch_name",
