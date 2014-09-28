@@ -132,10 +132,14 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 			- probably not
 
 ## Phase: prodport 
-- nginx setup: https://gorails.com/deploy/ubuntu/14.04
-- https://www.phusionpassenger.com/documentation/Users%20guide%20Nginx.html
+- first try:  https://gorails.com/deploy/ubuntu/14.04
+- then try: https://www.phusionpassenger.com/documentation/Users%20guide%20Nginx.html
 	- [PhusionPassenger](phusion_notes.md)
-	
+
+- removing deploy:start_rails_server, passenger should handle this...	
+- config/environments/production.rb
+  -	reset config.serve_static_assets = false
+
 
 ```
   gpg --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7
@@ -150,116 +154,36 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
   apt-get update
   apt-get install nginx-full passenger
   
-  service nginx start
-```
+  service nginx start # IP-default page is available at this point
 
-* visit: http://IP_OR_DOMAIN/
+	# /etc/nginx/nginx.conf
+ 	#(maybe) passenger_root /usr/lib/ruby/vendor_ruby/phusion_passenger/locations.ini;
+ 	passenger_ruby /home/deploy/.rvm/rubies/ruby-2.1.3/bin/ruby;
 
-* edit configs
+  service nginx restart 
 
-```
-sudo vim /etc/nginx/nginx.conf
-##
-# Phusion Passenger
-##
-# Uncomment it if you installed ruby-passenger or ruby-passenger-enterprise
-##
+	create: /etc/nginx/sites-enabled/default
+@domain = RailsAws.domain # default to IP
 
-passenger_root /usr/lib/ruby/vendor_ruby/phusion_passenger/locations.ini;
-
-	passenger_ruby /home/ubuntu/.rvm/rubies/ruby-2.1.3/bin/ruby;
-
-```
-
-* restart: ```sudo service nginx restart```
-
-
-* then routing: /etc/nginx/sites-enabled/default
-	* setup by root in cloud-init
-
-@server_name = RailsAws.domain # default to IP
-@public_root = File.join "/home/deploy/", @application, "public"
-
-```
-  server {   
-  	listen 80;   
-  	server_name @server_name; 
-    rails_env  RailsAWS.environment;  
-  	passenger_enabled on;   
-  	root @public_root; 
-    # redirect server error pages to the static page /50x.html  
-  	error_page   500 502 503 504  /50x.html;
-    location = /50x.html {
-        root   html;
-    }
+  server {
+          listen 80 default_server;
+          listen [::]:80 default_server ipv6only=on; # possibly remove default server stuff
+  
+          server_name <%= RailsAWS.domain %>;
+          passenger_enabled on;
+          rails_env    <%= RailsAWS.environment %>;
+          root         /home/deploy/<%= RailsAWS.application %>/current/public;
+  
+          # redirect server error pages to the static page /50x.html
+          error_page   500 502 503 504  /50x.html;
+          location = /50x.html {
+              root   html;
+          }
   }
 ```
 
-- http://serverfault.com/questions/208656/routing-to-various-node-js-servers-on-same-machine
-	- has routing/proxy-pass info
-
-```
-server {
-    listen 80;
-    server_name example.com;
-
-    location /foo {
-        proxy_pass http://localhost:9000;
-    }
-
-    location /bar {
-        proxy_pass http://localhost:9001;
-    }
-
-    location /baz {
-        proxy_pass http://localhost:9002;
-    }
-}
-```
-
-- config/environments/production.rb
- 	uncomment: config.serve_static_assets = false when nginx handles it
-  # config.force_ssl = true
-
-
-
-## Phase
-- rake aws:check_setup (rails-aws.yml)
-  - and clean up documentation
-
-
-
-
-* then:
-	* ```
-			mkdir /home/ubuntu/rails-aws/RailsAws/tmp
-			touch /home/ubuntu/rails-aws/RailsAws/tmp/restart.txt
-		```
-
-* visit: http://54.165.219.61/
-* visit: http://54.165.219.61:3000 # rails
-
-
-* process: https://gorails.com/deploy/ubuntu/14.04
-	* install everything as ubuntu
-	* manually execute install getting process down
-	* rails server -e development -p 3000
-* website access
-
-* install with cloud-init
-
-```
-  "yum -y install gcc-c++ make","\n",
-  "yum -y install mysql-devel sqlite-devel","\n",
-  "yum -y install ruby-rdoc rubygems ruby-mysql ruby-devel","\n",
-	"bundle install", "\n",
-  "rails new myapp","\n",
-  "cd myapp","\n",
-  "rails server","\n",
-```
-
 ## Phase: partyshuffle v1
-* partyshuffle git codebase installed, development
+* partyshuffle git codebase installed
 
 ## Phase: RDS 
 * snapshot of target database
@@ -280,6 +204,10 @@ server {
   	* rails server through passenger 
 	* uber: everything on one server
 
+## Phase
+- rake aws:check_setup (rails-aws.yml)
+  - and clean up documentation
+
 
 ## Dashboard
 * what do i have
@@ -292,6 +220,7 @@ server {
 
 ## Phase: SSL
 
+* setup ssl requirements
 * nginx config
 
 ```
@@ -303,6 +232,8 @@ server {
 ```
 
 * enforce_https|ssl
+	* config/environments/production.rb: has directive
+	* or add to application controller
 
 ## Phase
 - make a security check on startup?
