@@ -61,10 +61,12 @@ Tooling and templates for instantiating production and development environments 
 - rails g rails_a_w_s:setup:
   - capistrano files need moving to gem/generator process
 		- lib/rails-aws/[deploy.rb|development.rb|production.rb]
+
   - create: 
 		- Capfile
 		- config/deploy.rb
 		- config/deploy/[development|production].rb
+
   - check Gemfile for needed gem includes/versions lines
 
 ## cleaned up 'setup' process
