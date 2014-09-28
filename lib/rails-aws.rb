@@ -17,24 +17,30 @@ module RailsAWS
 		branch_dir
 	end
 
-	# make a hash based on region
-	def self.ami_id
-		# from: http://cloud-images.ubuntu.com/locator/ec2/
-		"ami-8afb51e2"
+	def self.config_hash( options = {} )
+		options = options.reverse_merge :reset => false
+		if options[:reset] || @config.nil?
+			@@config ||= YAML.load_file( File.join( Rails.root, 'config/rails-aws.yml' ) )
+		end
+		@@config
 	end
 
-	# replace these with user config settings, have cheap defaults
-	def self.config( key )
-		@config ||= YAML.load_file( File.join( Rails.root, 'config/rails-aws.yml' ) )
-		@config.fetch( key.to_s )
+	def self.config( key, options = {} )
+		RailsAWS.config_hash( options )
+		@@config.fetch( key.to_s )
+	end
+
+	def self.ami_id
+		# from: http://cloud-images.ubuntu.com/locator/ec2/
+		RailsAWS.config( :environment )
 	end
 
 	def self.environment
 		RailsAWS.config( :environment )
 	end
 
-	def self.deploy_key
-		RailsAWS.config( :deploy_key )
+	def self.deploy_key( options = {} )
+		File.join( Rails.root, 'config/deploy_key/', "#{RailsAWS.config( :application, options )}_id_rsa" )
 	end
 
 	def self.repo_url
@@ -52,4 +58,8 @@ module RailsAWS
 	def self.application
 		RailsAWS.config( :application )
 	end
+
+
+	private
+
 end

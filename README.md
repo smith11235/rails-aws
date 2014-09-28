@@ -23,24 +23,47 @@ Tooling and templates for instantiating production and development environments 
 
 ### Project Setup: from dev/coordination server
 
-* clone repo
-* sh build_ruby_env.sh
-* source load_ruby_env.sh
-* bundle install 
+This is meant to be run on a dev or production server.
 
-* bundle exec rails g rails_a_w_s:setup
-	- enter aws key information
-	- region: us-east-1
-	- application: rails-aws
-	- repo_url: git@github.com:smith11235/rails-aws.git
-	- deploy_key: /root/.ssh/deploy_id_rsa
-	- environment: development
-	- instance_type: t2.micro
-* create deploy key:
-	* ssh-keygen -t rsa -f ~/.ssh/deploy_id_rsa
-	* add the public key to github repo you are deploying
-		* ~/.ssh/deploy_id_rsa.pub
-		* Key attached to github repo: 'deploy: [repo-name]'
+Or from a thumbdrive where you are able to run rails and have a local dashboard.
+
+Get the rails-aws project.
+
+```
+	# this is meant to deploy [your-app-name] repo
+  ~/ git clone git@github.com:smith11235/rails-aws.git rails-aws-[your-app-name]
+```
+
+Build the ruby environment.  May require sudo.
+
+```
+  sh build_ruby_env.sh
+  source load_ruby_env.sh
+  bundle install 
+```
+
+Execute the rails-aws generator.
+
+```
+  bundle exec rails g rails_a_w_s:setup
+	-> will as for repo_url 
+	  - example: git@github.com:smith11235/rails-aws.git
+		- clone url for ssh access
+```
+
+Default settings can be modified in **config/rails-aws.yml** but is not advised.
+
+### Protected Keys
+
+AWS Host Keys are kept by default in config/branch/[branch]/private.key files.
+
+And deploy keys for your repository are in config/deploy_key/[application]_id_rsa(.pub) files.
+
+For your git deploy key, you can edit **config/rails-aws.yml** to specify an alternate location.
+
+You also need to manually add the **config/deploy_key/[application]_id_rsa.pub contents to the github repo.
+
+This is explained in [Git Deploy Keys](public/get_deploy_keys.md)
 
 ### Stack Management
 
@@ -57,22 +80,26 @@ Tooling and templates for instantiating production and development environments 
 ```
 
 ## Phase: Capistrano
-
 - rails g rails_a_w_s:setup:
-  - capistrano files need moving to gem/generator process
-		- lib/rails-aws/[deploy.rb|development.rb|production.rb]
-  - create: 
-		- ask if replacement should occur
-		- Capfile
-		- config/deploy.rb
-		- config/deploy/[development|production].rb
+		- ask: update?
+			- Rails.root, 'config/deploy_key/[repo_name]_id_rsa (and .pub)
+	  	- ssh-keygen -t rsa -f ~/.ssh/deploy_id_rsa
+		- print instructions for github
+			- in system(vim) on Rails.root, 'GIT_DEPLOY_KEY_[app-name].md'
+			- print website for viewing this
+			- suggest markdown viewer
 
-  - check Gemfile for needed gem includes/versions lines
+- gitignore append
+/config/aws-keys.yml
+/config/branch/*/private.key
+/config/deploy_key
+
+
+- make a security check on startup?
+	- for rake, generator, rails, capistrano
+## Phase: 
 
 ## cleaned up 'setup' process
-- generate deploy key from application/repo name
-	- generate 'application' from repo
-	- generate deploy key off of application
 
 ## Deploy whisperedsecrets.us
 - get domain servers transfered
