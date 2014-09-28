@@ -95,6 +95,7 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 - add config/deploy/production.rb
 	- prob wont work...
 
+
 - port 3000
 	- then port 80 can be figured out later
 
@@ -110,6 +111,9 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 
 ## Phase: open port 80
 - http://serverfault.com/questions/208656/routing-to-various-node-js-servers-on-same-machine
+- config/environments/
+ 	uncomment: config.serve_static_assets = false when nginx handles it
+  # config.force_ssl = true
 
 ```
 server {
