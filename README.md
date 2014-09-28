@@ -130,31 +130,25 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 	- rake aws:domain_delete[ branch ]
 
 - test gem in another project: whisperedsecrets.us
-	- generator
-	- build stack
+	- stack_create
+		- skip cap deploy, rails-aws path gem dependency will fail
 	- domain_create
 	- domain_delete
+	- stack_delete
+	- publish gem to master
+		- merge to master
+		- push
+	- use gem from github
+		- edit gemfile
+		- bundle install
+		- git push origin master
+		- r aws:cap_deploy
 
 - lib/rails-aws/route53.json.erb
 	- http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-route53.html
 		* hostedzonename - Rails.domain 
 		* IP from outputs
 
-	```
-			"domaintorails" : {
-            "Type" : "AWS::Route53::RecordSet",
-            "Properties" : {
-                "HostedZoneName" : "<%= RailsAWS.domain %>.",
-                "Comment" : "A records for my frontend.",
-                "Name" : "<%= RailsAWS.domain %>.",
-                "Type" : "A",
-                "TTL" : "900",
-                "ResourceRecords" : [
-                    "<%= Cloudformation.outputs.fetch( "IP" ) %>"
-                ]
-            }
-        }
-	```
 - rake aws:domain_delete[ branch ]
 	- deletes branch_domain
 

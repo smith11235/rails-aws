@@ -6,6 +6,9 @@ module RailsAWS
 
 		source_root File.expand_path("../", __FILE__)
 
+		def git_deploy_keys_doc
+			copy_file 'git_deploy_keys.md', File.join( Rails.root,'public/git_deploy_keys.md' )
+		end
 
 		def rails_aws_settings
 			file = "config/rails-aws.yml"
@@ -42,7 +45,6 @@ module RailsAWS
 		end
 
 		def aws_keys_config_file
-			RailsAWS::EC2Client.get
 			file = "config/aws-keys.yml"
 			yes = File.file?(file) ? ask("Do you wish to update: #{file} (y)") : 'y'
 			if yes == "y"
@@ -102,9 +104,6 @@ module RailsAWS
 			end
 		end
 
-		def git_deploy_keys_doc
-			copy_file 'git_deploy_keys.md', File.join( Rails.root,'public/git_deploy_keys.md' )
-		end
 
 		def config_secrets
 			copy_file 'secrets.yml', File.join( Rails.root, 'config/secrets.yml' )
