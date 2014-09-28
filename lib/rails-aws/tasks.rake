@@ -2,7 +2,7 @@ namespace :aws do
 
 
 	desc "Create a new stack from [branch_name]"
-	task :create_stack, [:branch_name] => :environment do |t,args|
+	task :stack_create, [:branch_name] => :environment do |t,args|
 		raise "Missing branch name".red if args[:branch_name].nil?
 		branch_name = args[:branch_name]
 
@@ -14,7 +14,7 @@ namespace :aws do
 	end
 
 	desc "Login to ec2"
-	task :login, [:branch_name] => :environment do |t,args|
+	task :stack_login, [:branch_name] => :environment do |t,args|
 		branch_name = args[:branch_name]
 		raise "Missing branch name".red if branch_name.nil?
 		ip = RailsAWS::Cloudformation.outputs(branch_name).fetch "IP"
@@ -70,7 +70,7 @@ namespace :aws do
 	end
 
 	desc "Delete a stack from [branch_name]"
-	task :delete_stack, [:branch_name] => :environment do |t,args|
+	task :stack_delete, [:branch_name] => :environment do |t,args|
 		raise "Missing branch name".red if args[:branch_name].nil?
 		branch_name = args[:branch_name]
 

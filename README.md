@@ -111,7 +111,7 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
   rake aws:stack_status[branch_name]
 
 	# logging into hosts as deploy user
-  rake aws:login[branch_name]
+  rake aws:stack_login[branch_name]
 
 	# getting your execution information
   tail log/development.log # or production as appropriate
