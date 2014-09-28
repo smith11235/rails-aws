@@ -85,15 +85,16 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
   tail log/development.log
 ```
 
-## Try breifly: production environment
+## Phase: production environment
+- Try briefly:
 - test on dev server, prod should work
 	- for figuring out how at least
 - add config/deploy/production.rb
 	- prob wont work...
 - port 3000
-- then port 80
+	- then port 80 can be figured out later
 
-## Deploy whisperedsecrets.us
+## Phase: Deploy whisperedsecrets.us
 - test gem in another project: whisperedsecrets.us
 - figure out route 53
 	- secondary ebs file
@@ -103,8 +104,7 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 		* to port 3000 seamlessly?
 			- probably not
 
-
-## Phase: install nginx, open to 80
+## Phase: open port 80
 
 - nginx setup: https://gorails.com/deploy/ubuntu/14.04
 
