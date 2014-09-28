@@ -125,19 +125,17 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 
 ## Phase: Deploy whisperedsecrets.us
 - update docs for domain setup
+	- rails-aws: domain, domain_branch: default to nil, set after
+	- rake aws:domain_create[ branch ]
+	- rake aws:domain_delete[ branch ]
 
 - test gem in another project: whisperedsecrets.us
 
-- rails-aws settings:
-	- domain: whisperedsecrets.us
-	- domain_branch: master
+- rails-aws settings to generator
 - RailsAWS.domain_enabled
-	- if has_domain && RailsAws.config( :domain_branch ) == RailsAWS.branch
-- RailsAWS.domain
-	- if domain_enabled, use domain, else default
-
 - rake aws:domain_create[ branch ]
 	- raise "Domain is not enabled, must have 'domain' and 'domain_branch' config" unless domain_enabled
+
 	- creates branch_domain
 - lib/rails-aws/route53.json.erb
 	- http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-route53.html

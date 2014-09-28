@@ -6,23 +6,6 @@ module RailsAWS
 
 		source_root File.expand_path("../", __FILE__)
 
-		def aws_keys_config_file
-			RailsAWS::EC2Client.get
-			file = "config/aws-keys.yml"
-			yes = File.file?(file) ? ask("Do you wish to update: #{file} (y)") : 'y'
-			if yes == "y"
-				create_file file do
-					keys = [ :access_key_id, :secret_access_key ]
-					values = Hash.new
-					values[:region] = RailsAWS.region
-					keys.each do |key|
-						values[key] = ask "What is the '#{key}'?" 
-					end
-					values.to_yaml
-				end
-			end
-		end
-
 
 		def rails_aws_settings
 			file = "config/rails-aws.yml"
@@ -50,7 +33,27 @@ module RailsAWS
 					#raise "Unknown repo_url,\nexpecting [user]@[domain]:[project|accout]\nlike git@github.com:smith11235/rails-aws.git".red
 					application = File.basename repo_url, ".*"
 					values[ 'application' ] = application
+					values[ 'domain' ] = nil
+					values[ 'domain_branch' ] = nil
 
+					values.to_yaml
+				end
+			end
+		end
+
+		def aws_keys_config_file
+			RailsAWS::EC2Client.get
+			file = "config/aws-keys.yml"
+			yes = File.file?(file) ? ask("Do you wish to update: #{file} (y)") : 'y'
+			if yes == "y"
+				create_file file do
+					keys = [ :access_key_id, :secret_access_key ]
+					values = Hash.new
+					keys.each do |key|
+						values[key] = ask "What is the '#{key}'?" 
+					end
+					RailsAWS.config_hash( :reset => true )
+					values[:region] = RailsAWS.region
 					values.to_yaml
 				end
 			end

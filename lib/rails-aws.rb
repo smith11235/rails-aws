@@ -66,8 +66,25 @@ module RailsAWS
 		RailsAWS.config( :application )
 	end
 
+	def self.domain_enabled?
+		case false 
+		when RailsAWS.config_hash.has_key? 'domain'
+			false 
+		when RailsAWS.config_hash.has_key? 'domain_branch'
+			false
+		when RailsAWS.config_hash[ 'domain' ] != nil
+			false 
+		when RailsAWS.config_hash['domain_branch'] != nil
+			false
+		when RailsAWS.branch == RailsAWS.config_hash['domain_branch']
+			true
+		else
+			false
+		end
+	end
+
 	def self.domain
-		if RailsAWS.config_hash.has_key? 'domain'
+		if RailsAWS.domain_enabled?
 			return RailsAWS.config( :domain )
 		else
 			return "~^(.+)$"
