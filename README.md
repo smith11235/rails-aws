@@ -88,7 +88,6 @@ This is explained in [Git Deploy Keys](public/get_deploy_keys.md)
 ## Phase: Capistrano
 
 ## Try breifly: production environment
-
 - test on dev server, prod should work
 	- for figuring out how at least
 - add config/deploy/production.rb
@@ -97,8 +96,13 @@ This is explained in [Git Deploy Keys](public/get_deploy_keys.md)
 - then port 80
 
 ## Deploy whisperedsecrets.us
-- figure out route 53
 - test gem in another project: whisperedsecrets.us
+- figure out route 53
+	- secondary ebs file
+	- route53.json
+		* domain name - add to rails-aws.yml
+		* IP from outputs
+
 
 ## Phase: install nginx, open to 80
 
