@@ -97,24 +97,24 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 ### Stack Management
 
 ```
-	# create a stack and start server
+  # create a stack and start server
   rake aws:stack_create[branch_name] aws:cap_deploy[branch_name]
-	# if you have a domain
-	rake aws:domain_create[branch_name]
+  # if you have a domain
+  rake aws:domain_create[branch_name]
 
-	# teardown a server
+  # teardown a server
   rake aws:stack_delete[branch_name]
   # if you have a domain
-	rake aws:domain_delete[branch_name]
+  rake aws:domain_delete[branch_name]
 
-	# status of stacks
+  # status of stacks
   rake aws:status
   rake aws:stack_status[branch_name]
 
-	# logging into hosts as deploy user
+  # logging into hosts as deploy user
   rake aws:stack_login[branch_name]
 
-	# getting your execution information
+  # getting your execution information
   tail log/development.log # or production as appropriate
 ```
 
@@ -131,6 +131,8 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 	* set domain to: example.com
 	* set domain_branch to 'master'
 		* or whatever you want to pair this domain to
+* if you are setting up repeatedly this domain
+	* it can take a couple minutes for the routing to be updated
 
 ## Phase: stack and domain rebuild: whisperedsecrets.us
 - rake aws:stack_create[master] aws:domain_create[master] aws:cap_deploy[master]
