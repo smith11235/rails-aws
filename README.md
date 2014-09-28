@@ -65,7 +65,7 @@ For your git deploy key, you can edit **config/rails-aws.yml** to specify an alt
 
 You also need to manually add the **config/deploy_key/[application]_id_rsa.pub contents to the github repo.
 
-This is explained in [Git Deploy Keys](public/get_deploy_keys.md)
+This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 
 ### Stack Management
 
@@ -85,8 +85,6 @@ This is explained in [Git Deploy Keys](public/get_deploy_keys.md)
   tail log/development.log
 ```
 
-## Phase: Capistrano
-
 ## Try breifly: production environment
 - test on dev server, prod should work
 	- for figuring out how at least
@@ -102,6 +100,8 @@ This is explained in [Git Deploy Keys](public/get_deploy_keys.md)
 	- route53.json
 		* domain name - add to rails-aws.yml
 		* IP from outputs
+		* to port 3000 seamlessly?
+			- probably not
 
 
 ## Phase: install nginx, open to 80
@@ -123,13 +123,6 @@ This is explained in [Git Deploy Keys](public/get_deploy_keys.md)
   
   sudo service nginx start
 ```
-
-- allow production environment deployment
-  - make sure settings are tuned properly
-
-- rake aws:check_setup (rails-aws.yml)
-  - and clean up documentation
-
 
 * visit: http://54.165.219.61/
 
@@ -173,6 +166,12 @@ server {
 }
 ```
 
+## Phase
+- rake aws:check_setup (rails-aws.yml)
+  - and clean up documentation
+
+
+
 
 * then:
 	* ```
@@ -202,18 +201,28 @@ server {
   "rails server","\n",
 ```
 
-## Phase 3
-* partyshuffle git codebase installed
+## Phase: partyshuffle v1
+* partyshuffle git codebase installed, development
 
-## SSL
+## Phase: RDS 
+* snapshot of target database
+  * mysql/postgres as per current db
+  * db from a snapshot: parameter
+* access from rails
 
-```
-server {       
-  listen         80;
-  server_name 54.165.219.61;       
-  rewrite        ^ https://$server_name$request_uri? permanent;
-}
-```
+## Phase: Additional AWS Resources
+* EC2:
+  * resque: 
+  	* resque-worker
+  	* redis
+	* push
+  	* private-pub
+	* app:
+		* both resque + private pub
+  * web: 
+  	* rails server through passenger 
+	* uber: everything on one server
+
 
 ## Dashboard
 * what do i have
@@ -224,72 +233,33 @@ server {
 		* cloudformation, ec2, ebs, rds
 		* tied to a global search?
 
-## Phase 3
-* snapshot of target database
-* create RDBS from snapshot
+## Phase: SSL
 
-## Phase 4
-* Rails setup
+* nginx config
 
-## Phase
-* also push server port?
-* also push redis/resque?
+```
+  server {       
+    listen         80;
+    server_name 54.165.219.61;       
+    rewrite        ^ https://$server_name$request_uri? permanent;
+  }
+```
 
-## Shutdown/startup
-* ttl/cost savings
-
-## Phase 3
-* cloud-init:
-	* rails install
-	* git branch
-	* Gemfile
-
-## Phase 4
-* external access at http://[IP] 
-
+* enforce_https|ssl
 
 ## Phase
 - make a security check on startup?
 	- for rake, generator, rails, capistrano
-## Phase 6
-* subnets
-* vpc
 
-## Phase 7
-* ssl support
 
-## Phase 6
-* app server
-	* redis
-	* resque?
-	* push server
+## TTL lifetime
 
-## AWS Resources
-* Key
-* VPC
-* subnet:
-	* allow 22 on all hosts
-	* key auth only
-	* port 80/443 on web
-	* internal networking open
+To save money, on startup.
+Process to delete in background
 
-* RDS: 
-	* mysql as per current
-	* db from a snapshot: parameter
 
-* EC2:
-	* service: 
-		* resque-worker
-		* private-pub
-	* web: 
-		* rails server through passenger 
 
-## Deployment Process
-* generate a [Key Pair](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-create-keypair.html)
-* take snapshot of current rds
-* run template with correct param values
-* test
-* migrate route 53
+### Phase: VPC 
 
 ### Config Values For Login
 

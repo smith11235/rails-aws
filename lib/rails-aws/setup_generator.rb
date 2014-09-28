@@ -98,6 +98,10 @@ module RailsAWS
 			end
 		end
 
+		def git_deploy_keys_doc
+			copy_file 'git_deploy_keys.md', File.join( Rails.root,'public' )
+		end
+
 	end
 
 end
