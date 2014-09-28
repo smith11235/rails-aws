@@ -82,7 +82,6 @@ namespace :aws do
 	task :cap_deploy, [:branch_name] => :environment do |t,args|
 		branch_name = args[:branch_name]
 		raise "Missing branch name".red if branch_name.nil?
- 		# removed: deploy:start_rails_server
 		%w(deploy:publish_deploy_key deploy deploy:generate_secret).each do |task|
 			cap_cmd( branch_name, task )
 		end
@@ -90,14 +89,6 @@ namespace :aws do
 		website( branch_name )
 	end
 
-	desc "Start Rails"
-	task :cap_start, [:branch_name] => :environment do |t,args|
-		raise "Missing branch name".red if args[:branch_name].nil?
-		branch_name = args[:branch_name]
-
-		cap_cmd( branch_name, 'deploy:start_rails_server' )
-		website( branch_name )
-	end
 
 	desc "Delete a stack from [branch_name]"
 	task :stack_delete, [:branch_name] => :environment do |t,args|
