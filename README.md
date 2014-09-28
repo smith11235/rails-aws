@@ -133,12 +133,12 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 
 ## Phase: prodport 
 - first try:  https://gorails.com/deploy/ubuntu/14.04
-- then try: https://www.phusionpassenger.com/documentation/Users%20guide%20Nginx.html
-	- [PhusionPassenger](phusion_notes.md)
+	- then try: [PhusionPassenger](phusion_notes.md)
 
-- removing deploy:start_rails_server, passenger should handle this...	
-- config/environments/production.rb
-  -	reset config.serve_static_assets = false
+- reset on failure
+	- removing deploy:start_rails_server, passenger should handle this...	
+	- config/environments/production.rb
+  	-	reset config.serve_static_assets = false
 
 
 ```

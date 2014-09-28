@@ -52,8 +52,8 @@ namespace :aws do
 	task :cap_deploy, [:branch_name] => :environment do |t,args|
 		branch_name = args[:branch_name]
 		raise "Missing branch name".red if branch_name.nil?
-
-		%w(deploy:publish_deploy_key deploy deploy:generate_secret deploy:start_rails_server).each do |task|
+ 		# removed: deploy:start_rails_server
+		%w(deploy:publish_deploy_key deploy deploy:generate_secret).each do |task|
 			cap_cmd( branch_name, task )
 		end
 		puts "Capistrano Deployment Successful".green
