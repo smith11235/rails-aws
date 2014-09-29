@@ -63,6 +63,11 @@ namespace :deploy do
 	desc 'Generate Rails Secret'
 	task :generate_secret do
     on roles(:app), in: :sequence, wait: 5 do
+			begin
+				execute "cd #{current_path} && mkdir tmp"
+			resque
+				puts "failed making tmp dir"
+			end
 			execute "source ~/.rvm/scripts/rvm && rvm use 2.1.3 && cd #{current_path} && bundle exec rake secret > tmp/secret"
     end
 	end
