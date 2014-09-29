@@ -5,3 +5,5 @@ instance_type: t2.micro
 region: us-east-1
 ami_id: ami-8afb51e2
 application: rails-aws
+domain: rails-aws.com
+domain_branch: master
