@@ -17,6 +17,7 @@ module RailsAWS
 
 		def initialize( branch_name = RailsAWS.branch, options = {} )
 			@branch_name = branch_name
+			@key_name = KeyPair.key_name
 			@cfm = RailsAWS::CFMClient.get
 			@ec2 = RailsAWS::EC2Client.get
 			@region = RailsAWS.region

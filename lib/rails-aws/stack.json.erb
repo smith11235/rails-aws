@@ -5,7 +5,7 @@
 		"<%= @branch_name + "ec2" %>" : {
       "Type" : "AWS::EC2::Instance",
       "Properties" : {
-				"KeyName" : "<%= @branch_name %>",
+				"KeyName" : "<%= @key_name %>",
 				"InstanceType": "<%= @instance_type %>",
 				"SecurityGroups" : [ { "Ref" : "<%= @branch_name + "sg" %>" } ],
 				"ImageId" : "<%= @ami_id %>",
