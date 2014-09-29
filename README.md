@@ -1,39 +1,53 @@
 # Rails AWS
 
-Tooling and templates for instantiating production and development environments in AWS.
+Tooling and templates for instantiating many consistent Rails environments in AWS.
 
-Allows rapid, uniform, multi branch testing and production deployment with uniform environments.
+Allows rapid, uniform, multi branch testing and production deployment with uniform process and standard tools.
 
-If it is not running on your local machine.
+If it is not running on your local machine, its a production environment.
 
-You should be able to have any branch deployed in a production manner.
+Easily, in minutes.  Focus on the code that matters, that your clients care about.
 
-This is Ruby(2.1.3) and rails on RVM on Ubunto (14.04) with Passenger/Nginx as detailed [here](https://gorails.com/deploy/ubuntu/14.04)
+Manage any number of Rails deployments.
+
+Easily.  On your local development machine. From a thumbdrive even.
+
+## Software
+
+* Ubuntu 14.04
+* Nginx + Passenger
+* RVM
+* Ruby (2.1.3) 
+* Rails
+* Capistrano
+
+* Eventually (as what good site is not hooked up with all the goods):
+	* RDS (mysql/postgres) support
+	* [Private-Pub Push Server](http://railscasts.com/episodes/316-private-pub?view=comments)
+		* ajax/real-time support, but easier
+	* [Reque Job Manager](http://railscasts.com/episodes/271-resque)
 
 ## Usage
 
+### Someday
+
+Create an account at **http://rails-aws.com**
 
 ### Gem or Application
 
-You can either clone the rails-aws project and run the included rails project.
+Add the **rails-aws** gem to your Gemfile.
 
-Or use just the gem within your rails project.
-
-Either way deployment is expected to run from a secure location.
-
-Or your local development machine.
-
-Or from a thumdrive will all your keys safely protected.
+Or clone the project and run the bundled Rails project standalone fashion.
 
 #### Application Setup
 
 The directory name for the clone is based on a **1 rails-aws <=> 1 application to deploy** relationship.
 
-Later this will be 1 to many for easy cloud management from your local machine.
+Later this will be 1 to many for easy cloud management from your local machine or rails-aws.com.
 
 ```
-	# where [your-app-name] is your repohost.com/username/your-app-name
-	# example
+  # where [your-app-name] is your repohost.com/username/your-app-name
+  # example
   ~/ $ git clone git@github.com:smith11235/rails-aws.git rails-aws-[your-app-name]
 ```
 
@@ -49,7 +63,7 @@ Build the rvm/ruby environment.  May require sudo for needed ruby libraries.
 Add to your projects Gemfile:
 
 ```
-	gem 'rails-aws', github: "smith11235/rails-aws"
+  gem 'rails-aws', github: "smith11235/rails-aws"
 ```
 
 ### Run rails-aws Rails Generator
@@ -84,15 +98,15 @@ This is not advised. Other than **domain** settings.
 
 ### Protected Keys
 
+These are all added to your .gitignore.  But they are good to be aware of.
+
 AWS Host Keys are kept by default in config/branch/[branch]/private.key files.
 
-And deploy keys for your repository are in config/deploy_key/[application]_id_rsa(.pub) files.
+Deploy keys for your repository are in config/deploy_key/[application]_id_rsa(.pub) files.
 
-For your git deploy key, you can edit **config/rails-aws.yml** to specify an alternate location.
+For your deploy key, you can edit **config/rails-aws.yml** to specify an alternate location.
 
-You also need to manually add the **config/deploy_key/[application]_id_rsa.pub contents to the github repo.
-
-This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
+Managing deploy keys can be viewed here: [Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 
 ### Stack Management
 
@@ -134,14 +148,9 @@ This is explained in [Git Deploy Keys](lib/rails-aws/get_deploy_keys.md)
 * if you are setting up repeatedly this domain
 	* it can take a couple minutes for the routing to be updated
 
-## Phase: stack and domain rebuild: whisperedsecrets.us
-- rake aws:stack_create[master] aws:domain_create[master] aws:cap_deploy[master]
+## Development Phases
 
-## Phase: Fix stack name and secret
-Stack name needs:
-	- application-branch
-	- Stack name needs special char filtering
-		- hmmm
+### Phase: Fix secret handling
 
 Secret
 * add secret to branch_dir/secret
@@ -150,21 +159,21 @@ Secret
 
 uploaded by cap deploy, reuseable
 
-## Phase: RDS - Blank
+### Phase: RDS - Blank
 * what is PS running
 * new db to start
 * access from rails
 
-## Phase: RDS - Snapshot
+### Phase: RDS - Snapshot
 * db dependency on rails secret?
 * snapshot of target database
 * stand up against snapshot
 
-## Phase: partyshuffle v1
+### Phase: partyshuffle v1
 * partyshuffle git codebase installed
 * view history
 
-## Push server on app server
+### Push server on app server
 
 * rails-aws.yml:
 	* push_server: enabled
@@ -173,7 +182,7 @@ uploaded by cap deploy, reuseable
 * security group port for push
 * cap logic starts it up
 
-## Phase: Additional AWS Resources
+### Phase: Additional AWS Resources
 * EC2:
   * resque: 
   	* resque-worker
@@ -185,16 +194,16 @@ uploaded by cap deploy, reuseable
   * web: 
   	* rails server through passenger 
 
-## Phase: Update Stack
+### Phase: Update Stack
 - task: 
 	- cap_generate_secret: if file doesnt exist
 	- cap_start_rails_server: touch tmp/restart.txt
-## Phase
+### Phase
 - rake aws:check_setup (rails-aws.yml)
   - and clean up documentation
 
 
-## Dashboard
+### Dashboard
 * what do i have
 * details rake task displayed
 * bootstrap
@@ -203,7 +212,7 @@ uploaded by cap deploy, reuseable
 		* cloudformation, ec2, ebs, rds
 		* tied to a global search?
 
-## Phase: SSL
+### Phase: SSL
 
 * setup ssl requirements
 * nginx config
@@ -220,12 +229,12 @@ uploaded by cap deploy, reuseable
 	* config/environments/production.rb: has directive
 	* or add to application controller
 
-## Phase
+### Phase
 - make a security check on startup?
 	- for rake, generator, rails, capistrano
 
 
-## TTL lifetime
+### TTL lifetime
 
 To save money, on startup.
 Process to delete in background

@@ -31,12 +31,12 @@ module RailsAWS
 
 			case @type 
 			when :stack
-				@stack_name = @branch_name
+				@stack_name = clean_stack_name( @application + @branch_name )
 				@stack = @cfm.stacks[ @stack_name ] 
 				@rendered_file = File.join( RailsAWS.branch_dir( @branch_name ), "cloudformation.json" )
 				@template_file = File.expand_path( "../stack.json.erb", __FILE__ )
 			when :domain
-				@stack_name = @branch_name + "domain"
+				@stack_name = clean_stack_name( @application + @branch_name + "domain" )
 				@stack = @cfm.stacks[ @stack_name ] 
 				@rendered_file = File.join( RailsAWS.branch_dir( @branch_name ), "domain.json" )
 				@template_file = File.expand_path( "../route53.json.erb", __FILE__ )
@@ -103,6 +103,10 @@ module RailsAWS
 		end
 
 		private 
+
+		def clean_stack_name( stack_name )
+			stack_name.gsub( /(-|_)/, 'x' )
+		end
 
 		def delete_stack
 			msg = "Stack: #{@stack_name}:#{@stack.status} Deleting...".green
