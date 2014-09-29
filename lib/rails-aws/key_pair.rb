@@ -7,16 +7,17 @@ module RailsAWS
 
 		def initialize( branch_name = RailsAWS.branch )
 			@branch_name = branch_name
+			@key_name = "#{RailsAWS.application}-#{@branch_name}"
 			@ec2 = RailsAWS::EC2Client.get
 		end
 
 		def exists?
-			@ec2.key_pairs[ @branch_name ].exists?
+			@ec2.key_pairs[ @key_name ].exists?
 		end
 
 		def create!
 			if exists?
-				msg = "Key exists: #{@branch_name}".red
+				msg = "Key exists: #{@key_name}".red
 				Rails.logger.fatal msg
 				raise msg
 			end
@@ -27,7 +28,7 @@ module RailsAWS
 				raise msg
 			end
 
-			key_pair = @ec2.key_pairs.create( @branch_name )
+			key_pair = @ec2.key_pairs.create( @key_name )
 
 			File.open( key_pair_file, "wb") do |f|
 				f.write( key_pair.private_key )
@@ -39,17 +40,17 @@ module RailsAWS
 				raise msg
 			end
 
-			Rails.logger.info "Created KeyPair: #{@branch_name} and local file: #{key_pair_file}".green
+			Rails.logger.info "Created KeyPair: #{@key_name} and local file: #{key_pair_file}".green
 		end
 
 		def delete!
 			status = Array.new 
 
 			if exists?
-				@ec2.key_pairs[ @branch_name ].delete
-				status << "Key: #{@branch_name} deleted in AWS".green
+				@ec2.key_pairs[ @key_name ].delete
+				status << "Key: #{@key_name} deleted in AWS".green
 			else
-				status << "Key: #{@branch_name} didnt exist in AWS.".red
+				status << "Key: #{@key_name} didnt exist in AWS.".red
 			end
 
 			if File.file? key_pair_file
