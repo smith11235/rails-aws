@@ -56,6 +56,13 @@ Add to your projects Gemfile:
 
 Execute the supplied generator and provide needed information.
 
+```
+  bundle exec rails g rails_a_w_s:setup
+	-> main thing it will ask for: repo_url 
+	  - example: git@github.com:smith11235/rails-aws.git
+		- clone url for ssh access
+```
+
 This will:
 
 * setup .gitignore
@@ -68,13 +75,6 @@ This will:
 * modifies config/secret.yml to use host/branch specific secrets
 	* setup by deploy time logic
 * sets up a deploy key for pulling your project from your repository
-
-```
-  bundle exec rails g rails_a_w_s:setup
-	-> main thing it will ask for: repo_url 
-	  - example: git@github.com:smith11235/rails-aws.git
-		- clone url for ssh access
-```
 
 #### Tweaking the Config 
 

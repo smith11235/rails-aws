@@ -82,13 +82,20 @@ namespace :aws do
 	task :cap_deploy, [:branch_name] => :environment do |t,args|
 		branch_name = args[:branch_name]
 		raise "Missing branch name".red if branch_name.nil?
-		%w(deploy:publish_deploy_key deploy deploy:generate_secret).each do |task|
+		%w(deploy:publish_deploy_key deploy:generate_secret deploy deploy:restart).each do |task|
 			cap_cmd( branch_name, task )
 		end
 		puts "Capistrano Deployment Successful".green
 		website( branch_name )
 	end
 
+	desc "Cap Deploy This Stack"
+	task :cap_task, [:branch_name,:task] => :environment do |t,args|
+		branch_name = args[:branch_name]
+		raise "Missing branch name".red if branch_name.nil?
+		cap_cmd( branch_name, args[:task] )
+		website( branch_name )
+	end
 
 	desc "Delete a stack from [branch_name]"
 	task :stack_delete, [:branch_name] => :environment do |t,args|

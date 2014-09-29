@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rails-aws (0.0.1)
+    rails-aws (1.0.0)
       aws-sdk
       capistrano
       capistrano-bundler
