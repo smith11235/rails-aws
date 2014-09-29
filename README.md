@@ -106,7 +106,7 @@ Deploy keys for your repository are in config/deploy_key/[application]_id_rsa(.p
 
 For your deploy key, you can edit **config/rails-aws.yml** to specify an alternate location.
 
-Managing deploy keys can be viewed here: [Deploy Keys](lib/rails-aws/get_deploy_keys.md)
+Managing deploy keys can be viewed here: [Deploy Keys](lib/rails-aws/git_deploy_keys.md)
 
 ### Stack Management
 

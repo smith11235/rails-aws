@@ -1,1 +1,254 @@
-<h1>Hello Test World</h1>
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"><link rel="stylesheet" id="theme" href="chrome-extension://febilkbfcbhebfnokafefeacimjdckgl/theme/ClearnessDark.css"></head><body><h1 id="rails-aws">Rails AWS</h1>
+<p>Tooling and templates for instantiating many consistent Rails environments in AWS.</p>
+<p>Allows rapid, uniform, multi branch testing and production deployment with uniform process and standard tools.</p>
+<p>If it is not running on your local machine, its a production environment.</p>
+<p>Easily, in minutes.  Focus on the code that matters, that your clients care about.</p>
+<p>Manage any number of Rails deployments.</p>
+<p>Easily.  On your local development machine. From a thumbdrive even.</p>
+<h2 id="software">Software</h2>
+<ul>
+<li>Ubuntu 14.04</li>
+<li>Nginx + Passenger</li>
+<li>RVM</li>
+<li>Ruby (2.1.3) </li>
+<li>Rails</li>
+<li><p>Capistrano</p>
+</li>
+<li><p>Eventually (as what good site is not hooked up with all the goods):</p>
+<ul>
+<li>RDS (mysql/postgres) support</li>
+<li><a href="http://railscasts.com/episodes/316-private-pub?view=comments">Private-Pub Push Server</a><ul>
+<li>ajax/real-time support, but easier</li>
+</ul>
+</li>
+<li><a href="http://railscasts.com/episodes/271-resque">Reque Job Manager</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<h3 id="someday">Someday</h3>
+<p>Create an account at <strong><a href="http://rails-aws.com">http://rails-aws.com</a></strong></p>
+<h3 id="gem-or-application">Gem or Application</h3>
+<p>Add the <strong>rails-aws</strong> gem to your Gemfile.</p>
+<p>Or clone the project and run the bundled Rails project standalone fashion.</p>
+<h4 id="application-setup">Application Setup</h4>
+<p>The directory name for the clone is based on a <strong>1 rails-aws &lt;=&gt; 1 application to deploy</strong> relationship.</p>
+<p>Later this will be 1 to many for easy cloud management from your local machine or rails-aws.com.</p>
+<pre><code class="ruby">  <span class="comment"># where [your-app-name] is your repohost.com/username/your-app-name</span>
+  <span class="comment"># example</span>
+  ~<span class="regexp">/ $ git clone git@github.com:smith11235/rails</span>-aws.git rails-aws-[your-app-name]
+</code></pre><p>Build the rvm/ruby environment.  May require sudo for needed ruby libraries.</p>
+<pre><code class="nginx">  <span class="title">sh</span> build_ruby_env.sh
+  source load_ruby_env.sh
+</code></pre><h4 id="gem-alone-to-gemfile">Gem Alone: to Gemfile</h4>
+<p>Add to your projects Gemfile:</p>
+<pre><code class="nginx">  <span class="title">gem</span> <span class="string">'rails-aws'</span>, github: <span class="string">"smith11235/rails-aws"</span>
+</code></pre><h3 id="run-rails-aws-rails-generator">Run rails-aws Rails Generator</h3>
+<p>Execute the supplied generator and provide needed information.</p>
+<pre><code class="nginx">  <span class="title">bundle</span> exec rails g rails_a_w_s:setup
+    -&gt; main thing it will ask for: repo_url 
+      - example: git<span class="variable">@github</span>.com:smith11235/rails-aws.git
+        - clone url for ssh access
+</code></pre><p>This will:</p>
+<ul>
+<li>setup .gitignore</li>
+<li>setup aws access key file: config/aws-keys.yml<ul>
+<li>blocked in .gitignore</li>
+</ul>
+</li>
+<li>setup your deployment preferences: config/rails-aws.yml<ul>
+<li>revisioned.  can be edited.</li>
+</ul>
+</li>
+<li>adds capistrano to your project: <ul>
+<li>Capfile, config/deploy.rb, config/deploy/[production|development].rb</li>
+</ul>
+</li>
+<li>modifies config/secret.yml to use host/branch specific secrets<ul>
+<li>setup by deploy time logic</li>
+</ul>
+</li>
+<li>sets up a deploy key for pulling your project from your repository</li>
+</ul>
+<h4 id="tweaking-the-config">Tweaking the Config</h4>
+<p>Default settings can be modified later in <strong>config/rails-aws.yml</strong>.</p>
+<p>This is not advised. Other than <strong>domain</strong> settings.</p>
+<h3 id="protected-keys">Protected Keys</h3>
+<p>These are all added to your .gitignore.  But they are good to be aware of.</p>
+<p>AWS Host Keys are kept by default in config/branch/[branch]/private.key files.</p>
+<p>Deploy keys for your repository are in config/deploy_key/[application]_id_rsa(.pub) files.</p>
+<p>For your deploy key, you can edit <strong>config/rails-aws.yml</strong> to specify an alternate location.</p>
+<p>Managing deploy keys can be viewed here: <a href="git_deploy_keys.md">Deploy Keys</a></p>
+<h3 id="stack-management">Stack Management</h3>
+<pre><code class="sql">  # <span class="operator"><span class="keyword">create</span> a stack <span class="keyword">and</span> <span class="keyword">start</span> server
+  rake aws:stack_create[branch_name] aws:cap_deploy[branch_name]
+  # if you have a <span class="keyword">domain</span>
+  rake aws:domain_create[branch_name]
+
+  # teardown a server
+  rake aws:stack_delete[branch_name]
+  # if you have a <span class="keyword">domain</span>
+  rake aws:domain_delete[branch_name]
+
+  # status <span class="keyword">of</span> stacks
+  rake aws:status
+  rake aws:stack_status[branch_name]
+
+  # logging <span class="keyword">into</span> hosts <span class="keyword">as</span> deploy <span class="keyword">user</span>
+  rake aws:stack_login[branch_name]
+
+  # getting your execution information
+  tail log/development.log # <span class="keyword">or</span> production <span class="keyword">as</span> appropriate
+</span></code></pre><h4 id="have-a-domain-name-ready-">Have a Domain Name Ready?</h4>
+<ul>
+<li><a href="http://stackoverflow.com/questions/17568892/aws-ec2-godaddy-domain-how-to-point">GoDaddy Domain?</a></li>
+<li>create a Route 53 Hosted Zone<ul>
+<li>with name: yourdomain.com</li>
+<li>after creation, view recordsets</li>
+<li>in the NS record are 4 servers in the Value box</li>
+</ul>
+</li>
+<li>point nameservers in your registrarr<ul>
+<li>go to your registrars website</li>
+<li>set the 4 nameservers to your domain</li>
+</ul>
+</li>
+<li>edit your config/rails-aws.yml file<ul>
+<li>set domain to: example.com</li>
+<li>set domain_branch to 'master'<ul>
+<li>or whatever you want to pair this domain to</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>if you are setting up repeatedly this domain<ul>
+<li>it can take a couple minutes for the routing to be updated</li>
+</ul>
+</li>
+</ul>
+<h2 id="development-phases">Development Phases</h2>
+<h3 id="phase-fix-secret-handling">Phase: Fix secret handling</h3>
+<p>Secret</p>
+<ul>
+<li>add secret to branch_dir/secret</li>
+<li>upload with cap</li>
+<li>add to .gitignore</li>
+</ul>
+<p>uploaded by cap deploy, reuseable</p>
+<h3 id="phase-rds-blank">Phase: RDS - Blank</h3>
+<ul>
+<li>what is PS running</li>
+<li>new db to start</li>
+<li>access from rails</li>
+</ul>
+<h3 id="phase-rds-snapshot">Phase: RDS - Snapshot</h3>
+<ul>
+<li>db dependency on rails secret?</li>
+<li>snapshot of target database</li>
+<li>stand up against snapshot</li>
+</ul>
+<h3 id="phase-partyshuffle-v1">Phase: partyshuffle v1</h3>
+<ul>
+<li>partyshuffle git codebase installed</li>
+<li>view history</li>
+</ul>
+<h3 id="push-server-on-app-server">Push server on app server</h3>
+<ul>
+<li>rails-aws.yml:<ul>
+<li>push_server: enabled</li>
+</ul>
+</li>
+<li>expect it to be present in Rails build<ul>
+<li>expect default config?</li>
+</ul>
+</li>
+<li>security group port for push</li>
+<li>cap logic starts it up</li>
+</ul>
+<h3 id="phase-additional-aws-resources">Phase: Additional AWS Resources</h3>
+<ul>
+<li>EC2:<ul>
+<li>resque: <ul>
+<li>resque-worker</li>
+<li>redis<ul>
+<li>push</li>
+</ul>
+</li>
+<li>private-pub<ul>
+<li>app:</li>
+<li>both resque + private pub</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>web: <ul>
+<li>rails server through passenger </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="phase-update-stack">Phase: Update Stack</h3>
+<ul>
+<li>task: <ul>
+<li>cap_generate_secret: if file doesnt exist</li>
+<li>cap_start_rails_server: touch tmp/restart.txt<h3 id="phase">Phase</h3>
+</li>
+</ul>
+</li>
+<li>rake aws:check_setup (rails-aws.yml)<ul>
+<li>and clean up documentation</li>
+</ul>
+</li>
+</ul>
+<h3 id="dashboard">Dashboard</h3>
+<ul>
+<li>what do i have</li>
+<li>details rake task displayed</li>
+<li>bootstrap</li>
+<li>format:<ul>
+<li>each top level section an accordion<ul>
+<li>cloudformation, ec2, ebs, rds</li>
+<li>tied to a global search?</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="phase-ssl">Phase: SSL</h3>
+<ul>
+<li>setup ssl requirements</li>
+<li>nginx config</li>
+</ul>
+<pre><code class="nginx">  <span class="title">server</span> {       
+    <span class="title">listen</span>         <span class="number">80</span>;
+    <span class="title">server_name</span> <span class="number">54.165.219.61</span>;       
+    <span class="title">rewrite</span>       <span class="regexp"> ^</span> <span class="url">https://$server_name$request_uri?</span> <span class="built_in">permanent</span>;
+  }
+</code></pre><ul>
+<li>enforce_https|ssl<ul>
+<li>config/environments/production.rb: has directive</li>
+<li>or add to application controller</li>
+</ul>
+</li>
+</ul>
+<h3 id="phase">Phase</h3>
+<ul>
+<li>make a security check on startup?<ul>
+<li>for rake, generator, rails, capistrano</li>
+</ul>
+</li>
+</ul>
+<h3 id="ttl-lifetime">TTL lifetime</h3>
+<p>To save money, on startup.
+Process to delete in background</p>
+<h3 id="phase-vpc">Phase: VPC</h3>
+<h3 id="config-values-for-login">Config Values For Login</h3>
+<p>File: <strong>/etc/ssh/sshd_config</strong></p>
+<pre><code class="nginx">  <span class="title">PermitRootLogin</span> <span class="built_in">no</span>      
+  UsePAM <span class="built_in">no</span>      
+  RSAAuthentication <span class="built_in">yes</span> <span class="comment"># default      </span>
+  PubkeyAuthentication <span class="built_in">yes</span>       <span class="comment"># default</span>
+  ChallengeResponseAuthentication <span class="built_in">no</span>  <span class="comment"># default</span>
+  PasswordAuthentication <span class="built_in">no</span>  <span class="comment"># default</span>
+</code></pre></body></html>
