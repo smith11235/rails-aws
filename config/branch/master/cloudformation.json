@@ -46,7 +46,44 @@
 					 "echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Default Ruby VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
 			     "sudo -i -u $new_user sh -c \"bash -c 'source ~/.rvm/scripts/rvm && rvm use 2.1.3 --default'\"", "\n",
 
+    "gpg --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7", "\n",
+    "gpg --armor --export 561F9B9CAC40B2F7 | sudo apt-key add -", "\n",
+    "", "\n",
+    "apt-get install apt-transport-https -y", "\n",
+    "", "\n",
+    "echo 'deb https://oss-binaries.phusionpassenger.com/apt/passenger trusty main' >> /etc/apt/sources.list.d/passenger.list", "\n",
+    "chown root: /etc/apt/sources.list.d/passenger.list", "\n",
+    "chmod 600 /etc/apt/sources.list.d/passenger.list", "\n",
+    "", "\n",
+    "apt-get update -y", "\n",
+    "apt-get install nginx-full passenger -y", "\n",
+    "", "\n",
+    "service nginx start ", "\n",
 
+    "grep passenger_root /etc/nginx/nginx.conf", "\n",
+    "grep passenger_ruby /etc/nginx/nginx.conf", "\n",
+    "sed -i 's_passenger\\_ruby.*;_passenger\\_ruby /home/deploy/.rvm/rubies/ruby-2.1.3/bin/ruby;_' /etc/nginx/nginx.conf", "\n",
+    "grep passenger_ruby /etc/nginx/nginx.conf", "\n",
+    "service nginx restart ", "\n",
+
+		"export nginx_default=/etc/nginx/sites-enabled/default", "\n",
+
+    "echo 'server {' > $nginx_default", "\n",
+    "echo '        listen 80 default_server;' >> $nginx_default", "\n",
+    "echo '        listen [::]:80 default_server ipv6only=on; ' >> $nginx_default", "\n",
+		"echo '        server_name rails-aws.com;' >> $nginx_default", "\n",
+    "echo '        passenger_enabled on;' >> $nginx_default", "\n",
+    "echo '        rails_env    production;' >> $nginx_default", "\n",
+    "echo '        root         /home/deploy/rails-aws/current/public;' >> $nginx_default", "\n",
+    "echo '        # redirect server error pages to the static page /50x.html' >> $nginx_default", "\n",
+    "echo '        error_page   500 502 503 504  /50x.html;' >> $nginx_default", "\n",
+    "echo '        location = /50x.html {' >> $nginx_default", "\n",
+    "echo '            root   html;' >> $nginx_default", "\n",
+    "echo '        }' >> $nginx_default", "\n",
+    "echo '}' >> $nginx_default", "\n",
+
+		"service nginx restart", "\n",
+					
             "curl -X PUT -H 'Content-Type:' --data-binary '{\"Status\" : \"SUCCESS\",",
                                                            "\"Reason\" : \"The application myapp is ready\",",
                                                            "\"UniqueId\" : \"myapp\",",
@@ -55,11 +92,15 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "rails-aws"
+						"Value": "rails-aws-master-production"
 					},
 					{
 						"Key": "branch_name",
 						"Value": "master"
+					},
+					{
+						"Key": "environment",
+						"Value": "production"
 					},
 					{
 						"Key": "deployer",
@@ -98,11 +139,15 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": ""
+						"Value": "rails-aws-master-production"
 					},
 					{
 						"Key": "branch_name",
 						"Value": "master"
+					},
+					{
+						"Key": "environment",
+						"Value": "production"
 					},
 					{
 						"Key": "deployer",
@@ -132,13 +177,9 @@
       "Description" : "The IP for the newly created server",
 			"Value" : { "Fn::GetAtt" : [ "masterec2", "PublicIp" ] } 
 		},
-    "Login" : {
-      "Description" : "The ssh command for the newly created server",
-			"Value" : { "Fn::Join" : ["", [ "ssh -i config/keys/master.private_key deploy@", { "Fn::GetAtt" : [ "masterec2", "PublicIp" ] } ]]}
-    },
     "WebsiteURL" : {
       "Description" : "The URL for the newly created Rails application",
-			"Value" : { "Fn::Join" : ["", [ "http://", { "Fn::GetAtt" : [ "masterec2", "PublicIp" ] }, ":3000" ]]}
+			"Value" : { "Fn::Join" : ["", [ "http://", { "Fn::GetAtt" : [ "masterec2", "PublicIp" ] } ]]}
     }
   }
 }
