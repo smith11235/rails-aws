@@ -5,7 +5,7 @@
 		"masterec2" : {
       "Type" : "AWS::EC2::Instance",
       "Properties" : {
-				"KeyName" : "master",
+				"KeyName" : "rails-aws-master",
 				"InstanceType": "t2.micro",
 				"SecurityGroups" : [ { "Ref" : "mastersg" } ],
 				"ImageId" : "ami-8afb51e2",
