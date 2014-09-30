@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rails-aws (1.1.0)
+    rails-aws (1.1.2)
       aws-sdk
       capistrano
       capistrano-bundler
@@ -96,6 +96,7 @@ GEM
     mini_portile (0.6.0)
     minitest (5.4.1)
     multi_json (1.10.1)
+    mysql2 (0.3.16)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (2.9.1)
@@ -173,6 +174,7 @@ DEPENDENCIES
   coffee-rails (~> 4.0.0)
   jbuilder (~> 2.0)
   jquery-rails
+  mysql2
   pry
   rails (= 4.1.6)
   rails-aws!
