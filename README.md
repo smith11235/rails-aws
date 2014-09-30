@@ -153,11 +153,12 @@ Managing deploy keys can be viewed here: [Deploy Keys](lib/rails-aws/git_deploy_
 ### Phase: Fix secret handling
 
 Secret
-* add secret to branch_dir/secret
+* generate secret locally
+	* save to RailsAWS.branch_secret_file
 * upload with cap
+	* RailsAWS.branch_secret_file
+	* 
 * add to .gitignore
-
-uploaded by cap deploy, reuseable
 
 ### Phase: RDS - Blank
 * what is PS running
