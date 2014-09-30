@@ -134,11 +134,31 @@ Managing deploy keys can be viewed here: [Deploy Keys](lib/rails-aws/git_deploy_
 
 ### Phase: Fix secret handling
 	* run build to test
+	* r aws:stack_login[secret]
+		* cat rails-aws/current/tmp/secret
+	* r aws:stack_delete[secret]
 
 ### Phase: RDS - Blank
 * what is PS running
 * new db to start
-* access from rails
+* access from rails (in whispered secrets, have, relationships)
+
+* whisperedsecrets
+	* gem 'haml-rails' and setup
+	* gem 'boostrap-sass', '~> 3.1.0' and setup
+	* gem 'devise' and setup: http://railscasts.com/episodes/209-introducing-devise
+	* gem 'rolify' and setup: https://github.com/RolifyCommunity/rolify
+		* rails g rolify Role User
+		* rake db:migrate
+
+	* add bootstrap first
+	* remove development phases from public/index
+	* rails g scaffold relationship display_name so1 so2 password
+	* mv public/index.html app/views/relationships/index.html.erb
+		* so1, so2: has_one :so1, :class =
+	* root 'relationships#index'
+	* rails g scaffold missive missive so 
+
 
 ### Phase: RDS - Snapshot
 * db dependency on rails secret?

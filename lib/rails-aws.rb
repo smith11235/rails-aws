@@ -25,7 +25,7 @@ module RailsAWS
 	end
 
 	def self.branch_secret
-		File.join( RailsAWS.branch_dir, 'secret' )
+		File.join( RailsAWS.branch_dir( RailsAWS.branch ), 'secret' )
 	end
 
 	def self.config_hash( options = {} )
