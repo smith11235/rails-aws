@@ -7,8 +7,8 @@
 default: &default
   adapter: mysql2
   encoding: utf8
-  database: <%= ENV["dbname"] %>
-  username: <%= ENV["dbusername"] %> 
+  database: rails
+  username: rails
   password: <%= ENV["dbpassword"] %> 
   host: <%= ENV["dbhost"] %>
   port: 3306

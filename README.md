@@ -191,23 +191,27 @@ development:
 			end
 		```
 	* cloudformation create stack
-		* rds mini config
-		* of RailsAWS.rds_type
-		* user/password, saved in local files.  delivered as env vars?
-		*  
-
-* access from rails (in whispered secrets, have, relationships)
-
-* whisperedsecrets: ordered setup
-	* gem 'haml-rails' and setup
-	* gem 'boostrap-sass', '~> 3.1.0' and setup
-	* gem 'devise' and setup: http://railscasts.com/episodes/209-introducing-devise
-	* remove development phases from public/index
-	* mv public/index.html app/views/relationships/index.html.erb
-		* has_one :so, :class_name => "User", :foreign_key => " :so2: has_one :so1, :class =
-	* root 'relationships#index'
-	* rails g scaffold missive missive so 
-
+		* if RailsAWS.db_type != :sqlite
+			* rds mini config
+			* output: DBIP
+		* rake aws:cap_deploy
+			* if RailsAWS.db_type != :sqlite
+			* call RailsAWS.set_dbpassword
+				* require 'securerandom'
+				* random_string = SecureRandom.hex
+				* File.open( RailsAWS.dbpassword_file, 'w' ) {|f| f.puts random_string }
+			* RailsAWS.dbpassword_file
+				* RailsAWS.branch_dir, 'dbpassword'
+			* RailsAWS.dbpassword
+				* File.open( RailsAWS.dbpassword_file, 'r' ).read.chomp
+			* cap command: 
+				* if db_type != :sqlite
+					* dbip=RailsAWS::Cloudformation.outputs["DBIP"]
+					* dbpassword=RailsAWS.dbpassword
+  		* cap deploy:publish_db_settings (before deploy)
+  			* execute "echo 'export dbhost=' >> ~/.bashrc"
+  			* execute "echo \"export dbhost='#{RailsAWS.dbpassword}'\" >> ~/.bashrc"
+	* access from rails 
 
 ### Phase: RDS - Snapshot
 * db dependency on rails secret?
@@ -238,6 +242,10 @@ development:
 		* both resque + private pub
   * web: 
   	* rails server through passenger 
+
+### Phase: dbpassword_file in gitignore
+* add to generator
+* temporarily its behind ssh access and security group
 
 ### Phase: Update Stack
 - task: 
