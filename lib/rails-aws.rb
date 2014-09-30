@@ -17,11 +17,15 @@ module RailsAWS
 		@@branch
 	end
 
-	def self.branch_dir( branch )
+	def self.branch_dir( branch = nil )
 		RailsAWS.branch( branch )
 		branch_dir = File.join( Rails.root, 'config/branch', branch )
   	FileUtils.mkdir_p branch_dir unless File.directory?( branch_dir )
 		branch_dir
+	end
+
+	def self.branch_secret
+		File.join( RailsAWS.branch_dir, 'secret' )
 	end
 
 	def self.config_hash( options = {} )

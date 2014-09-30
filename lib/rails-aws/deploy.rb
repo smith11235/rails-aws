@@ -1,7 +1,7 @@
 # config valid only for Capistrano 3.1
 lock '3.2.1'
 
-%w( application repo_url branch deploy_key rails_env ).each do |setting|
+%w( application repo_url branch branch_secret deploy_key rails_env ).each do |setting|
 	setting_value = ENV[setting]
 	raise "Missing setting: #{setting}" if setting_value.nil?
 	puts "Setting: #{setting}, Value: #{setting_value}"
@@ -60,22 +60,11 @@ namespace :deploy do
     end
 	end
 
-	desc 'Generate Rails Secret'
-	task :generate_secret do
+	desc 'Publish Rails Secret, branch specific'
+	task :publish_secret do
     on roles(:app), in: :sequence, wait: 5 do
-			begin
-				execute "cd #{current_path} && mkdir tmp"
-			resque
-				puts "failed making tmp dir"
-			end
-			execute "source ~/.rvm/scripts/rvm && rvm use 2.1.3 && cd #{current_path} && bundle exec rake secret > tmp/secret"
-    end
-	end
-
-	desc 'Start Rails Server'
-	task :start_rails_server do
-    on roles(:app), in: :sequence, wait: 5 do
-			execute "source ~/.rvm/scripts/rvm && rvm use 2.1.3 && cd #{current_path} && ( nohup bundle exec rails server -e #{fetch(:rails_env)} -p 3000 > log/rails_server.log &) && sleep 3 && echo 'Rails Server Started' && ps x", :pty => true
+			execute( "cd #{current_path} && mkdir tmp" ) rescue nil
+      upload! fetch( :branch_secret ), File.join( current_path, 'tmp/secret' ) 
     end
 	end
 

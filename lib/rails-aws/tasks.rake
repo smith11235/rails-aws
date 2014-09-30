@@ -55,6 +55,7 @@ namespace :aws do
 	def cap_cmd( branch_name, task )
 		cmd_prefix = "cap"
 		cmd_prefix << " branch=#{branch_name}"
+		cmd_prefix << " branch_secret=#{RailsAWS.branch_secret}"
 		cmd_prefix << " ipaddress=#{RailsAWS::Cloudformation.outputs(branch_name).fetch("IP")}"
 		cmd_prefix << " key_file=#{RailsAWS::KeyPair.file( branch_name )}"
 
@@ -82,7 +83,15 @@ namespace :aws do
 	task :cap_deploy, [:branch_name] => :environment do |t,args|
 		branch_name = args[:branch_name]
 		raise "Missing branch name".red if branch_name.nil?
-		%w(deploy:publish_deploy_key deploy deploy:generate_secret deploy:restart).each do |task|
+		RailsAWS.branch( branch_name )
+
+		branch_secret = RailsAWS.branch_secret
+
+		cmd = "rake secret > #{branch_secret}"
+		raise "Unable to generate secret to: #{branch_secret}" unless system( cmd )
+		raise "Missing secret file: #{branch_secret}" unless File.file? branch_secret
+		
+		%w(deploy:publish_deploy_key deploy deploy:publish_secret deploy:restart).each do |task|
 			cap_cmd( branch_name, task )
 		end
 		puts "Capistrano Deployment Successful".green

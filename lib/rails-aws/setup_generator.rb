@@ -96,9 +96,10 @@ module RailsAWS
 		def gitignore
 			ignore_file = File.join Rails.root, '.gitignore'
 			%w(
-      /config/aws-keys.yml
-      /config/branch/*/private.key
-      /config/deploy_key
+      	/config/aws-keys.yml
+      	/config/branch/*/private.key
+      	/config/branch/*/secret
+      	/config/deploy_key
 			).each do |ignore|
 				system( "echo #{ignore} >> #{ignore_file}" )
 			end

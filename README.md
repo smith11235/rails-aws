@@ -37,26 +37,8 @@ Create an account at **http://rails-aws.com**
 
 Add the **rails-aws** gem to your Gemfile.
 
-Or clone the project and run the bundled Rails project standalone fashion.
+Run the migration.
 
-#### Application Setup
-
-The directory name for the clone is based on a **1 rails-aws <=> 1 application to deploy** relationship.
-
-Later this will be 1 to many for easy cloud management from your local machine or rails-aws.com.
-
-```
-  # where [your-app-name] is your repohost.com/username/your-app-name
-  # example
-  ~/ $ git clone git@github.com:smith11235/rails-aws.git rails-aws-[your-app-name]
-```
-
-Build the rvm/ruby environment.  May require sudo for needed ruby libraries.
-
-```
-  sh build_ruby_env.sh
-  source load_ruby_env.sh
-```
 
 #### Gem Alone: to Gemfile
 
@@ -151,14 +133,7 @@ Managing deploy keys can be viewed here: [Deploy Keys](lib/rails-aws/git_deploy_
 ## Development Phases
 
 ### Phase: Fix secret handling
-
-Secret
-* generate secret locally
-	* save to RailsAWS.branch_secret_file
-* upload with cap
-	* RailsAWS.branch_secret_file
-	* 
-* add to .gitignore
+	* run build to test
 
 ### Phase: RDS - Blank
 * what is PS running
@@ -243,6 +218,25 @@ Process to delete in background
 
 
 ### Phase: VPC 
+
+## Application Setup (Not as recommended)
+
+The directory name for the clone is based on a **1 rails-aws <=> 1 application to deploy** relationship.
+
+Later this will be 1 to many for easy cloud management from your local machine or rails-aws.com.
+
+```
+  # where [your-app-name] is your repohost.com/username/your-app-name
+  # example
+  ~/ $ git clone git@github.com:smith11235/rails-aws.git rails-aws-[your-app-name]
+```
+
+Build the rvm/ruby environment.  May require sudo for needed ruby libraries.
+
+```
+  sh build_ruby_env.sh
+  source load_ruby_env.sh
+```
 
 ### Config Values For Login
 
