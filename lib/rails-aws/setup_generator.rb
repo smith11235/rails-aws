@@ -27,7 +27,7 @@ module RailsAWS
 					%w(repo_url).each do |key|
 						values[ key ] = ask "What is the '#{key}'?"
 					end
-					values[ 'environment' ] = "development"
+					values[ 'environment' ] = "production"
 					values[ 'instance_type' ] = "t2.micro"
 					values[ 'region' ] = 'us-east-1'
 					values[ 'ami_id' ] = "ami-8afb51e2"
