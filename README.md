@@ -193,8 +193,12 @@ development:
 	* cloudformation create stack
 		* if RailsAWS.db_type != :sqlite
 			* rds mini config
-				* ip/security restrict host to ec2 by logical id?
-			* output: DBIP
+				* publicaccessible: false
+				* DbSecurityGroup:
+					* set to ec2-security-group-name
+					* allso need account-id (rails-aws.yml setting?)
+						* fetchable from api?
+			* output: DBIP (or url)
 		* rake aws:cap_deploy
 			* if RailsAWS.db_type != :sqlite
 			* call RailsAWS.set_dbpassword
