@@ -193,6 +193,7 @@ development:
 	* cloudformation create stack
 		* if RailsAWS.db_type != :sqlite
 			* rds mini config
+				* ip/security restrict host to ec2 by logical id?
 			* output: DBIP
 		* rake aws:cap_deploy
 			* if RailsAWS.db_type != :sqlite
