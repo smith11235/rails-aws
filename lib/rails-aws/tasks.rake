@@ -102,6 +102,7 @@ namespace :aws do
 	task :cap_task, [:branch_name,:task] => :environment do |t,args|
 		branch_name = args[:branch_name]
 		raise "Missing branch name".red if branch_name.nil?
+		RailsAWS.branch( branch_name )
 		cap_cmd( branch_name, args[:task] )
 		website( branch_name )
 	end

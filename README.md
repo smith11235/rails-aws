@@ -143,19 +143,13 @@ Managing deploy keys can be viewed here: [Deploy Keys](lib/rails-aws/git_deploy_
 * new db to start
 * access from rails (in whispered secrets, have, relationships)
 
-* whisperedsecrets
+* whisperedsecrets: ordered setup
 	* gem 'haml-rails' and setup
 	* gem 'boostrap-sass', '~> 3.1.0' and setup
 	* gem 'devise' and setup: http://railscasts.com/episodes/209-introducing-devise
-	* gem 'rolify' and setup: https://github.com/RolifyCommunity/rolify
-		* rails g rolify Role User
-		* rake db:migrate
-
-	* add bootstrap first
 	* remove development phases from public/index
-	* rails g scaffold relationship display_name so1 so2 password
 	* mv public/index.html app/views/relationships/index.html.erb
-		* so1, so2: has_one :so1, :class =
+		* has_one :so, :class_name => "User", :foreign_key => " :so2: has_one :so1, :class =
 	* root 'relationships#index'
 	* rails g scaffold missive missive so 
 
