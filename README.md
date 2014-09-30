@@ -130,17 +130,72 @@ Managing deploy keys can be viewed here: [Deploy Keys](lib/rails-aws/git_deploy_
 * if you are setting up repeatedly this domain
 	* it can take a couple minutes for the routing to be updated
 
+## DB Support
+
+You can use sqlite on your web server.
+
+Or you can use mysql.  
+
+Simply add the 'mysql2' gem.
+
+Then configure your **config/database.yml**
+
+Example below.
+
+```
+default: &default
+  adapter: mysql2
+  encoding: utf8
+  database: <%= ENV["dbname"] %>
+  username: <%= ENV["dbusername"] %> 
+  password: <%= ENV["dbpassword"] %> 
+  host: <%= ENV["dbhost"] %>
+  port: 3306
+  adapter: sqlite3
+  pool: 5
+  timeout: 5000
+
+test:
+  <<: *default
+
+production:
+	<<: *default
+
+development:
+  adapter: sqlite3
+  pool: 5
+  timeout: 5000
+  database: db/development.sqlite3
+```
+
+**Suggestion** Deploy production test environments, but keep 'development' for executing local migrations.
+
 ## Development Phases
 
-### Phase: Fix secret handling
-	* run build to test
-	* r aws:stack_login[secret]
-		* cat rails-aws/current/tmp/secret
-	* r aws:stack_delete[secret]
-
 ### Phase: RDS - Blank
-* what is PS running
-* new db to start
+
+		```
+			# in rails-aws.rb
+			def self.db_type
+				@db_type ||= ActiveRecord::Base.connection.adapter_name.downcase
+				case db_type
+				when /^mysql/
+					:mysql
+				when /^sqlite/
+					:sqlite
+				when :postgresql
+					raise "Not Yet supported db type: postgresql"
+				else
+					raise "Unsupported db type: #{db_type}"
+				end
+			end
+		```
+	* cloudformation create stack
+		* rds mini config
+		* of RailsAWS.rds_type
+		* user/password, saved in local files.  delivered as env vars?
+		*  
+
 * access from rails (in whispered secrets, have, relationships)
 
 * whisperedsecrets: ordered setup

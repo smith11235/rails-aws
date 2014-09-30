@@ -111,24 +111,24 @@ namespace :aws do
 	task :stack_delete, [:branch_name] => :environment do |t,args|
 		raise "Missing branch name".red if args[:branch_name].nil?
 		branch_name = args[:branch_name]
-
+		RailsAWS.branch( branch_name ) 
 		failed = false
 		begin
-			cloudformation = RailsAWS::Cloudformation.new( branch_name )
+			cloudformation = RailsAWS::Cloudformation.new( )
 			cloudformation.delete!
-		rescue 
+		rescue => exception
 			failed = true
-			msg = "Failed to delete cloudformation, moving on...".red
+			msg = "#{exception.inspect}\n#{exception.message.red}\nFailed to delete cloudformation, #{'moving on...'.yellow}"
 			puts msg
 			Rails.logger.info( msg )
 		end
 
 		begin
-			key_pair = RailsAWS::KeyPair.new( branch_name )
+			key_pair = RailsAWS::KeyPair.new( )
 			key_pair.delete!
-		rescue 
+		rescue => exception
 			failed = true
-			msg = "Failed to delete key_pair, moving on...".red
+			msg = "#{exception.inspect}\n#{exception.message.red}\nFailed to delete cloudformation, #{'moving on...'.yellow}"
 			puts msg
 			Rails.logger.info( msg )
 		end
@@ -151,7 +151,7 @@ namespace :aws do
 			key_pair.name
 		end
 
-		status[ :local_keys ] = Dir.glob( File.join( Rails.root, 'config/keys/*' ) )
+		status[ :local_keys ] = Dir.glob( File.join( Rails.root, 'config/branch/*/private.key' ) )
 
 		status[ :cloudformation ] = Hash.new
 		RailsAWS::CFMClient.get.stacks.each do |stack|
