@@ -20,7 +20,7 @@ test:
   <<: *default
 
 production:
-	<<: *default
+  <<: *default
 
 development:
   adapter: sqlite3
