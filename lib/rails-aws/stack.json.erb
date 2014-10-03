@@ -161,6 +161,9 @@
 				]
       }
     },
+		<% if RailsAWS.db_type != :sqlite %>
+				<% raise "unsupported type" %>
+		<% end %>
     "WaitForInstanceWaitHandle" : {
       "Type" : "AWS::CloudFormation::WaitConditionHandle",
       "Properties" : {

@@ -1,6 +1,7 @@
 ---
 repo_url: git@github.com:smith11235/rails-aws.git
 environment: production
+db_type: sqlite
 instance_type: t2.micro
 region: us-east-1
 ami_id: ami-8afb51e2

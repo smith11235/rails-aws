@@ -28,6 +28,8 @@ module RailsAWS
 						values[ key ] = ask "What is the '#{key}'?"
 					end
 					values[ 'environment' ] = "production"
+					values[ 'db_type' ] = "sqlite"
+
 					values[ 'instance_type' ] = "t2.micro"
 					values[ 'region' ] = 'us-east-1'
 					values[ 'ami_id' ] = "ami-8afb51e2"

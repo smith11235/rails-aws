@@ -41,6 +41,22 @@ module RailsAWS
 		@@config.fetch( key.to_s )
 	end
 
+	# in rails-aws.rb
+	def self.db_type
+		db_type = RailsAWS.config( 'db_type' )
+		case db_type
+		when /^mysql/
+			:mysql
+		when /^sqlite/
+			:sqlite
+		when /^postgresql/
+			raise "Not Yet supported db type: postgresql"
+		else
+			raise "Unsupported db type: #{db_type}"
+		end
+		db_type
+	end
+
 	def self.ami_id
 		# from: http://cloud-images.ubuntu.com/locator/ec2/
 		RailsAWS.config( :ami_id )

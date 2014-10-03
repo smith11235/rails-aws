@@ -1,16 +1,18 @@
 # Rails AWS
 
-Tooling and templates for instantiating many consistent Rails environments in AWS.
+[Source on Github](https://github.com/smith11235/rails-aws)
 
-Allows rapid, uniform, multi branch testing and production deployment with uniform process and standard tools.
+Rails-Rake tasks for instantiating consistent Rails environments in AWS.
 
-If it is not running on your local machine, its a production environment.
+And having as many branches as you need.  For as low cost as possible.
 
-Easily, in minutes.  Focus on the code that matters, that your clients care about.
+Incorporating db, push-server, and worker server integration.
 
-Manage any number of Rails deployments.
+Allows rapid, uniform, multi branch testing in strict-production environments with uniform process.
 
-Easily.  On your local development machine. From a thumbdrive even.
+Assign domains to your master or your release branches automatically..
+
+Run it from your computer, a server, or a thumbdrive.
 
 ## Software
 
@@ -33,33 +35,29 @@ Easily.  On your local development machine. From a thumbdrive even.
 
 Create an account at **http://rails-aws.com**
 
-### Gem or Application
+### Gem 
 
-Add the **rails-aws** gem to your Gemfile.
-
-Run the migration.
-
-
-#### Gem Alone: to Gemfile
-
-Add to your projects Gemfile:
+**./Gemfile**
 
 ```
   gem 'rails-aws', github: "smith11235/rails-aws"
 ```
 
-### Run rails-aws Rails Generator
+### Rails Generator
 
 Execute the supplied generator and provide needed information.
 
 ```
   bundle exec rails g rails_a_w_s:setup
-	-> main thing it will ask for: repo_url 
-	  - example: git@github.com:smith11235/rails-aws.git
-		- clone url for ssh access
+  # main thing it will ask for: 
+  > repo_url 
+    - example: git@github.com:smith11235/rails-aws.git
+    - clone url for ssh access
+	> aws_access_key
+	> aws_secret_key
 ```
 
-This will:
+#### What is the generator doing?
 
 * setup .gitignore
 * setup aws access key file: config/aws-keys.yml
@@ -72,11 +70,19 @@ This will:
 	* setup by deploy time logic
 * sets up a deploy key for pulling your project from your repository
 
-#### Tweaking the Config 
+#### config/rails-aws.yml 
 
 Default settings can be modified later in **config/rails-aws.yml**.
 
-This is not advised. Other than **domain** settings.
+Environment can be set to **development** or **production**(default).
+
+And if you have a domain you want to use:
+
+* **domain**: your base url, for which you have a hosted zone setup for.
+
+* **domain_branch**: the branch that will get the domain url.  
+  * other branches are presumed development environments
+	* this can be 'master' or a release branch name
 
 ### Protected Keys
 
@@ -93,13 +99,16 @@ Managing deploy keys can be viewed here: [Deploy Keys](lib/rails-aws/git_deploy_
 ### Stack Management
 
 ```
-  # create a stack and start server
-  rake aws:stack_create[branch_name] aws:cap_deploy[branch_name]
-  # if you have a domain
+  # create a stack and start servers
+  rake aws:stack_create[branch_name] 
+	rake aws:cap_deploy[branch_name]
+
+  # if you have a domain you want assigned
   rake aws:domain_create[branch_name]
 
-  # teardown a server
+  # teardown an environment - save money on testing, always teardown
   rake aws:stack_delete[branch_name]
+
   # if you have a domain
   rake aws:domain_delete[branch_name]
 
@@ -112,6 +121,9 @@ Managing deploy keys can be viewed here: [Deploy Keys](lib/rails-aws/git_deploy_
 
   # getting your execution information
   tail log/development.log # or production as appropriate
+
+  # updating your production stack with capistrano
+	rake aws:cap_update[branch_name]
 ```
 
 #### Have a Domain Name Ready?
@@ -123,12 +135,16 @@ Managing deploy keys can be viewed here: [Deploy Keys](lib/rails-aws/git_deploy_
 * point nameservers in your registrarr
 	* go to your registrars website
 	* set the 4 nameservers to your domain
+* create a HostedZone for your domain
+  * go to the aws console for route 53
+	* create a hosted zone
+	* enter your base domain: example.com
 * edit your config/rails-aws.yml file
-	* set domain to: example.com
+	* set domain to your hosted zone name: example.com
 	* set domain_branch to 'master'
 		* or whatever you want to pair this domain to
-* if you are setting up repeatedly this domain
-	* it can take a couple minutes for the routing to be updated
+* when deploying a domain, updates can take minutes to be reflected in the browser 
+	* rake aws:cap_update instead of tearing down master
 
 ## DB Support
 
@@ -161,7 +177,7 @@ test:
 production:
 	<<: *default
 
-development:
+development:  # for your local machine
   adapter: sqlite3
   pool: 5
   timeout: 5000
@@ -174,24 +190,15 @@ development:
 
 ### Phase: RDS - Blank
 
-		```
-			# in rails-aws.rb
-			def self.db_type
-				@db_type ||= ActiveRecord::Base.connection.adapter_name.downcase
-				case db_type
-				when /^mysql/
-					:mysql
-				when /^sqlite/
-					:sqlite
-				when :postgresql
-					raise "Not Yet supported db type: postgresql"
-				else
-					raise "Unsupported db type: #{db_type}"
-				end
-			end
-		```
 	* cloudformation create stack
 		* if RailsAWS.db_type != :sqlite
+
+	* setup generator
+		* select db type for deployment
+		* manage database.yml?
+
+	* cloudformation
+		* if mysql
 			* rds mini config
 				* publicaccessible: false
 				* DbSecurityGroup:
@@ -199,6 +206,7 @@ development:
 					* allso need account-id (rails-aws.yml setting?)
 						* fetchable from api?
 			* output: DBIP (or url)
+
 		* rake aws:cap_deploy
 			* if RailsAWS.db_type != :sqlite
 			* call RailsAWS.set_dbpassword
@@ -209,11 +217,11 @@ development:
 				* RailsAWS.branch_dir, 'dbpassword'
 			* RailsAWS.dbpassword
 				* File.open( RailsAWS.dbpassword_file, 'r' ).read.chomp
-			* cap command: 
+			* rake cap_cmd: 
 				* if db_type != :sqlite
 					* dbip=RailsAWS::Cloudformation.outputs["DBIP"]
 					* dbpassword=RailsAWS.dbpassword
-  		* cap deploy:publish_db_settings (before deploy)
+  		* cap cap_deploy:publish_db_settings (before deploy)
   			* execute "echo 'export dbhost=' >> ~/.bashrc"
   			* execute "echo \"export dbhost='#{RailsAWS.dbpassword}'\" >> ~/.bashrc"
 	* access from rails 
