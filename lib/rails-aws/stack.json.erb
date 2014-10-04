@@ -175,8 +175,8 @@
           "GroupDescription" : "Enable access to db from ec2 instances",
           "DBSecurityGroupIngress" : [
 						{ 
-							"EC2SecurityGroupOwnerId" : "<%= RailsAWS.account_id %>",
-							"EC2SecurityGroupId" : { "Ref": "<%= @branch_name + "sg" %>" }
+							"EC2SecurityGroupName" : { "Ref": "<%= @branch_name + "sg" %>" },
+							"EC2SecurityGroupOwnerId" : "<%= RailsAWS.account_id %>"
 						}
           ],
   				"Tags": [
