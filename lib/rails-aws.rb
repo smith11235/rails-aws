@@ -10,6 +10,7 @@ module RailsAWS
 	require 'rails-aws/cfm_client'
 	require 'rails-aws/key_pair'
 	require 'rails-aws/cloudformation'
+	require 'securerandom'
 
 	def self.environment
 		env = Rails.env
@@ -17,18 +18,24 @@ module RailsAWS
 		env
 	end
 
-	# in rails-aws.rb
-	def self.db_type
-		db_type = ActiveRecord::Base.connection.adapter_name.downcase
-		case db_type
-		when /^mysql/
-			:mysql
-		when /^sqlite/
-			:sqlite
-		else
-			raise "Unsupported db type: #{db_type}"
-		end
-		db_type
+
+	def self.dbpassword_file 
+		File.join( RailsAWS.branch_dir, "dbpassword" )
+	end
+
+	def self.set_dbpassword
+		pass_file = RailsAWS.dbpassword_file
+		raise "dbpassword_file #{pass_file} exists already".red if File.file? pass_file
+
+	  random_string = SecureRandom.hex
+		File.open( pass_file, 'w' ) {|f| f.puts random_string }
+		puts "Created #{pass_file}".green
+	end
+
+	def self.dbpassword
+		pass_file = RailsAWS.dbpassword_file
+		raise "dbpassword_file does not exist: #{pass_file}".red unless File.file? pass_file
+		File.open( pass_file, 'r' ).read.chomp
 	end
 
 	def self.branch( branch = nil )
@@ -37,15 +44,14 @@ module RailsAWS
 		@@branch
 	end
 
-	def self.branch_dir( branch = nil )
-		RailsAWS.branch( branch )
-		branch_dir = File.join( Rails.root, 'config/branch', branch )
+	def self.branch_dir
+		branch_dir = File.join( Rails.root, 'config/branch', RailsAWS.branch )
   	FileUtils.mkdir_p branch_dir unless File.directory?( branch_dir )
 		branch_dir
 	end
 
 	def self.branch_secret
-		File.join( RailsAWS.branch_dir( RailsAWS.branch ), 'secret' )
+		File.join( RailsAWS.branch_dir, 'secret' )
 	end
 
 	def self.config_hash( options = {} )
@@ -62,6 +68,22 @@ module RailsAWS
 	end
 
 
+	# in rails-aws.rb
+	def self.db_type
+		# db_type = ActiveRecord::Base.connection.adapter_name.downcase
+		config_key = "db_type_#{RailsAWS.environment}".to_sym
+		db_type = RailsAWS.config( config_key )
+
+		db_type = case db_type
+          		when /^mysql/
+          			:mysql
+          		when /^sqlite/
+          			:sqlite
+          		else
+          			raise "Unsupported db type: #{db_type}"
+          		end
+		db_type
+	end
 
 	def self.ami_id
 		# from: http://cloud-images.ubuntu.com/locator/ec2/
@@ -72,7 +94,11 @@ module RailsAWS
 		File.join( Rails.root, 'config/deploy_key/', "#{RailsAWS.application( options )}_id_rsa" )
 	end
 
-	def self.repo_url( options )
+	def self.account_id
+		RailsAWS.config( :account_id )
+	end
+
+	def self.repo_url( options = {} )
 		RailsAWS.config( :repo_url, options )
 	end
 

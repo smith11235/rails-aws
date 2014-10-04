@@ -1,7 +1,8 @@
 module RailsAWS
 	class Cloudformation
 
-		def self.outputs( branch_name = RailsAWS.branch )
+		def self.outputs
+			branch_name = RailsAWS.branch
 			outputs_file = Cloudformation.outputs_file( branch_name )
 			unless File.file? outputs_file
 				msg = "Missing outputs file: #{outputs_file}".red
@@ -11,12 +12,12 @@ module RailsAWS
 			YAML.load_file( outputs_file )
 		end
 
-		def self.outputs_file( branch_name )
-			File.join( RailsAWS.branch_dir( branch_name ), "outputs.yml" )
+		def self.outputs_file
+			File.join( RailsAWS.branch_dir, "outputs.yml" )
 		end
 
-		def initialize( branch_name = RailsAWS.branch, options = {} )
-			@branch_name = branch_name
+		def initialize( options = {} )
+			@branch_name = RailsAWS.branch
 			@key_name = KeyPair.key_name
 			@cfm = RailsAWS::CFMClient.get
 			@ec2 = RailsAWS::EC2Client.get
@@ -34,12 +35,12 @@ module RailsAWS
 			when :stack
 				@stack_name = clean_stack_name( @application + @branch_name )
 				@stack = @cfm.stacks[ @stack_name ] 
-				@rendered_file = File.join( RailsAWS.branch_dir( @branch_name ), "cloudformation.json" )
+				@rendered_file = File.join( RailsAWS.branch_dir, "cloudformation.json" )
 				@template_file = File.expand_path( "../stack.json.erb", __FILE__ )
 			when :domain
 				@stack_name = clean_stack_name( @application + @branch_name + "domain" )
 				@stack = @cfm.stacks[ @stack_name ] 
-				@rendered_file = File.join( RailsAWS.branch_dir( @branch_name ), "domain.json" )
+				@rendered_file = File.join( RailsAWS.branch_dir, "domain.json" )
 				@template_file = File.expand_path( "../route53.json.erb", __FILE__ )
 			end
 		end

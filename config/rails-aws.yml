@@ -1,7 +1,10 @@
 ---
 repo_url: git@github.com:smith11235/rails-aws.git
-domain: 
-domain_branch: 
+db_type_production: mysql
+db_type_development: sqlite
+account_id: 180190769793
+domain: rails-aws.com
+domain_branch: master
 instance_type: t2.micro
 region: us-east-1
 ami_id: ami-8afb51e2

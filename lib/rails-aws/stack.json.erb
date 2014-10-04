@@ -17,6 +17,7 @@
             "export package_list='git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties'", "\n",
             "apt-get install $package_list -y", "\n",
 						"apt-get install libgdbm-dev libncurses5-dev automake libtool bison libffi-dev -y", "\n",
+						"apt-get install libmysql-ruby libmysqlclient-dev -y", "\n",
 
 					"echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Setting Login Perms VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
  					"sed -i 's/PermitRootLogin\\swithout-password/PermitRootLogin no/' /etc/ssh/sshd_config", "\n",
@@ -154,6 +155,10 @@
 						"Value": "<%= @environment %>"
 					},
 					{
+						"Key": "db_type",
+						"Value": "<%= RailsAWS.db_type %>"
+					},
+					{
 						"Key": "deployer",
 						"Value": "<%= ENV["USER"] %>"
 					}
@@ -161,8 +166,87 @@
 				]
       }
     },
-		<% if RailsAWS.db_type != :sqlite %>
-				<% raise "unsupported type" %>
+		<% db_type = RailsAWS.db_type %>
+		<% if db_type != :sqlite %>
+			<% raise "only mysql currently supported, not: #{db_type}" unless db_type == :mysql %>
+      "<%= @branch_name + "rdssg" %>" : {
+        "Type" : "AWS::RDS::DBSecurityGroup",
+        "Properties" : {
+          "GroupDescription" : "Enable access to db from ec2 instances",
+          "DBSecurityGroupIngress" : [
+						{ 
+							"EC2SecurityGroupOwnerId" : "<%= RailsAWS.account_id %>",
+							"EC2SecurityGroupId" : { "Ref": "<%= @branch_name + "sg" %>" }
+						}
+          ],
+  				"Tags": [
+  					{
+  						"Key": "Name",
+  						"Value": "<%= "#{@application}-#{@branch_name}-#{@environment}" %>"
+  					},
+  					{
+  						"Key": "branch_name",
+  						"Value": "<%= @branch_name %>"
+  					},
+  					{
+  						"Key": "environment",
+  						"Value": "<%= @environment %>"
+  					},
+					{
+						"Key": "db_type",
+						"Value": "<%= RailsAWS.db_type %>"
+					},
+  					{
+  						"Key": "deployer",
+  						"Value": "<%= ENV["USER"] %>"
+  					}
+  
+  				]
+        }
+      },
+    	"<%= @branch_name + "rds" %>" : {
+        "Type" : "AWS::RDS::DBInstance",
+        "Properties" :
+        {
+           "AllocatedStorage" : "10",
+           "AllowMajorVersionUpgrade" : true,
+           "AutoMinorVersionUpgrade" : true,
+           "BackupRetentionPeriod" : "2",
+           "DBInstanceClass" : "db.t1.micro",
+           "DBName" : "railsapp",
+					 "DBSecurityGroups" : [
+					 	{ "Ref": "<%= @branch_name + "rdssg" %>" }
+					 ],
+           "Engine" : "MySQL",
+           "MasterUsername" : "railsapp",
+					 "MasterUserPassword" : "<%= RailsAWS.dbpassword %>",
+           "MultiAZ" : false,
+           "Port" : "3306",
+           "PubliclyAccessible" : false,
+           "Tags" : [  
+  					{
+  						"Key": "Name",
+  						"Value": "<%= "#{@application}-#{@branch_name}-#{@environment}" %>"
+  					},
+  					{
+  						"Key": "branch_name",
+  						"Value": "<%= @branch_name %>"
+  					},
+					{
+						"Key": "db_type",
+						"Value": "<%= RailsAWS.db_type %>"
+					},
+  					{
+  						"Key": "environment",
+  						"Value": "<%= @environment %>"
+  					},
+  					{
+  						"Key": "deployer",
+  						"Value": "<%= ENV["USER"] %>"
+  					}
+						]
+     			}
+     		},
 		<% end %>
     "WaitForInstanceWaitHandle" : {
       "Type" : "AWS::CloudFormation::WaitConditionHandle",
@@ -187,7 +271,11 @@
     "WebsiteURL" : {
       "Description" : "The URL for the newly created Rails application",
 			"Value" : { "Fn::Join" : ["", [ "http://", { "Fn::GetAtt" : [ "<%= @branch_name + "ec2" %>", "PublicIp" ] } ]]}
-    }
+    },
+		"DBHOST" : {
+      "Description" : "The internal url for the newly created RDS server",
+			"Value" : { "Fn::GetAtt" : [ "<%= @branch_name + "rds" %>", "Endpoint.Address" ] } 
+		}
   }
 }
 

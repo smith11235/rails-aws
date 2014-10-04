@@ -177,34 +177,23 @@ Your **config/database.yml** will be updated by the rails-aws setup generator.
 ## Development Plan
 
 ### Phase: RDS - Blank
-	* cloudformation
-		* if mysql
-			* rds mini config
-				* publicaccessible: false
-				* DbSecurityGroup:
-					* set to ec2-security-group-name
-					* allso need account-id (rails-aws.yml setting?)
-						* fetchable from api?
-			* output: DBIP (or url)
+	* test stack deployment
 
 		* rake aws:cap_deploy
-			* if RailsAWS.db_type != :sqlite
-			* call RailsAWS.set_dbpassword
-				* require 'securerandom'
-				* random_string = SecureRandom.hex
-				* File.open( RailsAWS.dbpassword_file, 'w' ) {|f| f.puts random_string }
-			* RailsAWS.dbpassword_file
-				* RailsAWS.branch_dir, 'dbpassword'
-			* RailsAWS.dbpassword
-				* File.open( RailsAWS.dbpassword_file, 'r' ).read.chomp
-			* rake cap_cmd: 
+			* cap_cmd: 
 				* if db_type != :sqlite
-					* dbip=RailsAWS::Cloudformation.outputs["DBIP"]
+					* dbhost=RailsAWS::Cloudformation.outputs["DBHOST"]
 					* dbpassword=RailsAWS.dbpassword
-  		* cap cap_deploy:publish_db_settings (before deploy)
-  			* execute "echo 'export dbhost=' >> ~/.bashrc"
-  			* execute "echo \"export dbhost='#{RailsAWS.dbpassword}'\" >> ~/.bashrc"
-	* access from rails 
+		  * if RailsAWS.db_type != :sqlite
+  			* cap cap_deploy:publish_db_settings (before deploy)
+  				* execute "echo 'export dbhost=#{dbhost}' >> ~/.bashrc"
+  				* execute "echo \"export dbpassword='#{dbpassword}'\" >> ~/.bashrc"
+	* test access from rails 
+
+### Phase: Setup Generator Update
+* ask for domain and domain_branch
+* for rails-aws.yml, aws-keys.yml
+	* load existing values, ask if update
 
 ### Phase: RDS - Snapshot
 * db dependency on rails secret?

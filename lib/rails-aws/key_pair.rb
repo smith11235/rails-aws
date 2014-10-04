@@ -1,16 +1,15 @@
 module RailsAWS
 	class KeyPair
 
-		def self.file( branch_name )
-			File.join( RailsAWS.branch_dir( branch_name ), "private.key" )
+		def self.file
+			File.join( RailsAWS.branch_dir, "private.key" )
 		end
 
 		def self.key_name
 			"#{RailsAWS.application}-#{RailsAWS.branch}"
 		end
 
-		def initialize( branch_name = RailsAWS.branch )
-			@branch_name = branch_name
+		def initialize
 			@ec2 = RailsAWS::EC2Client.get
 		end
 
@@ -72,7 +71,7 @@ module RailsAWS
 		private
 
 		def key_pair_file
-			KeyPair.file( @branch_name )
+			KeyPair.file
 		end
 	end
 end

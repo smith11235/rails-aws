@@ -24,6 +24,18 @@ module RailsAWS
 				create_file file do
 					values = Hash.new
 					values[ 'repo_url' ] = ask "What is your rails application git clone 'repo_url'?"
+					values[ 'account_id' ] = ask "What is your amazon web services 'account_id'?"
+
+					puts "Sqlite db's are cheaper to run, but lower performance for multi-user/non-trivial applications"
+					puts "Development environment is by default sqlite.  You can modify this afterwards"
+					prod_mysql = ask 'Do you wish to run a mysql server for your production environments (y)'
+					prod_type = if prod_mysql == 'y'
+												"mysql"
+											else
+												"sqlite" 
+											end
+					values[ 'db_type_production' ] = prod_type
+					values[ 'db_type_development' ] = 'sqlite'
 					
 					# defaults, user can setup afterwards
 					values[ 'domain' ] = nil
@@ -43,18 +55,12 @@ module RailsAWS
 			file = "config/database.yml"
 			yes = File.file?(file) ? ask("Do you wish to update: #{file} (y)") : 'y'
 			if yes == "y"
-				puts "Sqlite db's are cheaper to run, but lower performance for multi-user/non-trivial applications"
-				puts "Development environment is by default sqlite.  You can modify this afterwards"
-
-				prod_mysql = ask 'Do you wish to run mysql for your production environments (y)'
 
 				copy_file File.basename( file ), file
 
-				prod_type = if prod_mysql == 'y'
-											"mysql"
-										else
-											"sqlite" 
-										end
+
+				RailsAWS.config_hash( :reset => true )
+				prod_type = RailsAWS.db_type
 				sed_cmd = "sed -i 's/production_type/#{prod_type}/' #{file}"
 				raise "Unable to set production type: #{sed_cmd}" unless system( sed_cmd )
 				puts "Set production database to: #{prod_type}"

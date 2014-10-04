@@ -9,6 +9,16 @@ namespace :aws do
 		RailsAWS.branch( branch_name )
 
 		key_pair = RailsAWS::KeyPair.new
+
+		if RailsAWS.db_type != :sqlite
+			db_password_file = RailsAWS.dbpassword_file 
+			unless File.file? db_password_file
+				RailsAWS.set_dbpassword
+			else
+				puts "Reusing previously created dbpassword: #{db_password_file}".yellow
+			end
+		end
+
 		cloudformation = RailsAWS::Cloudformation.new
 
 		key_pair.create!
@@ -24,7 +34,7 @@ namespace :aws do
 
 		raise "Domain is not enabled, must have 'domain' and 'domain_branch' config with this branch specified" unless RailsAWS.domain_enabled?
 
-		cloudformation = RailsAWS::Cloudformation.new( branch_name, :type => :domain )
+		cloudformation = RailsAWS::Cloudformation.new( :type => :domain )
 
 		cloudformation.create!
 	end
@@ -38,7 +48,7 @@ namespace :aws do
 
 		raise "Domain is not enabled, must have 'domain' and 'domain_branch' config with this branch specified" unless RailsAWS.domain_enabled?
 
-		cloudformation = RailsAWS::Cloudformation.new( branch_name, :type => :domain )
+		cloudformation = RailsAWS::Cloudformation.new( :type => :domain )
 
 		cloudformation.delete!
 	end
@@ -47,17 +57,19 @@ namespace :aws do
 	task :stack_login, [:branch_name] => :environment do |t,args|
 		branch_name = args[:branch_name]
 		raise "Missing branch name".red if branch_name.nil?
-		ip = RailsAWS::Cloudformation.outputs(branch_name).fetch "IP"
-		login_cmd = "ssh -i #{RailsAWS::KeyPair.file( branch_name )} deploy@#{ip}"
+		RailsAWS.branch( branch_name )
+
+		ip = RailsAWS::Cloudformation.outputs.fetch "IP"
+		login_cmd = "ssh -i #{RailsAWS::KeyPair.file} deploy@#{ip}"
 		system( login_cmd )
 	end
 
-	def cap_cmd( branch_name, task )
+	def cap_cmd( task )
 		cmd_prefix = "cap"
-		cmd_prefix << " branch=#{branch_name}"
+		cmd_prefix << " branch=#{RailsAWS.branch}"
 		cmd_prefix << " branch_secret=#{RailsAWS.branch_secret}"
-		cmd_prefix << " ipaddress=#{RailsAWS::Cloudformation.outputs(branch_name).fetch("IP")}"
-		cmd_prefix << " key_file=#{RailsAWS::KeyPair.file( branch_name )}"
+		cmd_prefix << " ipaddress=#{RailsAWS::Cloudformation.outputs.fetch("IP")}"
+		cmd_prefix << " key_file=#{RailsAWS::KeyPair.file}"
 
 		cmd_prefix << " repo_url=#{RailsAWS.repo_url}"
 		cmd_prefix << " application=#{RailsAWS.application}"
@@ -75,8 +87,8 @@ namespace :aws do
 		end
 	end
 
-	def website( branch_name )
-		puts "Website: " + RailsAWS::Cloudformation.outputs(branch_name).fetch("WebsiteURL")
+	def website
+		puts "Website: " + RailsAWS::Cloudformation.outputs.fetch("WebsiteURL")
 	end
 
 	desc "Cap Deploy This Stack"
@@ -92,10 +104,10 @@ namespace :aws do
 		raise "Missing secret file: #{branch_secret}" unless File.file? branch_secret
 		
 		%w(deploy:publish_deploy_key deploy deploy:publish_secret deploy:restart).each do |task|
-			cap_cmd( branch_name, task )
+			cap_cmd( task )
 		end
 		puts "Capistrano Deployment Successful".green
-		website( branch_name )
+		website
 	end
 
 	desc "Cap Deploy This Stack"
@@ -103,12 +115,13 @@ namespace :aws do
 		branch_name = args[:branch_name]
 		raise "Missing branch name".red if branch_name.nil?
 		RailsAWS.branch( branch_name )
-		cap_cmd( branch_name, args[:task] )
-		website( branch_name )
+		cap_cmd( args[:task] )
+		website
 	end
 
 	desc "Delete a stack from [branch_name]"
-	task :stack_delete, [:branch_name] => :environment do |t,args|
+	task :stack_delete, [:branch_name,:no_error] => :environment do |t,args|
+		args.with_defaults :no_error => false
 		raise "Missing branch name".red if args[:branch_name].nil?
 		branch_name = args[:branch_name]
 		RailsAWS.branch( branch_name ) 
@@ -136,7 +149,9 @@ namespace :aws do
 		if failed
 			msg = "delete_stack[#{branch_name}] FAILED".red
 			Rails.logger.info( msg )
-			raise msg 
+			if args[:no_error] == false
+				raise msg 
+			end
 		end
 		msg = "delete_stack[#{branch_name}] successful".green
 		Rails.logger.info( msg )
@@ -165,10 +180,11 @@ namespace :aws do
 	task :stack_status, [:branch_name] => :environment do |t,args|
 		raise "Missing branch name".red if args[:branch_name].nil?
 		branch_name = args[:branch_name]
-		cf = RailsAWS::Cloudformation.new( branch_name )
+		RailsAWS.branch( branch_name )
+		cf = RailsAWS::Cloudformation.new 
 		cf.show_stack_status
 		cf.show_stack_events( true )
-		puts RailsAWS::Cloudformation.outputs( branch_name ).to_yaml
+		puts RailsAWS::Cloudformation.outputs.to_yaml
 	end
 
 	desc "Detail report for all infrastructure in account"
