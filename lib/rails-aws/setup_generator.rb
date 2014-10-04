@@ -23,26 +23,41 @@ module RailsAWS
 			if yes == "y"
 				create_file file do
 					values = Hash.new
+					values[ 'repo_url' ] = ask "What is your rails application git clone 'repo_url'?"
+					
+					# defaults, user can setup afterwards
+					values[ 'domain' ] = nil
+					values[ 'domain_branch' ] = nil
 
-					%w(repo_url).each do |key|
-						values[ key ] = ask "What is the '#{key}'?"
-					end
-					values[ 'environment' ] = "production"
-					values[ 'db_type' ] = "sqlite"
-
+					# default supported values
 					values[ 'instance_type' ] = "t2.micro"
 					values[ 'region' ] = 'us-east-1'
 					values[ 'ami_id' ] = "ami-8afb51e2"
 
-					repo_url = values[ 'repo_url' ]
-					#raise "Unknown repo_url,\nexpecting [user]@[domain]:[project|accout]\nlike git@github.com:smith11235/rails-aws.git".red
-					application = File.basename repo_url, ".*"
-					values[ 'application' ] = application
-					values[ 'domain' ] = nil
-					values[ 'domain_branch' ] = nil
-
 					values.to_yaml
 				end
+			end
+		end
+
+		def database_config_file
+			file = "config/database.yml"
+			yes = File.file?(file) ? ask("Do you wish to update: #{file} (y)") : 'y'
+			if yes == "y"
+				puts "Sqlite db's are cheaper to run, but lower performance for multi-user/non-trivial applications"
+				puts "Development environment is by default sqlite.  You can modify this afterwards"
+
+				prod_mysql = ask 'Do you wish to run mysql for your production environments (y)'
+
+				copy_file File.basename( file ), file
+
+				prod_type = if prod_mysql == 'y'
+											"mysql"
+										else
+											"sqlite" 
+										end
+				sed_cmd = "sed -i 's/production_type/#{prod_type}/' #{file}"
+				raise "Unable to set production type: #{sed_cmd}" unless system( sed_cmd )
+				puts "Set production database to: #{prod_type}"
 			end
 		end
 

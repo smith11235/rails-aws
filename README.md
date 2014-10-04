@@ -53,6 +53,7 @@ Execute the supplied generator and provide needed information.
   > repo_url 
     - example: git@github.com:smith11235/rails-aws.git
     - clone url for ssh access
+	> db type: mysql? or sqlite default
 	> aws_access_key
 	> aws_secret_key
 ```
@@ -64,6 +65,7 @@ Execute the supplied generator and provide needed information.
 	* blocked in .gitignore
 * setup your deployment preferences: config/rails-aws.yml
 	* revisioned.  can be edited.
+* setup your config/database.yml file
 * adds capistrano to your project: 
 	* Capfile, config/deploy.rb, config/deploy/[production|development].rb
 * modifies config/secret.yml to use host/branch specific secrets
@@ -73,8 +75,6 @@ Execute the supplied generator and provide needed information.
 #### config/rails-aws.yml 
 
 Default settings can be modified later in **config/rails-aws.yml**.
-
-Environment can be set to **development** or **production**(default).
 
 And if you have a domain you want to use:
 
@@ -126,6 +126,19 @@ Managing deploy keys can be viewed here: [Deploy Keys](lib/rails-aws/git_deploy_
 	rake aws:cap_update[branch_name]
 ```
 
+#### Production Vs Development
+
+Execute the stack management commands with RAILS_AWS=development or RAILS_AWS=production accordingly to deploy those environments.
+
+**Example master branch/domain deployment:**
+
+``` 
+  export RAILS_AWS=production
+  rake aws:stack_create[master]
+  rake aws:domain_create[master] 
+  rake aws:cap_deploy[master]
+```
+
 #### Have a Domain Name Ready?
 * [GoDaddy Domain?](http://stackoverflow.com/questions/17568892/aws-ec2-godaddy-domain-how-to-point)
 * create a Route 53 Hosted Zone
@@ -150,52 +163,21 @@ Managing deploy keys can be viewed here: [Deploy Keys](lib/rails-aws/git_deploy_
 
 You can use sqlite on your web server.
 
-Or you can use mysql.  
+Or you can use mysql on a separate host (greater cost, better performance).
 
-Simply add the 'mysql2' gem.
-
-Then configure your **config/database.yml**
-
-Example below.
+Ensure you have the gems as needed in your Gemfile.
 
 ```
-default: &default
-  adapter: mysql2
-  encoding: utf8
-  database: <%= ENV["dbname"] %>
-  username: <%= ENV["dbusername"] %> 
-  password: <%= ENV["dbpassword"] %> 
-  host: <%= ENV["dbhost"] %>
-  port: 3306
-  adapter: sqlite3
-  pool: 5
-  timeout: 5000
-
-test:
-  <<: *default
-
-production:
-	<<: *default
-
-development:  # for your local machine
-  adapter: sqlite3
-  pool: 5
-  timeout: 5000
-  database: db/development.sqlite3
+  gem 'mysql2'
+  gem 'sqlite3'
 ```
 
-**Suggestion** Deploy production test environments, but keep 'development' for executing local migrations.
+Your **config/database.yml** will be updated by the rails-aws setup generator.
 
-## Development Phases
+## Development Plan
 
 ### Phase: RDS - Blank
-
-	* cloudformation create stack
-		* if RailsAWS.db_type != :sqlite
-
-	* setup generator
-		* select db type for deployment
-		* manage database.yml?
+	* rake deployment tasks should have RAILS_ENV= development is default
 
 	* cloudformation
 		* if mysql

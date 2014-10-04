@@ -11,6 +11,26 @@ module RailsAWS
 	require 'rails-aws/key_pair'
 	require 'rails-aws/cloudformation'
 
+	def self.environment
+		env = Rails.env
+		raise "Support production/development only" unless %w(production development).include? env
+		env
+	end
+
+	# in rails-aws.rb
+	def self.db_type
+		db_type = ActiveRecord::Base.connection.adapter_name.downcase
+		case db_type
+		when /^mysql/
+			:mysql
+		when /^sqlite/
+			:sqlite
+		else
+			raise "Unsupported db type: #{db_type}"
+		end
+		db_type
+	end
+
 	def self.branch( branch = nil )
 		@@branch ||= branch
 		raise "Error: Branch is not set.".red if @@branch.nil?
@@ -41,29 +61,11 @@ module RailsAWS
 		@@config.fetch( key.to_s )
 	end
 
-	# in rails-aws.rb
-	def self.db_type
-		db_type = RailsAWS.config( 'db_type' )
-		case db_type
-		when /^mysql/
-			:mysql
-		when /^sqlite/
-			:sqlite
-		when /^postgresql/
-			raise "Not Yet supported db type: postgresql"
-		else
-			raise "Unsupported db type: #{db_type}"
-		end
-		db_type
-	end
+
 
 	def self.ami_id
 		# from: http://cloud-images.ubuntu.com/locator/ec2/
 		RailsAWS.config( :ami_id )
-	end
-
-	def self.environment
-		RailsAWS.config( :environment )
 	end
 
 	def self.deploy_key( options = {} )
@@ -83,7 +85,9 @@ module RailsAWS
 	end
 
 	def self.application
-		RailsAWS.config( :application )
+		repo_url = RailsAWS.repo_url
+		raise "Invalid format for repo_url to get application name, expecting ~= .../[application].git, #{repo_url}" unless repo_url =~ /\/\w+\.git$/
+		return File.basename repo_url, ".*"
 	end
 
 	def self.domain_enabled?
