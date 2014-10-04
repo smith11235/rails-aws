@@ -178,6 +178,8 @@ Your **config/database.yml** will be updated by the rails-aws setup generator.
 
 ### Phase: RDS - Blank
 	* test stack deployment
+		* r aws:stack_delete[rds,no-error] aws:stack_create[rds] RAILS_ENV=production
+		* failing on timeout
 
 		* rake aws:cap_deploy
 			* cap_cmd: 

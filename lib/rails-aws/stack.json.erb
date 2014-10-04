@@ -14,10 +14,8 @@
 						"echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Installing Packages VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
             "apt-get update", "\n",
             "apt-get upgrade -y", "\n",
-            "export package_list='git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties'", "\n",
+            "export package_list='git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libgdbm-dev libncurses5-dev automake libtool bison libffi-dev mysql-client libmysqlclient-dev'", "\n",
             "apt-get install $package_list -y", "\n",
-						"apt-get install libgdbm-dev libncurses5-dev automake libtool bison libffi-dev -y", "\n",
-						"apt-get install libmysql-ruby libmysqlclient-dev -y", "\n",
 
 					"echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Setting Login Perms VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
  					"sed -i 's/PermitRootLogin\\swithout-password/PermitRootLogin no/' /etc/ssh/sshd_config", "\n",
@@ -258,7 +256,7 @@
 			"DependsOn" : "<%= @branch_name + "ec2" %>",
       "Properties" : {
         "Handle" : {"Ref" : "WaitForInstanceWaitHandle"},
-        "Timeout" : "600"
+        "Timeout" : "700"
       }
     }
   },

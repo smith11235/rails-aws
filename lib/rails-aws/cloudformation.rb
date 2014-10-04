@@ -3,7 +3,7 @@ module RailsAWS
 
 		def self.outputs
 			branch_name = RailsAWS.branch
-			outputs_file = Cloudformation.outputs_file( branch_name )
+			outputs_file = Cloudformation.outputs_file
 			unless File.file? outputs_file
 				msg = "Missing outputs file: #{outputs_file}".red
 				Rails.logger.info( msg )
@@ -151,7 +151,7 @@ module RailsAWS
 		end
 
 		def log_stack_outputs
-			outputs_file = Cloudformation.outputs_file( @branch_name )
+			outputs_file = Cloudformation.outputs_file
 
 			outputs = Hash.new
 			@stack.outputs.each do |output|
