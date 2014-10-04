@@ -48,3 +48,11 @@ pickle-email-*.html
 /config/branch/*/private.key
 /config/branch/*/secret
 /config/deploy_key
+/config/aws-keys.yml
+/config/branch/*/private.key
+/config/branch/*/secret
+/config/deploy_key
+/config/aws-keys.yml
+/config/branch/*/private.key
+/config/branch/*/secret
+/config/deploy_key

@@ -1,9 +1,7 @@
 ---
 repo_url: git@github.com:smith11235/rails-aws.git
-domain: rails-aws.com
-domain_branch: master
-
+domain: 
+domain_branch: 
 instance_type: t2.micro
 region: us-east-1
 ami_id: ami-8afb51e2
-

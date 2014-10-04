@@ -177,8 +177,6 @@ Your **config/database.yml** will be updated by the rails-aws setup generator.
 ## Development Plan
 
 ### Phase: RDS - Blank
-	* rake deployment tasks should have RAILS_ENV= development is default
-
 	* cloudformation
 		* if mysql
 			* rds mini config

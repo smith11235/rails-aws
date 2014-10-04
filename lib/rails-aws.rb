@@ -69,11 +69,11 @@ module RailsAWS
 	end
 
 	def self.deploy_key( options = {} )
-		File.join( Rails.root, 'config/deploy_key/', "#{RailsAWS.config( :application, options )}_id_rsa" )
+		File.join( Rails.root, 'config/deploy_key/', "#{RailsAWS.application( options )}_id_rsa" )
 	end
 
-	def self.repo_url
-		RailsAWS.config( :repo_url )
+	def self.repo_url( options )
+		RailsAWS.config( :repo_url, options )
 	end
 
 	def self.region
@@ -84,9 +84,9 @@ module RailsAWS
 		RailsAWS.config( :instance_type )
 	end
 
-	def self.application
-		repo_url = RailsAWS.repo_url
-		raise "Invalid format for repo_url to get application name, expecting ~= .../[application].git, #{repo_url}" unless repo_url =~ /\/\w+\.git$/
+	def self.application( options = {} )
+		repo_url = RailsAWS.repo_url( options )
+		raise "Invalid format for repo_url to get application name, expecting ~= .../[application].git, #{repo_url}" unless repo_url =~ /\/[a-z0-9\-_.]+\.git$/
 		return File.basename repo_url, ".*"
 	end
 
