@@ -66,18 +66,27 @@ namespace :aws do
 
 	def cap_cmd( task )
 		cmd_prefix = "cap"
-		cmd_prefix << " branch=#{RailsAWS.branch}"
-		cmd_prefix << " branch_secret=#{RailsAWS.branch_secret}"
-		cmd_prefix << " ipaddress=#{RailsAWS::Cloudformation.outputs.fetch("IP")}"
-		cmd_prefix << " key_file=#{RailsAWS::KeyPair.file}"
+		vars = {
+  		:branch => RailsAWS.branch,
+  		:branch_secret => RailsAWS.branch_secret,
+  		:ipaddress => RailsAWS::Cloudformation.outputs.fetch("IP"),
+  		:key_file => RailsAWS::KeyPair.file,
+  		:repo_url => RailsAWS.repo_url,
+  		:application => RailsAWS.application,
+  		:deploy_key => RailsAWS.deploy_key,
+  		:rails_env => RailsAWS.environment
+		}
 
-		cmd_prefix << " repo_url=#{RailsAWS.repo_url}"
-		cmd_prefix << " application=#{RailsAWS.application}"
-		cmd_prefix << " deploy_key=#{RailsAWS.deploy_key}"
-		cmd_prefix << " rails_env=#{RailsAWS.environment}"
+		if RailsAWS.db_type != :sqlite
+			vars[ :dbhost ] = RailsAWS::Cloudformation.outputs.fetch( "DBHOST" )
+			vars[ :dbpassword ] = RailsAWS.dbpassword
+		end
 
-		cmd_prefix << " #{RailsAWS.environment} " # environment
-		cmd = cmd_prefix + task
+		vars.each do |key,value|
+			cmd_prefix << " #{key}='#{value}' "
+		end
+
+		cmd = "#{cmd_prefix} #{RailsAWS.environment} #{task}"
 
 		puts "Executing: #{cmd}".green
 		unless system( cmd )
@@ -103,7 +112,7 @@ namespace :aws do
 		raise "Unable to generate secret to: #{branch_secret}" unless system( cmd )
 		raise "Missing secret file: #{branch_secret}" unless File.file? branch_secret
 		
-		%w(deploy:publish_deploy_key deploy deploy:publish_secret deploy:restart).each do |task|
+		%w(deploy:publish_deploy_key  deploy:publish_db_settings deploy deploy:publish_secret deploy:restart).each do |task|
 			cap_cmd( task )
 		end
 		puts "Capistrano Deployment Successful".green

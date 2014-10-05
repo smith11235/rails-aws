@@ -177,20 +177,15 @@ Your **config/database.yml** will be updated by the rails-aws setup generator.
 ## Development Plan
 
 ### Phase: RDS - Blank
-	* test stack deployment
-		* r aws:stack_delete[rds,no-error] aws:stack_create[rds] RAILS_ENV=production
-		* failing on timeout
 
 		* rake aws:cap_deploy
-			* cap_cmd: 
-				* if db_type != :sqlite
-					* dbhost=RailsAWS::Cloudformation.outputs["DBHOST"]
-					* dbpassword=RailsAWS.dbpassword
 		  * if RailsAWS.db_type != :sqlite
   			* cap cap_deploy:publish_db_settings (before deploy)
   				* execute "echo 'export dbhost=#{dbhost}' >> ~/.bashrc"
   				* execute "echo \"export dbpassword='#{dbpassword}'\" >> ~/.bashrc"
-	* test access from rails 
+	* test stack deployment
+		* r aws:stack_delete[rds,no-error] aws:stack_create[rds] RAILS_ENV=production
+		* test access from rails 
 
 ### Phase: Setup Generator Update
 * ask for domain and domain_branch
