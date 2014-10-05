@@ -1,6 +1,16 @@
 class BranchesController < ApplicationController
   before_action :set_branch, only: [:show, :edit, :update, :destroy]
 
+	def test
+		(0..9).each do |number|
+	  	random_string = SecureRandom.hex
+			Branch.new( :name => "test-#{number}-#{random_string}" ).save!
+		end
+    respond_to do |format|
+      format.html { redirect_to :index, notice: 'Test branches created.' }
+    end
+	end
+
   # GET /branches
   # GET /branches.json
   def index
