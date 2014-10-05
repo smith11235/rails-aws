@@ -1,6 +1,9 @@
 source 'https://rubygems.org'
 
-gemspec
+group :development do
+	gemspec
+end
+
 gem 'pry'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
