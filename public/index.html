@@ -1,10 +1,11 @@
 <html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"><link rel="stylesheet" id="theme" href="chrome-extension://febilkbfcbhebfnokafefeacimjdckgl/theme/ClearnessDark.css"></head><body><h1 id="rails-aws">Rails AWS</h1>
-<p>Tooling and templates for instantiating many consistent Rails environments in AWS.</p>
-<p>Allows rapid, uniform, multi branch testing and production deployment with uniform process and standard tools.</p>
-<p>If it is not running on your local machine, its a production environment.</p>
-<p>Easily, in minutes.  Focus on the code that matters, that your clients care about.</p>
-<p>Manage any number of Rails deployments.</p>
-<p>Easily.  On your local development machine. From a thumbdrive even.</p>
+<p><a href="https://github.com/smith11235/rails-aws">Source on Github</a></p>
+<p>Rails-Rake tasks for instantiating consistent Rails environments in AWS.</p>
+<p>And having as many branches as you need.  For as low cost as possible.</p>
+<p>Incorporating db, push-server, and worker server integration.</p>
+<p>Allows rapid, uniform, multi branch testing in strict-production environments with uniform process.</p>
+<p>Assign domains to your master or your release branches automatically..</p>
+<p>Run it from your computer, a server, or a thumbdrive.</p>
 <h2 id="software">Software</h2>
 <ul>
 <li>Ubuntu 14.04</li>
@@ -28,28 +29,20 @@
 <h2 id="usage">Usage</h2>
 <h3 id="someday">Someday</h3>
 <p>Create an account at <strong><a href="http://rails-aws.com">http://rails-aws.com</a></strong></p>
-<h3 id="gem-or-application">Gem or Application</h3>
-<p>Add the <strong>rails-aws</strong> gem to your Gemfile.</p>
-<p>Or clone the project and run the bundled Rails project standalone fashion.</p>
-<h4 id="application-setup">Application Setup</h4>
-<p>The directory name for the clone is based on a <strong>1 rails-aws &lt;=&gt; 1 application to deploy</strong> relationship.</p>
-<p>Later this will be 1 to many for easy cloud management from your local machine or rails-aws.com.</p>
-<pre><code class="ruby">  <span class="comment"># where [your-app-name] is your repohost.com/username/your-app-name</span>
-  <span class="comment"># example</span>
-  ~<span class="regexp">/ $ git clone git@github.com:smith11235/rails</span>-aws.git rails-aws-[your-app-name]
-</code></pre><p>Build the rvm/ruby environment.  May require sudo for needed ruby libraries.</p>
-<pre><code class="nginx">  <span class="title">sh</span> build_ruby_env.sh
-  source load_ruby_env.sh
-</code></pre><h4 id="gem-alone-to-gemfile">Gem Alone: to Gemfile</h4>
-<p>Add to your projects Gemfile:</p>
+<h3 id="gem">Gem</h3>
+<p><strong>./Gemfile</strong></p>
 <pre><code class="nginx">  <span class="title">gem</span> <span class="string">'rails-aws'</span>, github: <span class="string">"smith11235/rails-aws"</span>
-</code></pre><h3 id="run-rails-aws-rails-generator">Run rails-aws Rails Generator</h3>
+</code></pre><h3 id="rails-generator">Rails Generator</h3>
 <p>Execute the supplied generator and provide needed information.</p>
-<pre><code class="nginx">  <span class="title">bundle</span> exec rails g rails_a_w_s:setup
-    -&gt; main thing it will ask for: repo_url 
-      - example: git<span class="variable">@github</span>.com:smith11235/rails-aws.git
-        - clone url for ssh access
-</code></pre><p>This will:</p>
+<pre><code class="ruby">  bundle exec rails g <span class="symbol">rails_a_w_s:</span>setup
+  <span class="comment"># main thing it will ask for: </span>
+  &gt; repo_url 
+    - <span class="symbol">example:</span> git<span class="variable">@github</span>.<span class="symbol">com:</span>smith11235/rails-aws.git
+    - clone url <span class="keyword">for</span> ssh access
+    &gt; db <span class="symbol">type:</span> mysql? <span class="keyword">or</span> sqlite default
+    &gt; aws_access_key
+    &gt; aws_secret_key
+</code></pre><h4 id="what-is-the-generator-doing-">What is the generator doing?</h4>
 <ul>
 <li>setup .gitignore</li>
 <li>setup aws access key file: config/aws-keys.yml<ul>
@@ -60,6 +53,7 @@
 <li>revisioned.  can be edited.</li>
 </ul>
 </li>
+<li>setup your config/database.yml file</li>
 <li>adds capistrano to your project: <ul>
 <li>Capfile, config/deploy.rb, config/deploy/[production|development].rb</li>
 </ul>
@@ -70,23 +64,38 @@
 </li>
 <li>sets up a deploy key for pulling your project from your repository</li>
 </ul>
-<h4 id="tweaking-the-config">Tweaking the Config</h4>
+<h4 id="config-rails-aws-yml">config/rails-aws.yml</h4>
 <p>Default settings can be modified later in <strong>config/rails-aws.yml</strong>.</p>
-<p>This is not advised. Other than <strong>domain</strong> settings.</p>
+<p>And if you have a domain you want to use:</p>
+<ul>
+<li><p><strong>domain</strong>: your base url, for which you have a hosted zone setup for.</p>
+</li>
+<li><p><strong>domain_branch</strong>: the branch that will get the domain url.  </p>
+<ul>
+<li>other branches are presumed development environments<ul>
+<li>this can be 'master' or a release branch name</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 <h3 id="protected-keys">Protected Keys</h3>
 <p>These are all added to your .gitignore.  But they are good to be aware of.</p>
 <p>AWS Host Keys are kept by default in config/branch/[branch]/private.key files.</p>
 <p>Deploy keys for your repository are in config/deploy_key/[application]_id_rsa(.pub) files.</p>
 <p>For your deploy key, you can edit <strong>config/rails-aws.yml</strong> to specify an alternate location.</p>
-<p>Managing deploy keys can be viewed here: <a href="git_deploy_keys.md">Deploy Keys</a></p>
+<p>Managing deploy keys can be viewed here: <a href="lib/rails-aws/git_deploy_keys.md">Deploy Keys</a></p>
 <h3 id="stack-management">Stack Management</h3>
-<pre><code class="sql">  # <span class="operator"><span class="keyword">create</span> a stack <span class="keyword">and</span> <span class="keyword">start</span> server
-  rake aws:stack_create[branch_name] aws:cap_deploy[branch_name]
-  # if you have a <span class="keyword">domain</span>
+<pre><code class="sql">  # <span class="operator"><span class="keyword">create</span> a stack <span class="keyword">and</span> <span class="keyword">start</span> servers
+  rake aws:stack_create[branch_name] 
+    rake aws:cap_deploy[branch_name]
+
+  # if you have a <span class="keyword">domain</span> you want assigned
   rake aws:domain_create[branch_name]
 
-  # teardown a server
+  # teardown an environment - save money <span class="keyword">on</span> testing, always teardown
   rake aws:stack_delete[branch_name]
+
   # if you have a <span class="keyword">domain</span>
   rake aws:domain_delete[branch_name]
 
@@ -99,6 +108,16 @@
 
   # getting your execution information
   tail log/development.log # <span class="keyword">or</span> production <span class="keyword">as</span> appropriate
+
+  # updating your production stack <span class="keyword">with</span> capistrano
+    rake aws:cap_update[branch_name]
+</span></code></pre><h4 id="production-vs-development">Production Vs Development</h4>
+<p>Execute the stack management commands with RAILS_AWS=development or RAILS_AWS=production accordingly to deploy those environments.</p>
+<p><strong>Example master branch/domain deployment:</strong></p>
+<pre><code class="sql">  export RAILS_AWS=production
+  rake aws:stack_<span class="operator"><span class="keyword">create</span>[master]
+  rake aws:domain_create[master] 
+  rake aws:cap_deploy[master]
 </span></code></pre><h4 id="have-a-domain-name-ready-">Have a Domain Name Ready?</h4>
 <ul>
 <li><a href="http://stackoverflow.com/questions/17568892/aws-ec2-godaddy-domain-how-to-point">GoDaddy Domain?</a></li>
@@ -113,142 +132,39 @@
 <li>set the 4 nameservers to your domain</li>
 </ul>
 </li>
+<li>create a HostedZone for your domain<ul>
+<li>go to the aws console for route 53<ul>
+<li>create a hosted zone</li>
+<li>enter your base domain: example.com</li>
+</ul>
+</li>
+</ul>
+</li>
 <li>edit your config/rails-aws.yml file<ul>
-<li>set domain to: example.com</li>
+<li>set domain to your hosted zone name: example.com</li>
 <li>set domain_branch to 'master'<ul>
 <li>or whatever you want to pair this domain to</li>
 </ul>
 </li>
 </ul>
 </li>
-<li>if you are setting up repeatedly this domain<ul>
-<li>it can take a couple minutes for the routing to be updated</li>
+<li>when deploying a domain, updates can take minutes to be reflected in the browser <ul>
+<li>rake aws:cap_update instead of tearing down master</li>
 </ul>
 </li>
 </ul>
-<h2 id="development-phases">Development Phases</h2>
-<h3 id="phase-fix-secret-handling">Phase: Fix secret handling</h3>
-<p>Secret</p>
-<ul>
-<li>add secret to branch_dir/secret</li>
-<li>upload with cap</li>
-<li>add to .gitignore</li>
-</ul>
-<p>uploaded by cap deploy, reuseable</p>
-<h3 id="phase-rds-blank">Phase: RDS - Blank</h3>
-<ul>
-<li>what is PS running</li>
-<li>new db to start</li>
-<li>access from rails</li>
-</ul>
-<h3 id="phase-rds-snapshot">Phase: RDS - Snapshot</h3>
-<ul>
-<li>db dependency on rails secret?</li>
-<li>snapshot of target database</li>
-<li>stand up against snapshot</li>
-</ul>
-<h3 id="phase-partyshuffle-v1">Phase: partyshuffle v1</h3>
-<ul>
-<li>partyshuffle git codebase installed</li>
-<li>view history</li>
-</ul>
-<h3 id="push-server-on-app-server">Push server on app server</h3>
-<ul>
-<li>rails-aws.yml:<ul>
-<li>push_server: enabled</li>
-</ul>
-</li>
-<li>expect it to be present in Rails build<ul>
-<li>expect default config?</li>
-</ul>
-</li>
-<li>security group port for push</li>
-<li>cap logic starts it up</li>
-</ul>
-<h3 id="phase-additional-aws-resources">Phase: Additional AWS Resources</h3>
-<ul>
-<li>EC2:<ul>
-<li>resque: <ul>
-<li>resque-worker</li>
-<li>redis<ul>
-<li>push</li>
-</ul>
-</li>
-<li>private-pub<ul>
-<li>app:</li>
-<li>both resque + private pub</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>web: <ul>
-<li>rails server through passenger </li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="phase-update-stack">Phase: Update Stack</h3>
-<ul>
-<li>task: <ul>
-<li>cap_generate_secret: if file doesnt exist</li>
-<li>cap_start_rails_server: touch tmp/restart.txt<h3 id="phase">Phase</h3>
-</li>
-</ul>
-</li>
-<li>rake aws:check_setup (rails-aws.yml)<ul>
-<li>and clean up documentation</li>
-</ul>
-</li>
-</ul>
-<h3 id="dashboard">Dashboard</h3>
-<ul>
-<li>what do i have</li>
-<li>details rake task displayed</li>
-<li>bootstrap</li>
-<li>format:<ul>
-<li>each top level section an accordion<ul>
-<li>cloudformation, ec2, ebs, rds</li>
-<li>tied to a global search?</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="phase-ssl">Phase: SSL</h3>
-<ul>
-<li>setup ssl requirements</li>
-<li>nginx config</li>
-</ul>
-<pre><code class="nginx">  <span class="title">server</span> {       
-    <span class="title">listen</span>         <span class="number">80</span>;
-    <span class="title">server_name</span> <span class="number">54.165.219.61</span>;       
-    <span class="title">rewrite</span>       <span class="regexp"> ^</span> <span class="url">https://$server_name$request_uri?</span> <span class="built_in">permanent</span>;
-  }
-</code></pre><ul>
-<li>enforce_https|ssl<ul>
-<li>config/environments/production.rb: has directive</li>
-<li>or add to application controller</li>
-</ul>
-</li>
-</ul>
-<h3 id="phase">Phase</h3>
-<ul>
-<li>make a security check on startup?<ul>
-<li>for rake, generator, rails, capistrano</li>
-</ul>
-</li>
-</ul>
-<h3 id="ttl-lifetime">TTL lifetime</h3>
-<p>To save money, on startup.
-Process to delete in background</p>
-<h3 id="phase-vpc">Phase: VPC</h3>
-<h3 id="config-values-for-login">Config Values For Login</h3>
-<p>File: <strong>/etc/ssh/sshd_config</strong></p>
-<pre><code class="nginx">  <span class="title">PermitRootLogin</span> <span class="built_in">no</span>      
-  UsePAM <span class="built_in">no</span>      
-  RSAAuthentication <span class="built_in">yes</span> <span class="comment"># default      </span>
-  PubkeyAuthentication <span class="built_in">yes</span>       <span class="comment"># default</span>
-  ChallengeResponseAuthentication <span class="built_in">no</span>  <span class="comment"># default</span>
-  PasswordAuthentication <span class="built_in">no</span>  <span class="comment"># default</span>
-</code></pre></body></html>
+<h2 id="db-support">DB Support</h2>
+<p>You can use sqlite on your web server.</p>
+<p>Or you can use mysql on a separate host (greater cost, better performance).</p>
+<p>Ensure you have the gems as needed in your Gemfile.</p>
+<pre><code class="nginx">  <span class="title">gem</span> <span class="string">'mysql2'</span>
+  gem <span class="string">'sqlite3'</span>
+</code></pre><p>Your <strong>config/database.yml</strong> will be updated by the rails-aws setup generator.</p>
+<h2 id="comming-soon-worker-server">Comming Soon: Worker Server</h2>
+<p><a href="http://railscasts.com/episodes/316-private-pub">Private Pub</a>, a real time push server will soon be supported by setting 'private_pub: shared' in your config/rails-aws.yml file.</p>
+<p>To run on a separate worker host: 'private_pub: shared_worker'</p>
+<p><a href="http://railscasts.com/episodes/271-resque">Resque</a>, a redis backed job engine, 'resque: shared'.</p>
+<p>To run on a separate worker host: 'resque: shared_worker'</p>
+<p>By default 1 worker will support private_pub and resque for lower cost.</p>
+<p>To have 2 separate servers, set them to "private_worker"</p>
+</body></html>
