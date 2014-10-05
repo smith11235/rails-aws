@@ -1,8 +1,6 @@
 source 'https://rubygems.org'
 
-group :development do
-	gemspec
-end
+gemspec
 
 gem 'pry'
 
