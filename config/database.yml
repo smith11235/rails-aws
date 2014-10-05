@@ -13,8 +13,8 @@ mysql: &mysql
   encoding: utf8
   database: railsapp
   username: railsapp
-  password: <%= ENV["dbpassword"] %> 
-  host: <%= ENV["dbhost"] %>
+  password: "dbpassword" 
+  host: "dbhost"
   port: 3306
   timeout: 60
 

@@ -177,7 +177,6 @@ Your **config/database.yml** will be updated by the rails-aws setup generator.
 ## Development Plan
 
 ### Phase: RDS - Blank
-
 	* test stack deployment
 		* be rails g rails_a_w_s:setup
 		* r aws:stack_delete[rds,no-error] aws:stack_create[rds] RAILS_ENV=production
@@ -187,11 +186,7 @@ Your **config/database.yml** will be updated by the rails-aws setup generator.
 ### Phase: Setup Generator Update
 * for rails-aws.yml, aws-keys.yml
 	* load existing values, ask if update
-
 * ask for domain and domain_branch
-
-* tag files with likelihood of update
-
 
 ### Phase: RDS - Snapshot
 * db dependency on rails secret?

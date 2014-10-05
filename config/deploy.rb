@@ -1,7 +1,7 @@
 # config valid only for Capistrano 3.1
 lock '3.2.1'
 
-%w( application repo_url branch branch_secret deploy_key rails_env ).each do |setting|
+%w( application repo_url branch branch_secret deploy_key rails_env dbhost dbpassword ).each do |setting|
 	setting_value = ENV[setting]
 	raise "Missing setting: #{setting}" if setting_value.nil?
 	puts "Setting: #{setting}, Value: #{setting_value}"
@@ -44,10 +44,13 @@ namespace :deploy do
 	desc 'Publish DB Settings to App Hosts'
 	task :publish_db_settings do
     on roles(:app), in: :sequence, wait: 5 do
-  		execute "echo 'export dbhost=#{fetch( :dbhost )}' >> ~/.bashrc"
-  		execute "echo \"export dbpassword='#{fetch( :dbpassword )}'\" >> ~/.bashrc"
+			db_file = File.join( current_path, "config/database.yml" )
+  		execute "sed -i 's/dbhost/#{fetch( :dbhost )}/' #{db_file}"
+  		execute "sed -i 's/dbpassword/#{fetch( :dbpassword )}/' #{db_file}"
 		end
 	end
+
+	before 'deploy:migrate', 'deploy:publish_db_settings'
 
 	desc 'Publish Deploy Uey For Git'
 	task :publish_deploy_key do

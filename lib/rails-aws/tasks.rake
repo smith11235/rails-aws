@@ -112,7 +112,7 @@ namespace :aws do
 		raise "Unable to generate secret to: #{branch_secret}" unless system( cmd )
 		raise "Missing secret file: #{branch_secret}" unless File.file? branch_secret
 		
-		%w(deploy:publish_deploy_key  deploy:publish_db_settings deploy deploy:publish_secret deploy:restart).each do |task|
+		%w(deploy:publish_deploy_key deploy deploy:publish_secret deploy:restart).each do |task|
 			cap_cmd( task )
 		end
 		puts "Capistrano Deployment Successful".green
