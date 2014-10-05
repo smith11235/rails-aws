@@ -54,13 +54,15 @@ namespace :aws do
 	end
 
 	desc "Login to ec2"
-	task :stack_login, [:branch_name] => :environment do |t,args|
+	task :stack_login, [:branch_name,:user] => :environment do |t,args|
+		args.with_defaults :user => 'deploy'
 		branch_name = args[:branch_name]
 		raise "Missing branch name".red if branch_name.nil?
 		RailsAWS.branch( branch_name )
 
 		ip = RailsAWS::Cloudformation.outputs.fetch "IP"
-		login_cmd = "ssh -i #{RailsAWS::KeyPair.file} deploy@#{ip}"
+		login_cmd = "ssh -i #{RailsAWS::KeyPair.file} #{args[:user]}@#{ip}"
+		puts "Attempting: #{login_cmd}".green
 		system( login_cmd )
 	end
 
@@ -74,7 +76,10 @@ namespace :aws do
   		:repo_url => RailsAWS.repo_url,
   		:application => RailsAWS.application,
   		:deploy_key => RailsAWS.deploy_key,
-  		:rails_env => RailsAWS.environment
+  		:rails_env => RailsAWS.environment,
+			:dbtype => RailsAWS.db_type,
+			:dbhost => 'dummy',
+			:dbpassword => 'dummy'
 		}
 
 		if RailsAWS.db_type != :sqlite

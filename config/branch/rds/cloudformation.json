@@ -32,6 +32,9 @@
           "cp /home/ubuntu/.ssh/authorized_keys /home/$new_user/.ssh/authorized_keys", "\n",
           "chown -R $new_user:$new_user /home/$new_user/.ssh/authorized_keys", "\n",
           "chmod 600 /home/$new_user/.ssh/authorized_keys", "\n",
+					"echo 'deploy      ALL=(ALL:ALL) NOPASSWD:ALL' >> /etc/sudoers", "\n",
+
+					 
 
 					 "echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Installing RVM VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
 			     "sudo -u $new_user sh -c '\\curl -sSL https://get.rvm.io | bash -s stable'", "\n",
@@ -60,9 +63,12 @@
     "service nginx start ", "\n",
 
     "grep passenger_root /etc/nginx/nginx.conf", "\n",
+		"sed -i 's/^.user.*$/user deploy;/' /etc/nginx/nginx.conf", "\n",
+
+		"sed -i 's/^.passenger_root/passenger_root/' /etc/nginx/nginx.conf", "\n",
+    "sed -i 's_^.*passenger\\_ruby.*;_passenger\\_ruby /home/deploy/.rvm/gems/ruby-2.1.3/wrappers/ruby;_' /etc/nginx/nginx.conf", "\n",
     "grep passenger_ruby /etc/nginx/nginx.conf", "\n",
-    "sed -i 's_passenger\\_ruby.*;_passenger\\_ruby /home/deploy/.rvm/rubies/ruby-2.1.3/bin/ruby;_' /etc/nginx/nginx.conf", "\n",
-    "grep passenger_ruby /etc/nginx/nginx.conf", "\n",
+
     "service nginx restart ", "\n",
 
 		"export nginx_default=/etc/nginx/sites-enabled/default", "\n",
@@ -72,7 +78,7 @@
     "echo '        listen [::]:80 default_server ipv6only=on; ' >> $nginx_default", "\n",
 		"echo '        server_name ~^(.+)$;' >> $nginx_default", "\n",
     "echo '        passenger_enabled on;' >> $nginx_default", "\n",
-    "echo '        rails_env    production;' >> $nginx_default", "\n",
+    "echo '        rails_env    development;' >> $nginx_default", "\n",
     "echo '        root         /home/deploy/rails-aws/current/public;' >> $nginx_default", "\n",
     "echo '        # redirect server error pages to the static page /50x.html' >> $nginx_default", "\n",
     "echo '        error_page   500 502 503 504  /50x.html;' >> $nginx_default", "\n",
@@ -91,7 +97,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "rails-aws-rds-production"
+						"Value": "rails-aws-rds-development"
 					},
 					{
 						"Key": "branch_name",
@@ -99,11 +105,11 @@
 					},
 					{
 						"Key": "environment",
-						"Value": "production"
+						"Value": "development"
 					},
 					{
 						"Key": "db_type",
-						"Value": "mysql"
+						"Value": "sqlite"
 					},
 					{
 						"Key": "deployer",
@@ -142,7 +148,7 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "rails-aws-rds-production"
+						"Value": "rails-aws-rds-development"
 					},
 					{
 						"Key": "branch_name",
@@ -150,11 +156,11 @@
 					},
 					{
 						"Key": "environment",
-						"Value": "production"
+						"Value": "development"
 					},
 					{
 						"Key": "db_type",
-						"Value": "mysql"
+						"Value": "sqlite"
 					},
 					{
 						"Key": "deployer",
@@ -165,86 +171,6 @@
       }
     },
 		
-		
-			
-      "rdsrdssg" : {
-        "Type" : "AWS::RDS::DBSecurityGroup",
-        "Properties" : {
-          "GroupDescription" : "Enable access to db from ec2 instances",
-          "DBSecurityGroupIngress" : [
-						{ 
-							"EC2SecurityGroupName" : { "Ref": "rdssg" },
-							"EC2SecurityGroupOwnerId" : "180190769793"
-						}
-          ],
-  				"Tags": [
-  					{
-  						"Key": "Name",
-  						"Value": "rails-aws-rds-production"
-  					},
-  					{
-  						"Key": "branch_name",
-  						"Value": "rds"
-  					},
-  					{
-  						"Key": "environment",
-  						"Value": "production"
-  					},
-					{
-						"Key": "db_type",
-						"Value": "mysql"
-					},
-  					{
-  						"Key": "deployer",
-  						"Value": "root"
-  					}
-  
-  				]
-        }
-      },
-    	"rdsrds" : {
-        "Type" : "AWS::RDS::DBInstance",
-        "Properties" :
-        {
-           "AllocatedStorage" : "10",
-           "AllowMajorVersionUpgrade" : true,
-           "AutoMinorVersionUpgrade" : true,
-           "BackupRetentionPeriod" : "2",
-           "DBInstanceClass" : "db.t1.micro",
-           "DBName" : "railsapp",
-					 "DBSecurityGroups" : [
-					 	{ "Ref": "rdsrdssg" }
-					 ],
-           "Engine" : "MySQL",
-           "MasterUsername" : "railsapp",
-					 "MasterUserPassword" : "5aed99058d873716ebec7111b2e679dc",
-           "MultiAZ" : false,
-           "Port" : "3306",
-           "PubliclyAccessible" : false,
-           "Tags" : [  
-  					{
-  						"Key": "Name",
-  						"Value": "rails-aws-rds-production"
-  					},
-  					{
-  						"Key": "branch_name",
-  						"Value": "rds"
-  					},
-					{
-						"Key": "db_type",
-						"Value": "mysql"
-					},
-  					{
-  						"Key": "environment",
-  						"Value": "production"
-  					},
-  					{
-  						"Key": "deployer",
-  						"Value": "root"
-  					}
-						]
-     			}
-     		},
 		
     "WaitForInstanceWaitHandle" : {
       "Type" : "AWS::CloudFormation::WaitConditionHandle",
@@ -266,14 +192,11 @@
       "Description" : "The IP for the newly created server",
 			"Value" : { "Fn::GetAtt" : [ "rdsec2", "PublicIp" ] } 
 		},
+		
     "WebsiteURL" : {
       "Description" : "The URL for the newly created Rails application",
 			"Value" : { "Fn::Join" : ["", [ "http://", { "Fn::GetAtt" : [ "rdsec2", "PublicIp" ] } ]]}
-    },
-		"DBHOST" : {
-      "Description" : "The internal url for the newly created RDS server",
-			"Value" : { "Fn::GetAtt" : [ "rdsrds", "Endpoint.Address" ] } 
-		}
+    }
   }
 }
 

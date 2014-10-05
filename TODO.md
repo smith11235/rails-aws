@@ -1,24 +1,53 @@
 # Development Plan
 
 ## Phase: Db Data
-* add a scaffold:
-	* be rails g scaffold branch name 
-	* /branch
-		* add button/route to create 100 branches
-		* route: collection test_batch
+
+* phusion isnt serving rails
+
+* debugging:
+	* export RAILS_ENV=development
+	* r aws:stack_delete[rds,no_error] aws:stack_create[rds] aws:cap_deploy[rds]
+	* login and debug
+		* set user => deploy in nginx.conf
+		* uncomment passenger_root
+		* uncomment passenger_ruby
+			* passenger_ruby /home/deploy/.rvm/gems/ruby-2.1.3/wrappers/ruby
+
+* remove 'deploy' root priviledges (stack.json.erb, cloudinit, /etc/sudoers)
 
 ## Phase: Setup Generator Update
-* for rails-aws.yml, aws-keys.yml
-	* load existing values, ask if update
+
+* for rails-aws.yml, aws-keys.yml, db-type
+	* load existing values, <enter> uses default
 * ask for domain and domain_branch
 
 ## Phase: RDS - From Snapshot
 
-* rake aws:create_dbsnapshot
-	* search rds instances...
-		* ask for selection? based on Name?
-	* create snapshot
-	* log config/branch/:branch/db_snapshot_id
+* rake aws:rds_info
+
+```
+rake aws:rds_info
+
+rds = AWS::RDS.new
+rds.db_instances.each do |instance|
+	puts "RDS::DBInstance  id:#{instance.id} db_name:#{instance.db_name}"
+end
+
+rds.db_snapshots.each do |instance|
+	puts "RDS::DBSnapshot  id:#{instance.id} db_name:#{instance.db_name}"
+end
+
+puts "Use a snapshot by running `rake aws:rds_set_snapshot[branch,snapshot_id]`"
+puts "Create and use a snapshot by running `rake aws:rds_new_snapshot[branch,database_id]`"
+
+```
+
+* rake aws:rds_new_snapshot[branch,rds_id]
+	* create snapshot of rds_id
+	* execute( rds_set_snapshot )
+* rake aws:rds_set_snapshot[branch,snapshot_id]
+	* log config/branch/:branch/rds_snapshot_id
+
 
 * rake aws:stack_create
 	* if db_type != :sqlite

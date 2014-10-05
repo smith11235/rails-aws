@@ -32,6 +32,9 @@
           "cp /home/ubuntu/.ssh/authorized_keys /home/$new_user/.ssh/authorized_keys", "\n",
           "chown -R $new_user:$new_user /home/$new_user/.ssh/authorized_keys", "\n",
           "chmod 600 /home/$new_user/.ssh/authorized_keys", "\n",
+					"echo 'deploy      ALL=(ALL:ALL) NOPASSWD:ALL' >> /etc/sudoers", "\n",
+
+					 
 
 					 "echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Installing RVM VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
 			     "sudo -u $new_user sh -c '\\curl -sSL https://get.rvm.io | bash -s stable'", "\n",
@@ -60,9 +63,12 @@
     "service nginx start ", "\n",
 
     "grep passenger_root /etc/nginx/nginx.conf", "\n",
+		"sed -i 's/^.user.*$/user deploy;/' /etc/nginx/nginx.conf", "\n",
+
+		"sed -i 's/^.passenger_root/passenger_root/' /etc/nginx/nginx.conf", "\n",
+    "sed -i 's_^.*passenger\\_ruby.*;_passenger\\_ruby /home/deploy/.rvm/gems/ruby-2.1.3/wrappers/ruby;_' /etc/nginx/nginx.conf", "\n",
     "grep passenger_ruby /etc/nginx/nginx.conf", "\n",
-    "sed -i 's_passenger\\_ruby.*;_passenger\\_ruby /home/deploy/.rvm/rubies/ruby-2.1.3/bin/ruby;_' /etc/nginx/nginx.conf", "\n",
-    "grep passenger_ruby /etc/nginx/nginx.conf", "\n",
+
     "service nginx restart ", "\n",
 
 		"export nginx_default=/etc/nginx/sites-enabled/default", "\n",
@@ -266,14 +272,16 @@
       "Description" : "The IP for the newly created server",
 			"Value" : { "Fn::GetAtt" : [ "<%= @branch_name + "ec2" %>", "PublicIp" ] } 
 		},
+		<% if RailsAWS.db_type != :sqlite %>
+  		"DBHOST" : {
+        "Description" : "The internal url for the newly created RDS server",
+  			"Value" : { "Fn::GetAtt" : [ "<%= @branch_name + "rds" %>", "Endpoint.Address" ] } 
+  		},
+		<% end %>
     "WebsiteURL" : {
       "Description" : "The URL for the newly created Rails application",
 			"Value" : { "Fn::Join" : ["", [ "http://", { "Fn::GetAtt" : [ "<%= @branch_name + "ec2" %>", "PublicIp" ] } ]]}
-    },
-		"DBHOST" : {
-      "Description" : "The internal url for the newly created RDS server",
-			"Value" : { "Fn::GetAtt" : [ "<%= @branch_name + "rds" %>", "Endpoint.Address" ] } 
-		}
+    }
   }
 }
 
