@@ -174,131 +174,16 @@ Ensure you have the gems as needed in your Gemfile.
 
 Your **config/database.yml** will be updated by the rails-aws setup generator.
 
-## Development Plan
+## Comming Soon: Worker Server
 
-### Phase: RDS - Blank
-	* test stack deployment
-		* be rails g rails_a_w_s:setup
-		* r aws:stack_delete[rds,no-error] aws:stack_create[rds] RAILS_ENV=production
-		* r aws:cap_deploy[rds] RAILS_ENV=production
-		* test connection
+[Private Pub](http://railscasts.com/episodes/316-private-pub), a real time push server will soon be supported by setting 'private_pub: shared' in your config/rails-aws.yml file.
 
-### Phase: Setup Generator Update
-* for rails-aws.yml, aws-keys.yml
-	* load existing values, ask if update
-* ask for domain and domain_branch
+To run on a separate worker host: 'private_pub: shared_worker'
 
-### Phase: RDS - Snapshot
-* db dependency on rails secret?
-* snapshot of target database
-* stand up against snapshot
+[Resque](http://railscasts.com/episodes/271-resque), a redis backed job engine, 'resque: shared'.
 
-### Phase: partyshuffle v1
-* partyshuffle git codebase installed
-* view history
+To run on a separate worker host: 'resque: shared_worker'
 
-### Push server on app server
+By default 1 worker will support private_pub and resque for lower cost.
 
-* rails-aws.yml:
-	* push_server: enabled
-* expect it to be present in Rails build
-	* expect default config?
-* security group port for push
-* cap logic starts it up
-
-### Phase: Additional AWS Resources
-* EC2:
-  * resque: 
-  	* resque-worker
-  	* redis
-	* push
-  	* private-pub
-	* app:
-		* both resque + private pub
-  * web: 
-  	* rails server through passenger 
-
-### Phase: dbpassword_file in gitignore
-* add to generator
-* temporarily its behind ssh access and security group
-
-### Phase: Update Stack
-- task: 
-	- cap_generate_secret: if file doesnt exist
-	- cap_start_rails_server: touch tmp/restart.txt
-### Phase
-- rake aws:check_setup (rails-aws.yml)
-  - and clean up documentation
-
-
-### Dashboard
-* what do i have
-* details rake task displayed
-* bootstrap
-* format:
-	* each top level section an accordion
-		* cloudformation, ec2, ebs, rds
-		* tied to a global search?
-
-### Phase: SSL
-
-* setup ssl requirements
-* nginx config
-
-```
-  server {       
-    listen         80;
-    server_name 54.165.219.61;       
-    rewrite        ^ https://$server_name$request_uri? permanent;
-  }
-```
-
-* enforce_https|ssl
-	* config/environments/production.rb: has directive
-	* or add to application controller
-
-### Phase
-- make a security check on startup?
-	- for rake, generator, rails, capistrano
-
-
-### TTL lifetime
-
-To save money, on startup.
-Process to delete in background
-
-
-
-### Phase: VPC 
-
-## Application Setup (Not as recommended)
-
-The directory name for the clone is based on a **1 rails-aws <=> 1 application to deploy** relationship.
-
-Later this will be 1 to many for easy cloud management from your local machine or rails-aws.com.
-
-```
-  # where [your-app-name] is your repohost.com/username/your-app-name
-  # example
-  ~/ $ git clone git@github.com:smith11235/rails-aws.git rails-aws-[your-app-name]
-```
-
-Build the rvm/ruby environment.  May require sudo for needed ruby libraries.
-
-```
-  sh build_ruby_env.sh
-  source load_ruby_env.sh
-```
-
-### Config Values For Login
-
-File: **/etc/ssh/sshd_config**
-
-```       
-  PermitRootLogin no      
-  UsePAM no      
-  RSAAuthentication yes # default      
-  PubkeyAuthentication yes       # default
-  ChallengeResponseAuthentication no  # default
-  PasswordAuthentication no  # default
-``` 
+To have 2 separate servers, set them to "private_worker"

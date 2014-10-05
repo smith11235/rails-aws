@@ -44,7 +44,7 @@ namespace :deploy do
 	desc 'Publish DB Settings to App Hosts'
 	task :publish_db_settings do
     on roles(:app), in: :sequence, wait: 5 do
-			db_file = File.join( current_path, "config/database.yml" )
+			db_file = File.join( release_path, "config/database.yml" )
   		execute "sed -i 's/dbhost/#{fetch( :dbhost )}/' #{db_file}"
   		execute "sed -i 's/dbpassword/#{fetch( :dbpassword )}/' #{db_file}"
 		end
