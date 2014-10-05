@@ -178,19 +178,20 @@ Your **config/database.yml** will be updated by the rails-aws setup generator.
 
 ### Phase: RDS - Blank
 
-		* rake aws:cap_deploy
-		  * if RailsAWS.db_type != :sqlite
-  			* cap cap_deploy:publish_db_settings (before deploy)
-  				* execute "echo 'export dbhost=#{dbhost}' >> ~/.bashrc"
-  				* execute "echo \"export dbpassword='#{dbpassword}'\" >> ~/.bashrc"
 	* test stack deployment
+		* be rails g rails_a_w_s:setup
 		* r aws:stack_delete[rds,no-error] aws:stack_create[rds] RAILS_ENV=production
-		* test access from rails 
+		* r aws:cap_deploy[rds] RAILS_ENV=production
+		* test connection
 
 ### Phase: Setup Generator Update
-* ask for domain and domain_branch
 * for rails-aws.yml, aws-keys.yml
 	* load existing values, ask if update
+
+* ask for domain and domain_branch
+
+* tag files with likelihood of update
+
 
 ### Phase: RDS - Snapshot
 * db dependency on rails secret?

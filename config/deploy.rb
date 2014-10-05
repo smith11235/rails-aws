@@ -41,6 +41,13 @@ set :default_shell, '/bin/bash -l'
 # set :keep_releases, 5
 
 namespace :deploy do
+	desc 'Publish DB Settings to App Hosts'
+	task :publish_db_settings do
+    on roles(:app), in: :sequence, wait: 5 do
+  		execute "echo 'export dbhost=#{fetch( :dbhost )}' >> ~/.bashrc"
+  		execute "echo \"export dbpassword='#{fetch( :dbpassword )}'\" >> ~/.bashrc"
+		end
+	end
 
 	desc 'Publish Deploy Uey For Git'
 	task :publish_deploy_key do

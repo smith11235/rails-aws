@@ -7,45 +7,43 @@ module RailsAWS
 		source_root File.expand_path("../", __FILE__)
 
 		def git_deploy_keys_doc
-			copy_file 'git_deploy_keys.md', File.join( Rails.root,'public/git_deploy_keys.md' )
+			source = 'git_deploy_keys.md'
+			target = File.join( Rails.root,'public', source )
+			if modify? target, :suggested => "Safe to update".green
+				copy_file source, target
+			end
 		end
 
 		def rails_aws_settings
 			file = "config/rails-aws.yml"
-			yes = if File.file?(file)
-							defaults = RailsAWS.config_hash( :reset => true )
-							ask("Do you wish to update: #{file} (y)") 
-						else
-							defaults = {}
-							'y'
-						end
+			# defaults = RailsAWS.config_hash( :reset => true )
 
-			if yes == "y"
+			if modify? file, :confirm => true, :suggested => "Update carefully".yellow
+				values = Hash.new
+				values[ 'repo_url' ] = ask "What is your rails application git clone 'repo_url'?"
+				values[ 'account_id' ] = ask "What is your amazon web services 'account_id'?"
+
+				puts "Sqlite db's are cheaper to run, but lower performance for multi-user/non-trivial applications"
+				puts "Development environment is by default sqlite.  You can modify this afterwards"
+				prod_mysql = ask 'Do you wish to run a mysql server for your production environments (y)'
+				prod_type = if prod_mysql == 'y'
+											"mysql"
+										else
+											"sqlite" 
+										end
+				values[ 'db_type_production' ] = prod_type
+				values[ 'db_type_development' ] = 'sqlite'
+
+				# defaults, user can setup afterwards
+				values[ 'domain' ] = nil
+				values[ 'domain_branch' ] = nil
+
+				# default supported values
+				values[ 'instance_type' ] = "t2.micro"
+				values[ 'region' ] = 'us-east-1'
+				values[ 'ami_id' ] = "ami-8afb51e2"
+
 				create_file file do
-					values = Hash.new
-					values[ 'repo_url' ] = ask "What is your rails application git clone 'repo_url'?"
-					values[ 'account_id' ] = ask "What is your amazon web services 'account_id'?"
-
-					puts "Sqlite db's are cheaper to run, but lower performance for multi-user/non-trivial applications"
-					puts "Development environment is by default sqlite.  You can modify this afterwards"
-					prod_mysql = ask 'Do you wish to run a mysql server for your production environments (y)'
-					prod_type = if prod_mysql == 'y'
-												"mysql"
-											else
-												"sqlite" 
-											end
-					values[ 'db_type_production' ] = prod_type
-					values[ 'db_type_development' ] = 'sqlite'
-					
-					# defaults, user can setup afterwards
-					values[ 'domain' ] = nil
-					values[ 'domain_branch' ] = nil
-
-					# default supported values
-					values[ 'instance_type' ] = "t2.micro"
-					values[ 'region' ] = 'us-east-1'
-					values[ 'ami_id' ] = "ami-8afb51e2"
-
 					values.to_yaml
 				end
 			end
@@ -53,8 +51,7 @@ module RailsAWS
 
 		def database_config_file
 			file = "config/database.yml"
-			yes = File.file?(file) ? ask("Do you wish to update: #{file} (y)") : 'y'
-			if yes == "y"
+			if modify? file, :suggested => "Safe to update, use the rails-aws provided config".green
 
 				copy_file File.basename( file ), file
 
@@ -69,8 +66,7 @@ module RailsAWS
 
 		def aws_keys_config_file
 			file = "config/aws-keys.yml"
-			yes = File.file?(file) ? ask("Do you wish to update: #{file} (y)") : 'y'
-			if yes == "y"
+			if modify? file, :suggested => "Safe to update... dont lose your secret key though".yellow
 				create_file file do
 					keys = [ :access_key_id, :secret_access_key ]
 					values = Hash.new
@@ -86,8 +82,7 @@ module RailsAWS
 
 		def deploy_key
 			file = RailsAWS.deploy_key( :reset => true )
-			yes = File.file?(file) ? ask("Do you wish to update: #{file} (y)") : 'y'
-			if yes == "y"
+			if modify? file, :suggested => "Safe to update... requires git remote repository changes".yellow
 				deploy_dir = File.dirname file
 				FileUtils.mkdir deploy_dir unless File.directory? deploy_dir
 				system( "ssh-keygen -t rsa -f #{file}" )
@@ -99,15 +94,14 @@ module RailsAWS
 
 		def capistrano_files
 
-  		files = [
-  			'Capfile',
-  			'config/deploy.rb',
-  			'config/deploy/development.rb',
-  			'config/deploy/production.rb'
-  		]
+			files = [
+				'Capfile',
+				'config/deploy.rb',
+				'config/deploy/development.rb',
+				'config/deploy/production.rb'
+			]
 			files.each do |file|
-				yes = File.file?(file) ? ask("Do you wish to update: #{file} (y)") : 'y'
-				if yes == "y"
+				if modify? file, :suggested => "Safe to update".green
 					source = File.basename( file ) 
 					directory = File.dirname( file )
 					FileUtils.mkdir directory unless File.directory? directory
@@ -115,23 +109,51 @@ module RailsAWS
 				end
 			end
 		end
-		
+
 		def gitignore
 			ignore_file = File.join Rails.root, '.gitignore'
-			%w(
-      	/config/aws-keys.yml
-      	/config/branch/*/private.key
-      	/config/branch/*/secret
-      	/config/deploy_key
-			).each do |ignore|
-				system( "echo #{ignore} >> #{ignore_file}" )
+			if modify? ignore_file, :suggested => "Ensure you add these ignores in".green
+				%w(
+				/config/aws-keys.yml
+				/config/branch/*/private.key
+				/config/branch/*/secret
+				/config/deploy_key
+				).each do |ignore|
+					system( "echo #{ignore} >> #{ignore_file}" )
+				end
 			end
 		end
 
 
 		def config_secrets
-			copy_file 'secrets.yml', File.join( Rails.root, 'config/secrets.yml' )
+			file = 'config/secrets.yml'
+			if modify? file, :suggested => "Safe to update".green
+				copy_file 'secrets.yml', File.join( Rails.root, file )
+			end
+		end
+
+		private
+
+		def modify?( file, opts = {} )
+			opts = opts.reverse_merge( :confirm => false, :suggested => nil  )
+
+			answer = if File.file?(file)
+								 puts
+								 puts "---".green
+								 puts "File: #{file}"
+								 puts "Suggested: #{opts[:suggested]}" if opts[:suggested]
+								 ask("Do you wish to modify (y)".yellow)  == 'y'
+							 else
+								 false
+							 end
+			answer = if answer && opts[:confirm]
+								 ask( "Are you sure you wish to modify (Y)".red ) == 'Y'
+							 else
+								 answer
+							 end
+			return answer
 		end
 	end
+
 
 end
