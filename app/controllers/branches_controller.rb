@@ -7,7 +7,7 @@ class BranchesController < ApplicationController
 			Branch.new( :name => "test-#{number}-#{random_string}" ).save!
 		end
     respond_to do |format|
-      format.html { redirect_to :index, notice: 'Test branches created.' }
+      format.html { redirect_to action: 'index', notice: 'Test branches created.' }
     end
 	end
 
