@@ -29,8 +29,10 @@ For all of these:
 
 ```
   git checkout master
-  git checkout -b release-X.Y.Z
-	git push origin release-X.Y.Z
+	export prior_branch=release-1.0.0
+	export branch=release-1.0.1
+  git checkout -b $branch 
+	git push origin $branch
 
   r aws:rds_info
   > select the database_id for database '[application]-release-A.B.C' (current production)
@@ -40,8 +42,15 @@ For all of these:
   # for a small case this could be 10 minutes. Future improvements are being made
   # set maintenance banners on your website to notify clients or prevent writes to your database.
 
-  r aws:stack_create[$branch] aws:cap_deploy[$branch] aws:domain_create[$branch]
-  # domain problems here....
+	r aws:create_stack[$branch] aws:cap_deploy[$branch] 
+	> test site: wget IPADDRESS
+	sed -i "s/^domain_branch:.*\$/domain_branch: $branch/" config/rails-aws.yml
+	r aws:domain_update
+	wget domain.com
+	r aws:delete_stack[$prior_branch]
+	git add .
+	git commit 
+	git push origin $release
 ```
 
 ## Dev Builds

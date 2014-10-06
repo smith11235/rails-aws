@@ -1,29 +1,20 @@
 # Development Plan
 
-## Phase: Domain Replacement
-* problem:
-	* browsers seem to block the change for a while
-		* or caching of ip route is happening sompewhere
-
-* document new release branch: release-1.0.1
-	* previously deployed branch 'release-1.0.0'
-	* git checkout master
-	* git checkout -b release-1.0.1
-	* git push origin release-1.0.1
-	* r aws:create_stack[release-1.0.1] aws:cap_deploy[release-1.0.1] 
-	* test site: wget IPADDRESS/route.json
-	* set config/rails-aws.yml::domain_branch to release-1.0.1
-	* r aws:domain_update
-	* wget rails.com/branches.json
-	* test website
-	* r aws:delete_stack[release-1.0.0]
-	* wget rails.com/branches.json
-	* test website
-	* r aws:delete_stack[release-1.0.1]
-
 
 ## Phase: partyshuffle v1
+* git checkout master
+* git checkout -b release-2.0.0
 * export RAILS_ENV=production
+* add gem to Gemfile
+* bundle install
+* rails g rails_a_w_s:setup
+* edit domain settings in rails-aws.yml
+* git push origin release-2.0.0
+* r aws:rds_info
+* r aws:rds_create_snapshot[db_id]
+* r aws:stack_create[release-2.0.0] aws:cap_deploy[release-2.0.0]
+
+
 * r aws:stack_delete[rds,no_error] aws:stack_create[rds] aws:cap_deploy[rds]
 * partyshuffle git codebase installed
 * with db history
@@ -36,6 +27,13 @@
 		* rake db:backup
 		* mv file to encrypted zip
 		* mv zip to public/
+
+## Phase: Domain Update Delay
+
+* problem:
+	* browsers seem to block the change for a while
+		* or caching of ip route is happening sompewhere
+
 
 ## VPC: Minimal Downtime
 * if we have vpc
