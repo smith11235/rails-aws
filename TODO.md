@@ -1,20 +1,16 @@
 # Development Plan
 
 ## Phase: Domain Replacement
-* rake aws:domain_repoint[branch,maintenance_branch]
-	* change: domain management separate from branch
-		* rake aws:domain_update # updates the existing record
+	* new release branch: release-1.0.0
+		* (running) create_stack cap_deploy
+		* rake aws:domain_create
+		* login and test
+	* new release branch: release-1.0.1
+		* git checkout -b release-1.0.1
+		* git push origin release-1.0.1
+		* aws:create_stack[release-1.0.1] aws:cap_deploy[release-1.0.1] aws:domain_update
+		* aws:delete_stack[release-1.0.0]
 
-	* new release branch: release-x.y.z
-		* create hardware stack, cap-deploy
-		* aws:domain_update
-		* delete prior branch stack
-	* cleaner workflow
-		* if db writes are frozen, a maintanance stack
-		* and a status message in the banner
-		* this is the best possible without a vpc
-			* independent vpc with security groups and subnets
-				* so db can be managed in different ways
 
 ## Phase: partyshuffle v1
 * export RAILS_ENV=production

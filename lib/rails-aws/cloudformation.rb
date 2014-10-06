@@ -41,21 +41,21 @@ module RailsAWS
 
 		def template_file 
 			@template_file ||= case true 
-			when stack?
-				File.expand_path( "../stack.json.erb", __FILE__ )
-			when domain?
-				File.expand_path( "../route53.json.erb", __FILE__ )
-			end
+												 when stack?
+													 File.expand_path( "../stack.json.erb", __FILE__ )
+												 when domain?
+													 File.expand_path( "../route53.json.erb", __FILE__ )
+												 end
 			@template_file
 		end
 
 		def rendered_file
 			@rendered_file ||= case true
-              			when stack?
-											File.join( RailsAWS.branch_dir, "cloudformation.json" )
-              			when domain?
-											File.join( Rails.root, 'config', "#{RailsAWS.application}_domain.json" )
-              			end
+												 when stack?
+													 File.join( RailsAWS.branch_dir, "cloudformation.json" )
+												 when domain?
+													 File.join( Rails.root, 'config', "#{RailsAWS.application}_domain.json" )
+												 end
 			@rendered_file
 		end
 
@@ -69,17 +69,21 @@ module RailsAWS
 
 		def stack_name
 			@stack_name ||= case true
-              			when stack?
-              				@application + RailsAWS.branch
-              			when domain?
-              				@application + "domain"
-              			end
-			@stack_name.gsub( /(-|_)/, 'x' )
+											when stack?
+												@application + RailsAWS.branch
+											when domain?
+												@application + "domain"
+											end
+			@stack_name.gsub( special_chars, 'x' )
+		end
+
+		def special_chars
+			/(-|_|\!|\.|\?|\*)/
 		end
 
 		def branch
 			@branch ||= RailsAWS.branch
-			@branch.gsub( /(-|_|\!)/, 'x' )
+			@branch.gsub( special_chars, 'x' )
 		end
 
 		def exists?
