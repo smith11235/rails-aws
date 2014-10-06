@@ -33,6 +33,14 @@ namespace :aws do
 		cloudformation.create!
 	end
 
+	desc "Updates the domain to a new branch stack that must already be created"
+	task :domain_update => :environment do
+		RailsAWS.branch( RailsAWS.domain_branch )
+		raise "Domain is not enabled, must have 'domain' and 'domain_branch' config with this branch specified".red unless RailsAWS.domain_enabled?
+		cloudformation = RailsAWS::Cloudformation.new( :type => :domain )
+		cloudformation.update!
+	end
+
 	desc "Remove a specified domain to your stack for that branch"
 	task :domain_delete => :environment do 
 		RailsAWS.branch( RailsAWS.domain_branch )

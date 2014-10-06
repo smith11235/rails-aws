@@ -96,6 +96,17 @@ module RailsAWS
 			delete_stack
 		end
 
+		def update!
+			unless exists?
+				msg = "Cloudformation stack does not exist: #{stack_name}".red
+				Rails.logger.fatal msg
+				raise msg
+			end
+
+			render_erb
+			update_stack
+		end
+
 		def create!
 			if exists?
 				msg = "Cloudformation stack exists: #{stack_name}".red
@@ -166,11 +177,24 @@ module RailsAWS
 			end
 		end
 
-		def create_stack
-			template = File.open( rendered_file ).read
-			@stack = @cfm.stacks.create( stack_name, template)
+		def update_stack
+			@stack = @cfm.stacks[ stack_name ]
+			@stack.update( :template => template )
+			track_stack( "UPDATE_IN_PROGRESS", "UPDATE_COMPLETE" )
+		end
 
-			while @stack.status == "CREATE_IN_PROGRESS"
+		def template
+			File.open( rendered_file ).read
+		end
+
+		def create_stack
+			@stack = @cfm.stacks.create( stack_name, template)
+			track_stack( "CREATE_IN_PROGRESS", "CREATE_COMPLETE" )
+		end
+
+		def track_stack( starting_status, ending_status )
+			puts "Starting stack status: #{starting_status}"
+			while @stack.status == starting_status
 				show_stack_status
 				sleep( 5 )
 			end
@@ -178,7 +202,11 @@ module RailsAWS
 			show_stack_status
 			show_stack_events
 
-			successful_stack?
+			unless @stack.status == ending_status
+				msg = "Stack Creation FAILED, expected(#{ending_status}), Received: '#{stack_name}': #{@stack.status}".red
+				Rails.logger.info( msg )
+				raise msg
+			end
 
 			log_stack_outputs if stack?
 		end
@@ -199,13 +227,6 @@ module RailsAWS
 			end
 		end
 
-		def successful_stack?
-			unless @stack.status == "CREATE_COMPLETE"
-				msg = "Stack Creation FAILED: '#{stack_name}': #{@stack.status}".red
-				Rails.logger.info( msg )
-				raise msg
-			end
-		end
 
 		def render_erb
 			Rails.logger.info "Cloudformation Template File: #{template_file}".green

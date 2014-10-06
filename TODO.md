@@ -3,9 +3,6 @@
 ## Phase: Domain Replacement
 * rake aws:domain_repoint[branch,maintenance_branch]
 	* change: domain management separate from branch
-		* domain json should be saved in:
-			* config/[application]_domain.json
-			* mv config/branch/master/domain.json to config/rails-aws_domain.json
 		* rake aws:domain_update # updates the existing record
 
 	* new release branch: release-x.y.z
