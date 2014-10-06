@@ -69,14 +69,14 @@ namespace :aws do
 	def cap_cmd( task )
 		cmd_prefix = "cap"
 		vars = {
-  		:branch => RailsAWS.branch,
-  		:branch_secret => RailsAWS.branch_secret,
-  		:ipaddress => RailsAWS::Cloudformation.outputs.fetch("IP"),
-  		:key_file => RailsAWS::KeyPair.file,
-  		:repo_url => RailsAWS.repo_url,
-  		:application => RailsAWS.application,
-  		:deploy_key => RailsAWS.deploy_key,
-  		:rails_env => RailsAWS.environment,
+			:branch => RailsAWS.branch,
+			:branch_secret => RailsAWS.branch_secret,
+			:ipaddress => RailsAWS::Cloudformation.outputs.fetch("IP"),
+			:key_file => RailsAWS::KeyPair.file,
+			:repo_url => RailsAWS.repo_url,
+			:application => RailsAWS.application,
+			:deploy_key => RailsAWS.deploy_key,
+			:rails_env => RailsAWS.environment,
 			:dbtype => RailsAWS.db_type,
 			:dbhost => 'dummy',
 			:dbpassword => 'dummy'
@@ -116,7 +116,7 @@ namespace :aws do
 		cmd = "rake secret > #{branch_secret}"
 		raise "Unable to generate secret to: #{branch_secret}" unless system( cmd )
 		raise "Missing secret file: #{branch_secret}" unless File.file? branch_secret
-		
+
 		%w(deploy:publish_deploy_key deploy deploy:publish_secret deploy:restart).each do |task|
 			cap_cmd( task )
 		end
@@ -201,8 +201,11 @@ namespace :aws do
 		puts RailsAWS::Cloudformation.outputs.to_yaml
 	end
 
-	desc "Detail report for all infrastructure in account"
-	task :details => :environment do
 
+	desc "Show available rds databases and snapshots"
+	task :rds_info => :environment do 
+		RailsAWS::RDS.new.available_info
+		puts "Use a snapshot by running `rake aws:rds_set_snapshot[branch,snapshot_id]`"
+		puts "Create and use a snapshot by running `rake aws:rds_new_snapshot[branch,database_id]`"
 	end
 end

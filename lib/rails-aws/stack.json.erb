@@ -32,9 +32,10 @@
           "cp /home/ubuntu/.ssh/authorized_keys /home/$new_user/.ssh/authorized_keys", "\n",
           "chown -R $new_user:$new_user /home/$new_user/.ssh/authorized_keys", "\n",
           "chmod 600 /home/$new_user/.ssh/authorized_keys", "\n",
-					"echo 'deploy      ALL=(ALL:ALL) NOPASSWD:ALL' >> /etc/sudoers", "\n",
 
-					 
+					<% if RailsAWS.environment == "development" %>
+						"echo 'deploy      ALL=(ALL:ALL) NOPASSWD:ALL' >> /etc/sudoers", "\n",
+					<% end %>
 
 					 "echo 'VVVVVVVVVVVVVVVVVVVVVVVVVVVV Installing RVM VVVVVVVVVVVVVVVVVVVVVVVVVVVV'", "\n",
 			     "sudo -u $new_user sh -c '\\curl -sSL https://get.rvm.io | bash -s stable'", "\n",
