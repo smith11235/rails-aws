@@ -1,0 +1,20 @@
+{
+	"AWSTemplateFormatVersion" : "2010-09-09",
+
+		"Resources" : {
+
+			"domaintorails" : {
+				"Type" : "AWS::Route53::RecordSet",
+				"Properties" : {
+					"HostedZoneName" : "rails-aws.com.",
+					"Comment" : "A records for my frontend.",
+					"Name" : "rails-aws.com.",
+					"Type" : "A",
+					"TTL" : "900",
+					"ResourceRecords" : [
+						"54.88.56.14"
+						]
+				}
+			}
+		}
+}
