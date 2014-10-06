@@ -4,11 +4,18 @@
 * rake aws:domain_repoint[branch,maintenance_branch]
 	* cloudformation route 53 update...
 		* check if it is seamless...
+
 	* change: domain management separate from branch
-		* rake aws:domain_create # uses settings to determine which isntance to apply it to
-		* rake aws:domain_update # updates the existing record
+		* remove branch parameter
+			* get target IP by using domain_branch
 		* domain json should be saved in:
 			* config/[application]_domain.json
+			* mv config/branch/master/domain.json to config/rails-aws_domain.json
+		* rake aws:domain_create 
+			* domain stack name should not have branch
+			* uses settings to determine which isntance to apply it to
+		* rake aws:domain_update # updates the existing record
+
 	* new release branch: release-x.y.z
 		* create hardware stack, cap-deploy
 		* aws:domain_update
