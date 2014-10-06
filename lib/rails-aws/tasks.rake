@@ -26,30 +26,18 @@ namespace :aws do
 	end
 
 	desc "Assign a specified domain to your stack for that branch"
-	task :domain_create, [:branch_name] => :environment do |t,args|
-		raise "Missing branch name".red if args[:branch_name].nil?
-		branch_name = args[:branch_name]
-
-		RailsAWS.branch( branch_name )
-
-		raise "Domain is not enabled, must have 'domain' and 'domain_branch' config with this branch specified" unless RailsAWS.domain_enabled?
-
+	task :domain_create => :environment do
+		RailsAWS.branch( RailsAWS.domain_branch )
+		raise "Domain is not enabled, must have 'domain' and 'domain_branch' config with this branch specified".red unless RailsAWS.domain_enabled?
 		cloudformation = RailsAWS::Cloudformation.new( :type => :domain )
-
 		cloudformation.create!
 	end
 
 	desc "Remove a specified domain to your stack for that branch"
-	task :domain_delete, [:branch_name] => :environment do |t,args|
-		raise "Missing branch name".red if args[:branch_name].nil?
-		branch_name = args[:branch_name]
-
-		RailsAWS.branch( branch_name )
-
+	task :domain_delete => :environment do 
+		RailsAWS.branch( RailsAWS.domain_branch )
 		raise "Domain is not enabled, must have 'domain' and 'domain_branch' config with this branch specified" unless RailsAWS.domain_enabled?
-
 		cloudformation = RailsAWS::Cloudformation.new( :type => :domain )
-
 		cloudformation.delete!
 	end
 

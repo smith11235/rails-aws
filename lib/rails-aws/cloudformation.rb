@@ -2,7 +2,6 @@ module RailsAWS
 	class Cloudformation
 
 		def self.outputs
-			branch_name = RailsAWS.branch
 			outputs_file = Cloudformation.outputs_file
 			unless File.file? outputs_file
 				msg = "Missing outputs file: #{outputs_file}".red

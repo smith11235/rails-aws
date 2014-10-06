@@ -142,8 +142,12 @@ module RailsAWS
 		return false unless RailsAWS.config_hash.has_key?( 'domain_branch' )
 		return false if RailsAWS.config_hash[ 'domain' ].nil?
 		return false if RailsAWS.config_hash['domain_branch'].nil?
-		return true if RailsAWS.branch == RailsAWS.config_hash['domain_branch']
+		return true if RailsAWS.branch == RailsAWS.config_hash[ 'domain_branch' ]
 		return false
+	end
+
+	def self.domain_branch
+		RailsAWS.config( :domain_branch )
 	end
 
 	def self.domain

@@ -2,9 +2,6 @@
 
 ## Phase: Domain Replacement
 * rake aws:domain_repoint[branch,maintenance_branch]
-	* cloudformation route 53 update...
-		* check if it is seamless...
-
 	* change: domain management separate from branch
 		* remove branch parameter
 			* get target IP by using domain_branch
