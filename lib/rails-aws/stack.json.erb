@@ -217,10 +217,15 @@
            "AutoMinorVersionUpgrade" : true,
            "BackupRetentionPeriod" : "2",
            "DBInstanceClass" : "db.t1.micro",
-           "DBName" : "railsapp",
 					 "DBSecurityGroups" : [
 					 	{ "Ref": "<%= @branch_name + "rdssg" %>" }
 					 ],
+						<% snapshot_id = RailsAWS.snapshot_id %>
+						<% if snapshot_id %>
+						  "DBSnapshotIdentifier": "<%= snapshot_id %>",
+						<% else %>
+              "DBName" : "railsapp",
+					  <% end %>
            "Engine" : "MySQL",
            "MasterUsername" : "railsapp",
 					 "MasterUserPassword" : "<%= RailsAWS.dbpassword %>",

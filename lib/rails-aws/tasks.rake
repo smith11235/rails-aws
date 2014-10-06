@@ -201,6 +201,25 @@ namespace :aws do
 		puts RailsAWS::Cloudformation.outputs.to_yaml
 	end
 
+	desc "Set the snapshot id from which to create db instance from"
+	task :rds_create_snapshot, [:branch_name,:database_id] => :environment do |t,args|
+		raise "Missing branch name".red if args[:branch_name].nil?
+		raise "Missing database_id".red if args[:database_id].nil?
+		branch_name = args[:branch_name]
+		RailsAWS.branch( branch_name )
+		snapshot_id = RailsAWS::RDS.new.new_snapshot( args[:database_id] )
+		puts "Generated new snapshot: #{snapshot_id}".green
+		RailsAWS.set_snapshot_id( snapshot_id )
+	end
+
+	desc "Set the snapshot id from which to create db instance from"
+	task :rds_set_snapshot, [:branch_name,:snapshot_id] => :environment do |t,args|
+		raise "Missing branch name".red if args[:branch_name].nil?
+		raise "Missing snapshot_id".red if args[:snapshot_id].nil?
+		branch_name = args[:branch_name]
+		RailsAWS.branch( branch_name )
+		RailsAWS.set_snapshot_id( args[:snapshot_id] )
+	end
 
 	desc "Show available rds databases and snapshots"
 	task :rds_info => :environment do 

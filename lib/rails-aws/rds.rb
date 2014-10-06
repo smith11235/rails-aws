@@ -9,6 +9,20 @@ module RailsAWS
 
 		end
 
+		def new_snapshot( database_id )
+			snapshot_id = "#{RailsAWS.branch}-#{database_id}-#{DateTime.now.to_s(:number)}"
+			db = @client.db_instances[ database_id ]
+			raise "db #{database_id} does not exist" unless db.exists?
+			snapshot = db.create_snapshot( snapshot_id )
+			puts "Snapshot initial status: #{snapshot.status}"
+			while snapshot.status == "creating"
+				puts "Snapshot is being created..."
+				sleep( 5 )
+			end
+			puts "Snapshot end status: #{snapshot.status}"
+			return snapshot.id
+		end
+
 		def available_info
 
 			info = { :no_current_db => Array.new }

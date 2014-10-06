@@ -21,6 +21,24 @@ module RailsAWS
 		env
 	end
 
+	def self.snapshot_id_file
+		File.join( RailsAWS.branch_dir, 'rds_snapshot_id.yml' )
+	end
+
+	def self.set_snapshot_id( snapshot_id )
+		data = { :snapshot_id => snapshot_id }
+		File.open( RailsAWS.snapshot_id_file, 'w' ) {|f| f.puts data.to_yaml }
+	end
+
+	def self.snapshot_id
+		file = RailsAWS.snapshot_id_file
+		if File.file? file
+			data = YAML.load_file file
+			data[:snapshot_id]
+		else
+			nil
+		end
+	end
 
 	def self.dbpassword_file 
 		File.join( RailsAWS.branch_dir, "dbpassword" )

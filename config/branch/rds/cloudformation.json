@@ -215,10 +215,13 @@
            "AutoMinorVersionUpgrade" : true,
            "BackupRetentionPeriod" : "2",
            "DBInstanceClass" : "db.t1.micro",
-           "DBName" : "railsapp",
 					 "DBSecurityGroups" : [
 					 	{ "Ref": "rdsrdssg" }
 					 ],
+						
+						
+						  "DBSnapshotIdentifier": "rds-rrzro844k5mcgt",
+						
            "Engine" : "MySQL",
            "MasterUsername" : "railsapp",
 					 "MasterUserPassword" : "5aed99058d873716ebec7111b2e679dc",

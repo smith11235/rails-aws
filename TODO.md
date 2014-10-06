@@ -1,38 +1,28 @@
 # Development Plan
 
-## Phase: Db Data
-
-* check db data is working
-
 ## Phase: RDS - From Snapshot
-
-* rake aws:rds_info
-* rake aws:rds_new_snapshot[branch,rds_id]
-	* create snapshot of rds_id
-	* execute( rds_set_snapshot )
-* rake aws:rds_set_snapshot[branch,snapshot_id]
-	* log config/branch/:branch/rds_snapshot_id
-
-* rake aws:stack_create
-	* if db_type != :sqlite
-		* if branch_dir/db_snapshot_id exists
-			* use it to source the db
-
-* db dependency on rails secret?
+* export RAILS_ENV=production
+* r aws:stack_delete[rds,no_error] aws:stack_create[rds] aws:cap_deploy[rds]
 
 ## Phase: partyshuffle v1
-
+* export RAILS_ENV=production
+* r aws:stack_delete[rds,no_error] aws:stack_create[rds] aws:cap_deploy[rds]
 * partyshuffle git codebase installed
 * with db history
+	* turn dbpassword into dbinfo
+		* default user/schema/password
+		* setable by user for pulling in prior db
+	* migration process:
+		* can i login to server to run rake?
+		* http://stackoverflow.com/questions/11656080/rake-task-to-backup-and-restore-database*
+		* rake db:backup
+		* mv file to encrypted zip
+		* mv zip to public/
 
 ## Push server on app server
 * rails-aws.yml setting
-
-* expect it to be present in Rails build
-	* expect default config?
-
-* security group port for push
 * cap logic starts it up
+* security group port for push needed.....
 
 ## Phase: Setup Generator Update
 
@@ -42,15 +32,11 @@
 
 ## Phase: Additional AWS Resources
 * EC2:
+	* push
+  	* private-pub
   * resque: 
   	* resque-worker
   	* redis
-	* push
-  	* private-pub
-	* app:
-		* both resque + private pub
-  * web: 
-  	* rails server through passenger 
 
 ## Phase: dbpassword_file in gitignore
 * add to generator
