@@ -3,8 +3,6 @@
 ## Phase: Domain Replacement
 * rake aws:domain_repoint[branch,maintenance_branch]
 	* change: domain management separate from branch
-		* remove branch parameter
-			* get target IP by using domain_branch
 		* domain json should be saved in:
 			* config/[application]_domain.json
 			* mv config/branch/master/domain.json to config/rails-aws_domain.json

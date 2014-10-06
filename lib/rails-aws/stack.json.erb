@@ -2,12 +2,12 @@
  "AWSTemplateFormatVersion" : "2010-09-09",
 
   "Resources" : {
-		"<%= @branch_name + "ec2" %>" : {
+		"<%= branch + "ec2" %>" : {
       "Type" : "AWS::EC2::Instance",
       "Properties" : {
 				"KeyName" : "<%= @key_name %>",
 				"InstanceType": "<%= @instance_type %>",
-				"SecurityGroups" : [ { "Ref" : "<%= @branch_name + "sg" %>" } ],
+				"SecurityGroups" : [ { "Ref" : "<%= ec2_security_group %>" } ],
 				"ImageId" : "<%= @ami_id %>",
         "UserData" : { "Fn::Base64" : { "Fn::Join" : ["",[
             "#!/bin/bash -ex","\n",
@@ -97,11 +97,11 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "<%= "#{@application}-#{@branch_name}-#{@environment}" %>"
+						"Value": "<%= "#{@application}-#{branch}-#{@environment}" %>"
 					},
 					{
 						"Key": "branch_name",
-						"Value": "<%= @branch_name %>"
+						"Value": "<%= branch %>"
 					},
 					{
 						"Key": "environment",
@@ -120,7 +120,7 @@
       }
     },
 
-    "<%= @branch_name + "sg" %>" : {
+    "<%= ec2_security_group %>" : {
       "Type" : "AWS::EC2::SecurityGroup",
       "Properties" : {
         "GroupDescription" : "Enable Access to Rails application via port 80, 443, 3000 and SSH access via port 22",
@@ -148,11 +148,11 @@
 				"Tags": [
 					{
 						"Key": "Name",
-						"Value": "<%= "#{@application}-#{@branch_name}-#{@environment}" %>"
+						"Value": "<%= "#{@application}-#{branch}-#{@environment}" %>"
 					},
 					{
 						"Key": "branch_name",
-						"Value": "<%= @branch_name %>"
+						"Value": "<%= branch %>"
 					},
 					{
 						"Key": "environment",
@@ -173,24 +173,24 @@
 		<% db_type = RailsAWS.db_type %>
 		<% if db_type != :sqlite %>
 			<% raise "only mysql currently supported, not: #{db_type}" unless db_type == :mysql %>
-      "<%= @branch_name + "rdssg" %>" : {
+      "<%= rds_security_group %>" : {
         "Type" : "AWS::RDS::DBSecurityGroup",
         "Properties" : {
           "GroupDescription" : "Enable access to db from ec2 instances",
           "DBSecurityGroupIngress" : [
 						{ 
-							"EC2SecurityGroupName" : { "Ref": "<%= @branch_name + "sg" %>" },
+							"EC2SecurityGroupName" : { "Ref": "<%= ec2_security_group %>" },
 							"EC2SecurityGroupOwnerId" : "<%= RailsAWS.account_id %>"
 						}
           ],
   				"Tags": [
   					{
   						"Key": "Name",
-  						"Value": "<%= "#{@application}-#{@branch_name}-#{@environment}" %>"
+  						"Value": "<%= "#{@application}-#{branch}-#{@environment}" %>"
   					},
   					{
   						"Key": "branch_name",
-  						"Value": "<%= @branch_name %>"
+  						"Value": "<%= branch %>"
   					},
   					{
   						"Key": "environment",
@@ -208,7 +208,7 @@
   				]
         }
       },
-    	"<%= @branch_name + "rds" %>" : {
+    	"<%= branch + "rds" %>" : {
         "Type" : "AWS::RDS::DBInstance",
         "Properties" :
         {
@@ -218,7 +218,7 @@
            "BackupRetentionPeriod" : "2",
            "DBInstanceClass" : "db.t1.micro",
 					 "DBSecurityGroups" : [
-					 	{ "Ref": "<%= @branch_name + "rdssg" %>" }
+					 	{ "Ref": "<%= rds_security_group %>" }
 					 ],
 						<% snapshot_id = RailsAWS.snapshot_id %>
 						<% if snapshot_id %>
@@ -235,11 +235,11 @@
            "Tags" : [  
   					{
   						"Key": "Name",
-  						"Value": "<%= "#{@application}-#{@branch_name}-#{@environment}" %>"
+  						"Value": "<%= "#{@application}-#{branch}-#{@environment}" %>"
   					},
   					{
   						"Key": "branch_name",
-  						"Value": "<%= @branch_name %>"
+  						"Value": "<%= branch %>"
   					},
 					{
 						"Key": "db_type",
@@ -264,7 +264,7 @@
     },
     "WaitForInstance" : {
       "Type" : "AWS::CloudFormation::WaitCondition",
-			"DependsOn" : "<%= @branch_name + "ec2" %>",
+			"DependsOn" : "<%= branch + "ec2" %>",
       "Properties" : {
         "Handle" : {"Ref" : "WaitForInstanceWaitHandle"},
         "Timeout" : "700"
@@ -275,17 +275,17 @@
   "Outputs" : {
 		"IP" : {
       "Description" : "The IP for the newly created server",
-			"Value" : { "Fn::GetAtt" : [ "<%= @branch_name + "ec2" %>", "PublicIp" ] } 
+			"Value" : { "Fn::GetAtt" : [ "<%= branch + "ec2" %>", "PublicIp" ] } 
 		},
 		<% if RailsAWS.db_type != :sqlite %>
   		"DBHOST" : {
         "Description" : "The internal url for the newly created RDS server",
-  			"Value" : { "Fn::GetAtt" : [ "<%= @branch_name + "rds" %>", "Endpoint.Address" ] } 
+  			"Value" : { "Fn::GetAtt" : [ "<%= branch + "rds" %>", "Endpoint.Address" ] } 
   		},
 		<% end %>
     "WebsiteURL" : {
       "Description" : "The URL for the newly created Rails application",
-			"Value" : { "Fn::Join" : ["", [ "http://", { "Fn::GetAtt" : [ "<%= @branch_name + "ec2" %>", "PublicIp" ] } ]]}
+			"Value" : { "Fn::Join" : ["", [ "http://", { "Fn::GetAtt" : [ "<%= branch + "ec2" %>", "PublicIp" ] } ]]}
     }
   }
 }

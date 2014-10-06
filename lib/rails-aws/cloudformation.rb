@@ -16,7 +16,6 @@ module RailsAWS
 		end
 
 		def initialize( options = {} )
-			@branch_name = RailsAWS.branch
 			@key_name = KeyPair.key_name
 			@cfm = RailsAWS::CFMClient.get
 			@ec2 = RailsAWS::EC2Client.get
@@ -29,28 +28,67 @@ module RailsAWS
 			options = options.reverse_merge :type => :stack
 			@type = options[:type]
 			raise "Invalid Type: #{@type}" unless [:stack, :domain].include? @type
+			@stack = @cfm.stacks[ stack_name ] 
+		end
 
-			case @type 
-			when :stack
-				@stack_name = clean_stack_name( @application + @branch_name )
-				@stack = @cfm.stacks[ @stack_name ] 
-				@rendered_file = File.join( RailsAWS.branch_dir, "cloudformation.json" )
-				@template_file = File.expand_path( "../stack.json.erb", __FILE__ )
-			when :domain
-				@stack_name = clean_stack_name( @application + @branch_name + "domain" )
-				@stack = @cfm.stacks[ @stack_name ] 
-				@rendered_file = File.join( RailsAWS.branch_dir, "domain.json" )
-				@template_file = File.expand_path( "../route53.json.erb", __FILE__ )
+		def stack?
+			@type == :stack
+		end
+
+		def domain?
+			@type == :stack
+		end
+
+		def template_file 
+			@template_file ||= case true 
+			when stack?
+				File.expand_path( "../stack.json.erb", __FILE__ )
+			when domain?
+				File.expand_path( "../route53.json.erb", __FILE__ )
 			end
+			@template_file
+		end
+
+		def rendered_file
+			@rendered_file ||= case true
+              			when stack?
+											File.join( RailsAWS.branch_dir, "cloudformation.json" )
+              			when domain?
+											File.join( Rails.root, 'config', "#{RailsAWS.application}_domain.json" )
+              			end
+			@rendered_file
+		end
+
+		def ec2_security_group
+			branch + "sg"
+		end
+
+		def rds_security_group
+			branch + "rdssg"
+		end
+
+		def stack_name
+			@stack_name ||= case true
+              			when stack?
+              				@application + RailsAWS.branch
+              			when domain?
+              				@application + "domain"
+              			end
+			@stack_name.gsub( /(-|_)/, 'x' )
+		end
+
+		def branch
+			@branch ||= RailsAWS.branch
+			@branch.gsub( /(-|_|\!)/, 'x' )
 		end
 
 		def exists?
-			@cfm.stacks[ @stack_name ].exists?
+			@cfm.stacks[ stack_name ].exists?
 		end
 
 		def delete!
 			unless exists?
-				msg = "Cloudformation stack does not exist: #{@stack_name}".red
+				msg = "Cloudformation stack does not exist: #{stack_name}".red
 				Rails.logger.info msg
 				raise msg 
 			end
@@ -60,7 +98,7 @@ module RailsAWS
 
 		def create!
 			if exists?
-				msg = "Cloudformation stack exists: #{@stack_name}".red
+				msg = "Cloudformation stack exists: #{stack_name}".red
 				Rails.logger.fatal msg
 				raise msg
 			end
@@ -78,7 +116,7 @@ module RailsAWS
 		end
 
 		def show_stack_status
-			msg = "Stack: #{@stack_name} - #{@stack.status}".yellow
+			msg = "Stack: #{stack_name} - #{@stack.status}".yellow
 			puts msg
 			Rails.logger.info( msg )
 			@stack.resources.each do |resource|
@@ -105,36 +143,32 @@ module RailsAWS
 
 		private 
 
-		def clean_stack_name( stack_name )
-			stack_name.gsub( /(-|_)/, 'x' )
-		end
-
 		def delete_stack
-			msg = "Stack: #{@stack_name}:#{@stack.status} Deleting...".green
+			msg = "Stack: #{stack_name}:#{@stack.status} Deleting...".green
 			puts msg
 			Rails.logger.info( msg )
 			@stack.delete
 			while @stack.exists? && @stack.status == "DELETE_IN_PROGRESS"
-				msg = "Stack: #{@stack_name} Status: #{@stack.status}".yellow
+				msg = "Stack: #{stack_name} Status: #{@stack.status}".yellow
 				puts msg
 				Rails.logger.info( msg )
 				sleep( 5 )
 			end
 
 			if @stack.exists?
-				msg = "Stack: #{@stack_name} Failed to Delete. Status: #{@stack.status}".red
+				msg = "Stack: #{stack_name} Failed to Delete. Status: #{@stack.status}".red
 				puts msg
 				Rails.logger.info( msg )
 			else
-				msg = "Stack: #{@stack_name} Deleted".green
+				msg = "Stack: #{stack_name} Deleted".green
 				puts msg
 				Rails.logger.info( msg )
 			end
 		end
 
 		def create_stack
-			template = File.open( @rendered_file ).read
-			@stack = @cfm.stacks.create( @stack_name, template)
+			template = File.open( rendered_file ).read
+			@stack = @cfm.stacks.create( stack_name, template)
 
 			while @stack.status == "CREATE_IN_PROGRESS"
 				show_stack_status
@@ -146,7 +180,7 @@ module RailsAWS
 
 			successful_stack?
 
-			log_stack_outputs if @type == :stack
+			log_stack_outputs if stack?
 		end
 
 		def log_stack_outputs
@@ -167,24 +201,24 @@ module RailsAWS
 
 		def successful_stack?
 			unless @stack.status == "CREATE_COMPLETE"
-				msg = "Stack Creation FAILED: '#{@stack_name}': #{@stack.status}".red
+				msg = "Stack Creation FAILED: '#{stack_name}': #{@stack.status}".red
 				Rails.logger.info( msg )
 				raise msg
 			end
 		end
 
 		def render_erb
-			Rails.logger.info "Cloudformation Template File: #{@template_file}".green
+			Rails.logger.info "Cloudformation Template File: #{template_file}".green
 
-			template = File.open( @template_file ).read
+			template = File.open( template_file ).read
 
 			renderer = ERB.new( template, nil, '%' )
 
-			File.open( @rendered_file, 'w' ) do |f|
+			File.open( rendered_file, 'w' ) do |f|
 				f.puts renderer.result( binding )
 			end
 
-			Rails.logger.info "Generated cloudformation: #{@rendered_file}".green
+			Rails.logger.info "Generated cloudformation: #{rendered_file}".green
 		end
 	end
 end
