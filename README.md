@@ -33,7 +33,7 @@ Run it from your computer, a server, or a thumbdrive.
 
 ### Common Workflows
 
-[Workflows](public/workflows.md)
+[Workflows](public/workflow.md)
 
 ### Someday
 

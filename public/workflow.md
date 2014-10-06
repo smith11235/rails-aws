@@ -41,4 +41,26 @@ For all of these:
   # set maintenance banners on your website to notify clients or prevent writes to your database.
 
   r aws:stack_create[$branch] aws:cap_deploy[$branch] aws:domain_create[$branch]
+  # domain problems here....
+```
+
+## Dev Builds
+
+```
+  git checkout master
+	export branch=my_branch
+	git checkout -b $branch
+
+  # repeat below as needed:
+
+  > edit stuff
+	git add .
+	git commit  
+	git push origin $branch
+
+  # initial build or for clean rebuilds 
+	r aws:stack_delete[$branch,no_error] aws:stack_create[$branch] aws:cap_deploy[$branch] 
+
+  # for quicker rails code testing updates after initial build
+	r aws:cap_deploy[$branch]
 ```
