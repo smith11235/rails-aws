@@ -1,13 +1,24 @@
 # Development Plan
 
-## Phase: RDS - From Snapshot
-* export RAILS_ENV=production
-* r aws:stack_delete[rds,no_error] aws:stack_create[rds] aws:cap_deploy[rds]
-
-## Phase: Production Replacement, Minimal Downtime
-* route 53 records need rewriting...
-* should i implement update for domain? 
-	* make domain non-branch specific
+## Phase: Domain Replacement
+* rake aws:domain_repoint[branch,maintenance_branch]
+	* cloudformation route 53 update...
+		* check if it is seamless...
+	* change: domain management separate from branch
+		* rake aws:domain_create # uses settings to determine which isntance to apply it to
+		* rake aws:domain_update # updates the existing record
+		* domain json should be saved in:
+			* config/[application]_domain.json
+	* new release branch: release-x.y.z
+		* create hardware stack, cap-deploy
+		* aws:domain_update
+		* delete prior branch stack
+	* cleaner workflow
+		* if db writes are frozen, a maintanance stack
+		* and a status message in the banner
+		* this is the best possible without a vpc
+			* independent vpc with security groups and subnets
+				* so db can be managed in different ways
 
 ## Phase: partyshuffle v1
 * export RAILS_ENV=production
