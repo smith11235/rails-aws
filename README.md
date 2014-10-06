@@ -44,7 +44,8 @@ Create an account at **http://rails-aws.com**
 **./Gemfile**
 
 ```
-  gem 'rails-aws', github: "smith11235/rails-aws"
+  # gem 'rails-aws', github: "smith11235/rails-aws"
+  gem 'rails-aws', :git => "git@github.com:smith11235/rails-aws" # private gem reference is different
 ```
 
 ### Rails Generator

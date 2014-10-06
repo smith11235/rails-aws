@@ -2,21 +2,23 @@
 
 
 ## Phase: partyshuffle v1
-* git checkout master
-* git checkout -b release-2.0.0
-* export RAILS_ENV=production
-* add gem to Gemfile
-* bundle install
-* rails g rails_a_w_s:setup
-* edit domain settings in rails-aws.yml
-* git push origin release-2.0.0
+
+deploying branch: rails-aws
+
 * r aws:rds_info
 * r aws:rds_create_snapshot[db_id]
-* r aws:stack_create[release-2.0.0] aws:cap_deploy[release-2.0.0]
+* export branch=rails-aws
+* export RAILS_ENV=production
+* r aws:stack_create[$branch] aws:cap_deploy[$branch]
 
+* broken on cap_deploy
+	* make sure gemfile is uptodate
+	* generate new deploy key
+		* add to github
 
-* r aws:stack_delete[rds,no_error] aws:stack_create[rds] aws:cap_deploy[rds]
-* partyshuffle git codebase installed
+* issue: db-name probably needs modifying in config/database.yml
+* issue: rails g rails_a_w_s:setup broken for first install
+
 * with db history
 	* turn dbpassword into dbinfo
 		* default user/schema/password
@@ -33,6 +35,8 @@
 * problem:
 	* browsers seem to block the change for a while
 		* or caching of ip route is happening sompewhere
+
+* problme: generator doesnt run if file doesnt exist
 
 
 ## VPC: Minimal Downtime

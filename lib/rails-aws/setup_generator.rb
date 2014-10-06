@@ -136,17 +136,17 @@ module RailsAWS
 
 		def modify?( file, opts = {} )
 			opts = opts.reverse_merge( :confirm => false, :suggested => nil  )
-
-			answer = if File.file?(file)
+			exists_already = File.file?(file)
+			answer = if exists_already
 								 puts
 								 puts "---".green
 								 puts "File: #{file}"
 								 puts "Suggested: #{opts[:suggested]}" if opts[:suggested]
 								 ask("Do you wish to modify (y)".yellow)  == 'y'
 							 else
-								 false
+								 true
 							 end
-			answer = if answer && opts[:confirm]
+			answer = if exists_already && answer && opts[:confirm]
 								 ask( "Are you sure you wish to modify (Y)".red ) == 'Y'
 							 else
 								 answer
