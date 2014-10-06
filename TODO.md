@@ -1,15 +1,23 @@
 # Development Plan
 
 ## Phase: Domain Replacement
-	* new release branch: release-1.0.0
-		* (running) create_stack cap_deploy
-		* rake aws:domain_create
-		* login and test
-	* new release branch: release-1.0.1
-		* git checkout -b release-1.0.1
-		* git push origin release-1.0.1
-		* aws:create_stack[release-1.0.1] aws:cap_deploy[release-1.0.1] aws:domain_update
-		* aws:delete_stack[release-1.0.0]
+* new release branch: release-1.0.0
+	* rake aws:domain_create
+	* login and test
+		* wget rails.com/branches.json
+
+* new release branch: release-1.0.1
+	* git checkout -b release-1.0.1
+	* git push origin release-1.0.1
+	* r aws:create_stack[release-1.0.1] aws:cap_deploy[release-1.0.1] 
+	* test site
+	* r aws:domain_update
+	* wget rails.com/branches.json
+	* test website
+	* r aws:delete_stack[release-1.0.0]
+	* wget rails.com/branches.json
+	* test website
+	* r aws:delete_stack[release-1.0.1]
 
 
 ## Phase: partyshuffle v1

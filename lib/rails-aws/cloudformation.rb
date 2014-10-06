@@ -36,7 +36,7 @@ module RailsAWS
 		end
 
 		def domain?
-			@type == :stack
+			@type == :domain
 		end
 
 		def template_file 
