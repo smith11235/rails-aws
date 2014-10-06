@@ -1,16 +1,18 @@
 # Development Plan
 
 ## Phase: Domain Replacement
-* new release branch: release-1.0.0
-	* rake aws:domain_create
-	* login and test
-		* wget rails.com/branches.json
+* problem:
+	* browsers seem to block the change for a while
+		* or caching of ip route is happening sompewhere
 
-* new release branch: release-1.0.1
+* document new release branch: release-1.0.1
+	* previously deployed branch 'release-1.0.0'
+	* git checkout master
 	* git checkout -b release-1.0.1
 	* git push origin release-1.0.1
 	* r aws:create_stack[release-1.0.1] aws:cap_deploy[release-1.0.1] 
-	* test site
+	* test site: wget IPADDRESS/route.json
+	* set config/rails-aws.yml::domain_branch to release-1.0.1
 	* r aws:domain_update
 	* wget rails.com/branches.json
 	* test website
