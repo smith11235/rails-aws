@@ -4,6 +4,11 @@
 * export RAILS_ENV=production
 * r aws:stack_delete[rds,no_error] aws:stack_create[rds] aws:cap_deploy[rds]
 
+## Phase: Production Replacement, Minimal Downtime
+* route 53 records need rewriting...
+* should i implement update for domain? 
+	* make domain non-branch specific
+
 ## Phase: partyshuffle v1
 * export RAILS_ENV=production
 * r aws:stack_delete[rds,no_error] aws:stack_create[rds] aws:cap_deploy[rds]
@@ -18,6 +23,15 @@
 		* rake db:backup
 		* mv file to encrypted zip
 		* mv zip to public/
+
+## VPC: Minimal Downtime
+* if we have vpc
+* if we update it with a new substack
+* corun two stacks internally
+* domain points to gateway
+* gateway points to determined current production host
+* repointed when ready
+* db hosts are easily reused or rebuilt
 
 ## Push server on app server
 * rails-aws.yml setting

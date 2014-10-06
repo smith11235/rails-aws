@@ -31,6 +31,10 @@ Run it from your computer, a server, or a thumbdrive.
 
 ## Usage
 
+### Common Workflows
+
+[Workflows](public/workflows.md)
+
 ### Someday
 
 Create an account at **http://rails-aws.com**
@@ -124,6 +128,27 @@ Managing deploy keys can be viewed here: [Deploy Keys](lib/rails-aws/git_deploy_
 
   # updating your production stack with capistrano
 	rake aws:cap_update[branch_name]
+```
+
+#### RDS: Database Management
+
+**PRIOR TO rake aws:create_stack**
+
+If you have an existing database with desired information; take a snapshot of it.
+
+By doing this you also flag this snapshot as your source for the branch you are building.
+
+```
+  # list RDS database and existing snapshot identifiers
+  rake aws:rds_info
+
+  # set a snapshot id manually for an existing snapshot
+  rake aws:rds_set_snapshot[branch_name,snapshot_id]
+
+  # create and set a snapshot of an existing database
+	rake aws:rds_create_snapshot[branch_name,database_id]
+
+	# then delete_stack create_stack and cap_deploy as normal
 ```
 
 #### Production Vs Development
