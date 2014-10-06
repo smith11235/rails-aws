@@ -6,9 +6,6 @@
 		* domain json should be saved in:
 			* config/[application]_domain.json
 			* mv config/branch/master/domain.json to config/rails-aws_domain.json
-		* rake aws:domain_create 
-			* domain stack name should not have branch
-			* uses settings to determine which isntance to apply it to
 		* rake aws:domain_update # updates the existing record
 
 	* new release branch: release-x.y.z
