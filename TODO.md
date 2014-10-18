@@ -1,43 +1,137 @@
 # Development Plan
 
-
-## Phase: partyshuffle v1
-
-deploying branch: rails-aws
-
-* r aws:rds_info
-* r aws:rds_create_snapshot[db_id]
-* export branch=rails-aws
-* export RAILS_ENV=production
-* r aws:stack_create[$branch] aws:cap_deploy[$branch]
-
-* broken on cap_deploy
-	* make sure gemfile is uptodate
-	* generate new deploy key
-		* add to github
-
-* issue: db-name probably needs modifying in config/database.yml
-* issue: rails g rails_a_w_s:setup broken for first install
-
-* with db history
-	* turn dbpassword into dbinfo
-		* default user/schema/password
-		* setable by user for pulling in prior db
-	* migration process:
-		* can i login to server to run rake?
-		* http://stackoverflow.com/questions/11656080/rake-task-to-backup-and-restore-database*
-		* rake db:backup
-		* mv file to encrypted zip
-		* mv zip to public/
+* complex release task 
+* thin/rackup setup/startup, single host
+* domain update delay elimination with eip-association
+* vpc
+* shared db
+* thin/rackup separate server: bigger domain_instance
 
 ## Phase: Domain Update Delay
 
-* problem:
-	* browsers seem to block the change for a while
-		* or caching of ip route is happening sompewhere
+* domain setup should include:
+	* eip
+		* http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-eip.html
+	* eipassociation for ec2 of domain_branch
+		* http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-eip-association.html
+		* this should change instead of domain record
+			* RailsAWS.instance_id
+				* load stack definition, 
+				* if doesnt exist, no association should be created
+					* just domain and ip
+				* update/exists
+					* add eip association
+					* with ec2 instance id from stack api
+	* set no public ip for ec2 server
 
-* problme: generator doesnt run if file doesnt exist
+```
+	def eip_name
+		branch_name + "eip"
+	end
 
+  def eip_association_name
+    branch_name + "eipas"
+  end
+
+  "<%= eip_name %>" : {
+     "Type" : "AWS::EC2::EIP",
+     "Properties" : {
+     }
+  },
+  "<%= eip_association_name %>" : {
+     "Type": "AWS::EC2::EIPAssociation",
+     "Properties": {
+        "EIP": { "Ref": "<%= eip_name %>" },
+        "InstanceId": { "Ref": "<%= RailsAWS.instance_id %>" },
+     }
+  }
+```
+
+## Phase: Easier release workflow
+
+* r aws:release[version,rds_id=nil] RAILS_ENV=production
+	* version =~ /^\d+\.\d+\.\d+$/
+	* system "git checkout master"
+	* system "git pull origin master"
+	* master-version = `cat VERSION`.chomp
+	* branch = "rails-aws-release-#{version}"
+  * system "git checkout -b $branch"
+	* system "echo '#{version}' > VERSION"
+	* system "git add VERSION"
+	* system "git commit -am 'updating version to $version'"
+	* system "git push origin $branch"
+	* if rds_id.nil? 
+    * check if an existing production db exists and snapshot it
+		* unless its set to 'new-db'
+	* if rds_id.db.exists? rds_create_snapshot[rds_id]
+	* elif rds_id.snapshot.exists? rds_set_snapshot[rds_id]
+	* else clear snapshot file
+  * stack_create[branch]
+  * cap_deploy[branch]
+	* system "git add ."
+	* system "git commit -am 'updating stack-info'"
+	* system "git push origin $branch"
+* if you are replacing your production stack:
+	* r aws:domain_update[branch=nil] # to publish your production release
+		* if branch is a new branch:
+			* sed -i 's/domain_branch.*$/domain_branch: $branch/' config/rails-aws.yml
+			* confirm it exists and responds
+			* update
+
+## Push server on web server
+* push_server: local 
+	* really good example: 
+		* http://stackoverflow.com/questions/13030149/how-to-deploy-ruby-rack-app-with-nginx
+	* rails-aws.yml setting
+		* push_server: local
+	* ```Thread.new { system("rackup private_pub.ru -s thin -E production") }``` in initializer
+	* security group port:
+		* 9292
+	* edit config/private_pub.yml
+		* production + dev should match
+		* server should be localhost 
+	* add port to nginx config
+
+		```
+      upstream rack_upstream {
+        server 127.0.0.1:9292;
+      }
+      
+      server {
+        listen       80;
+        server_name  domain.tld;
+        charset UTF-8;
+      
+        location /faye {
+     
+          proxy_pass http://rack_upstream;
+          proxy_redirect     off;
+          proxy_set_header   Host             $host;
+          proxy_set_header   X-Real-IP        $remote_addr;
+          proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+        }
+      
+      }
+		```
+
+* second server:
+	* https://www.phusionpassenger.com/documentation/Users%20guide%20Nginx.html#_tutorial_example_writing_and_deploying_a_hello_world_rack_application
+	* or merge .ru files and use "HOST_TYPE=[rails|push]"
+		* make config.ru managed
+
+* nginx/passenger rackup
+	* tutorial: https://gist.github.com/twetzel/3157812
+	* example: https://gist.github.com/meskyanichi/986075
+		* add push_secret
+* partyshuffle:  
+	* push_server
+	* private_pub.ru # rename it config.ru? in another install location???
+		* or just on secondary server?
+
+## Phase: Database Replacement
+* single sourcing your release branches on a static rds instance
+* 0 downtime deployment
+* requires vpc (to not have a publically accessible database)
 
 ## VPC: Minimal Downtime
 * if we have vpc
@@ -48,10 +142,6 @@ deploying branch: rails-aws
 * repointed when ready
 * db hosts are easily reused or rebuilt
 
-## Push server on app server
-* rails-aws.yml setting
-* cap logic starts it up
-* security group port for push needed.....
 
 ## Phase: Setup Generator Update
 

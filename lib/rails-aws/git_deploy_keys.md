@@ -10,10 +10,20 @@ This can be overriden with manual edits to **config/rails-aws.yml**
 
 ## Setting Up Github
 
+### Your Project
+
 Take the contents that are printed to screen after you read this.
+
+From config/deploy_key/[application]_id_rsa.pub
 
 Go to your repository and add a deployment key.
 
 For the rails-aws project that would be: https://github.com/smith11235/rails-aws/settings/keys
 
 Suggested key naming is **rails-aws** since you will need one per repo.
+
+### While rails-aws is a private repo
+
+Also add it to https://github.com/smith11235/rails-aws/settings/keys
+
+
