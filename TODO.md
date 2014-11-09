@@ -80,11 +80,14 @@
 
 ## Push server on web server
 * push_server: local 
+	* trying to get local/sqlite production running on my host, no go....
 	* really good example: 
 		* http://stackoverflow.com/questions/13030149/how-to-deploy-ruby-rack-app-with-nginx
 	* rails-aws.yml setting
 		* push_server: local
 	* ```Thread.new { system("rackup private_pub.ru -s thin -E production") }``` in initializer
+
+
 	* security group port:
 		* 9292
 	* edit config/private_pub.yml
