@@ -82,12 +82,19 @@ module RailsAWS
 		end
 		@@config
 	end
-
+	
 	def self.config( key, options = {} )
 		RailsAWS.config_hash( options )
 		@@config.fetch( key.to_s )
 	end
 
+	def self.stack_definition
+		config_has = RailsAWS.config_hash
+		stack_file = config_hash[ 'stack_definition' ] || 'lib/rails-aws/stack.json.erb'
+		stack_file = File.expand_path stack_file 
+		raise "Missing stack_definition: #{stack_file}".red unless File.file? stack_file
+		stack_file
+	end
 
 	# in rails-aws.rb
 	def self.db_type

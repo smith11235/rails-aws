@@ -8,3 +8,4 @@ domain_branch: release-1.0.1
 instance_type: t2.micro
 region: us-east-1
 ami_id: ami-8afb51e2
+push_server: [local|separate]

@@ -40,13 +40,12 @@ module RailsAWS
 		end
 
 		def template_file 
-			@template_file ||= case true 
-												 when stack?
-													 File.expand_path( "../stack.json.erb", __FILE__ )
-												 when domain?
-													 File.expand_path( "../route53.json.erb", __FILE__ )
-												 end
-			@template_file
+			case true 
+			when stack?
+				RailsAWS.stack_definition
+			when domain?
+				File.expand_path( "../route53.json.erb", __FILE__ )
+			end
 		end
 
 		def rendered_file

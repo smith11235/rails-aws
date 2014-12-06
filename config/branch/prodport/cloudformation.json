@@ -71,7 +71,7 @@
     "echo 'server {' > $nginx_default", "\n",
     "echo '        listen 80 default_server;' >> $nginx_default", "\n",
     "echo '        listen [::]:80 default_server ipv6only=on; ' >> $nginx_default", "\n",
-		"echo '        server_name ~^(.+)$;' >> $nginx_default", "\n",
+		"echo '        server_name <%= RailsAWS.domain %>;' >> $nginx_default", "\n",
     "echo '        passenger_enabled on;' >> $nginx_default", "\n",
     "echo '        rails_env    production;' >> $nginx_default", "\n",
     "echo '        root         /home/deploy/rails-aws/current/public;' >> $nginx_default", "\n",
