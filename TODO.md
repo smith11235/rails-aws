@@ -1,5 +1,46 @@
 # Development Plan
 
+* plan for db cloning
+	* not branch based
+
+	* config/db/config.yml
+    * # initial requirement
+		  * aws_creds: 
+			  * key
+			  * secret
+      * rds_production_id:
+
+		* snapshot_id:
+		* rds_instance_id:
+		* connection:
+			* password:
+			* user:
+			* db_name:
+			* hostname:
+	* iam policy:
+		* ability to snapshot production db
+		* ability to create db and delete db 'user-development-db'
+		* full privs on stack: [user]developmentdb
+	* cloudformation
+		* create rds instance open to world
+		* from a snapshot
+		* postgres
+		* small scale...
+		* outputs:
+			* creds, url, etc
+	* tasks:
+		* snapshot_production # and track id
+		* create_rds # from last snapshot
+			* output settings script:
+				* tmp/rds_env.sh
+					* source these to define env vars
+  * testing
+    * hmmm
+
+
+* rails 4.0, puma
+* elastic beanstalk logic
+
 * complex release task 
 * thin/rackup setup/startup, single host
 * domain update delay elimination with eip-association
@@ -155,10 +196,10 @@
 ## Phase: Additional AWS Resources
 * EC2:
 	* push
-  	* private-pub
+		* private-pub
   * resque: 
-  	* resque-worker
-  	* redis
+		* resque-worker
+		* redis
 
 ## Phase: dbpassword_file in gitignore
 * add to generator
