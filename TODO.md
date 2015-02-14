@@ -1,5 +1,7 @@
 # Development Plan
 
+* [ ] [Redesign](redesign.md)
+
 * plan for db cloning
 	* not branch based
 
