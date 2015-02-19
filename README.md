@@ -200,7 +200,7 @@ Ensure you have the gems as needed in your Gemfile.
 
 Your **config/database.yml** will be updated by the rails-aws setup generator.
 
-## Comming Soon: Worker Server
+## Coming Soon: Worker Server
 
 [Private Pub](http://railscasts.com/episodes/316-private-pub), a real time push server will soon be supported by setting 'private_pub: shared' in your config/rails-aws.yml file.
 
