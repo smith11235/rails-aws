@@ -27,6 +27,8 @@ Gem::Specification.new do |s|
 	s.add_dependency "capistrano-rails"
 	s.add_dependency "capistrano-rvm"
 
+  s.add_development_dependency 'rspec'
+
   s.files        = Dir.glob("{bin,lib}/**/*") + %w(README.md)
   s.executables  = []
   s.require_path = 'lib'

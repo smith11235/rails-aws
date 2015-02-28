@@ -15,16 +15,7 @@ This app is what runs on port 80.
 
 ### V1
 
-* multi project settings file
-  * configurable stack definition files
-
-* rails-aws gem can be used in 'development' environment to deploy production
-  * design point:
-    * rake tasks vs generators
-      * generators can be more interactive and guided
-      * i think rake tasks should be turned to generators
-
-* rspec tests for critical logic
+* https://github.com/smith11235/rails-aws/milestones/V1%20-%20Remake%20-%20Production%20Quality
 
 ### V2
 
