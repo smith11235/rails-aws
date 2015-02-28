@@ -26,10 +26,10 @@ module RailsAws
 								end
 			if @project.has_key? 'default'
 				@project['default'].each do |key,value|
-  				@branch[key] ||= value
-  				if value.is_a? Hash
-  					@branch[key].reverse_merge value
-  				end
+					@branch[key] ||= value
+					if value.is_a? Hash
+						@branch[key].reverse_merge value
+					end
 				end
 			end
 			default_branch_settings.each do |key,value|

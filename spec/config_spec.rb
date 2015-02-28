@@ -28,57 +28,57 @@ describe RailsAws::Config do
   end
 
   describe "Default Config" do
-		let(:config){ 
-			config = RailsAws::Config.new default_config
-		}
+    let(:config){ 
+      config = RailsAws::Config.new default_config
+    }
 
     it "should validate against the schema"
-		
-		it "should have a project" do
-			expect { config.set_project("my_project_name") }.to_not raise_error
-		end
+    
+    it "should have a project" do
+      expect { config.set_project("my_project_name") }.to_not raise_error
+    end
 
-		it "should fail for an unknown project" do
-			expect { config.set_project("fake_project_name") }.to raise_error
-		end
+    it "should fail for an unknown project" do
+      expect { config.set_project("fake_project_name") }.to raise_error
+    end
 
-		it "should have a git_repo" do
+    it "should have a git_repo" do
       config.set_project("my_project_name")
-			expect(config.project).to have_key("git_repo")
-		end
+      expect(config.project).to have_key("git_repo")
+    end
 
     it "should have all default config values for a random branch" do
       config.set_project("my_project_name")
-			config.set_branch("random_branch_name")
-			branch = config.branch
-			branch.delete "account_id"
-			expect(branch).to eql(config.default_branch_settings)
-		end
+      config.set_branch("random_branch_name")
+      branch = config.branch
+      branch.delete "account_id"
+      expect(branch).to eql(config.default_branch_settings)
+    end
 
-		it "should have an account id" do
+    it "should have an account id" do
       config.set_project("my_project_name")
-			config.set_branch("random_branch_name")
-			expect(config.branch).to have_key("account_id")
-	  end
+      config.set_branch("random_branch_name")
+      expect(config.branch).to have_key("account_id")
+    end
 
   end
 
   describe "Tiered Config and Overrides" do
-		let(:config){ 
-			config = RailsAws::Config.new tiered_config
-		}
+    let(:config){ 
+      config = RailsAws::Config.new tiered_config
+    }
 
     it "should validate against schema"
 
     it "should override specific default values" do
       config.set_project("my_project_name")
-			config.set_branch("master")
-			branch = config.branch
-			expect(branch['app']['instance_type']).to eq("m3.medium")
-			expect(branch['database']['instance_type']).to eq("rds.t2.medium")
-			expect(branch['database']['db_type']).to eq("postgres")
-			expect(branch['domain']).to eq("rails-aws.com")
-		end
+      config.set_branch("master")
+      branch = config.branch
+      expect(branch['app']['instance_type']).to eq("m3.medium")
+      expect(branch['database']['instance_type']).to eq("rds.t2.medium")
+      expect(branch['database']['db_type']).to eq("postgres")
+      expect(branch['domain']).to eq("rails-aws.com")
+    end
 
   end
 
