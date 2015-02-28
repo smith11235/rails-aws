@@ -4,9 +4,6 @@ describe  "Config File Format" do
 
   let(:default_config) do
     <<-END_OF_CONFIG
-      account_id: 180190769793
-      region: us_east_1 
-      ami: ami-8afb51e2
       project_name:
         git_repo: https://github.com/smith11235/rails-aws.git
         default:
@@ -23,7 +20,7 @@ describe  "Config File Format" do
   let(:tiered_config) do
     <<-END_OF_CONFIG
       project_name:
-        git_repo: https://github.com/smith11235/rails-aws.git
+        git_repo: 
         default:
           account_id: 180190769793
           region: us_east_1 
@@ -44,7 +41,10 @@ describe  "Config File Format" do
   end
 
   describe "Default Config" do
-    it "should validate against schema"
+		it "should have a project"
+		it "should require a git url"
+    it "should validate against schema/config.json with a git url"
+		it "should have a default set of keys and values for a base rails system"
   end
 
   describe "Tiered Config" do

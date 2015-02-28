@@ -27,7 +27,8 @@ Gem::Specification.new do |s|
 	s.add_dependency "capistrano-rails"
 	s.add_dependency "capistrano-rvm"
 
-  s.add_development_dependency 'rspec'
+ s.add_development_dependency 'spring-commands-rspec'
+ s.add_development_dependency 'rspec'
 
   s.files        = Dir.glob("{bin,lib}/**/*") + %w(README.md)
   s.executables  = []

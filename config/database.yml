@@ -24,3 +24,5 @@ production:
 development:
   <<: *sqlite  
 
+test:
+  <<: *sqlite

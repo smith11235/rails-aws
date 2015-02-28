@@ -1,4 +1,6 @@
-module RailsAWS
+module RailsAws
+	include ActionView::Helpers::TranslationHelper
+
 	require 'rails'
 	require 'colorize'
 	# require 'haml'
@@ -8,18 +10,13 @@ module RailsAWS
 	require 'securerandom'
 
 	require 'rails-aws/railtie'
+	require 'rails-aws/config'
 	require 'rails-aws/ec2_client'
 	require 'rails-aws/cfm_client'
 	require 'rails-aws/key_pair'
 	require 'rails-aws/cloudformation'
 	require 'rails-aws/rds'
 
-
-	def self.environment
-		env = Rails.env
-		raise "Support production/development only" unless %w(production development).include? env
-		env
-	end
 
 	def self.snapshot_id_file
 		File.join( RailsAWS.branch_dir, 'rds_snapshot_id.yml' )
@@ -59,64 +56,10 @@ module RailsAWS
 		File.open( pass_file, 'r' ).read.chomp
 	end
 
-	def self.branch( branch = nil )
-		@@branch ||= branch
-		raise "Error: Branch is not set.".red if @@branch.nil?
-		@@branch
-	end
-
-	def self.branch_dir
-		branch_dir = File.join( Rails.root, 'config/branch', RailsAWS.branch )
-  	FileUtils.mkdir_p branch_dir unless File.directory?( branch_dir )
-		branch_dir
-	end
-
 	def self.branch_secret
 		File.join( RailsAWS.branch_dir, 'secret' )
 	end
 
-	def self.config_hash( options = {} )
-		options = options.reverse_merge :reset => false
-		if options[:reset] || @config.nil?
-			@@config ||= YAML.load_file( File.join( Rails.root, 'config/rails-aws.yml' ) )
-		end
-		@@config
-	end
-	
-	def self.config( key, options = {} )
-		RailsAWS.config_hash( options )
-		@@config.fetch( key.to_s )
-	end
-
-	def self.stack_definition
-		config_has = RailsAWS.config_hash
-		stack_file = config_hash[ 'stack_definition' ] || 'lib/rails-aws/stack.json.erb'
-		stack_file = File.expand_path stack_file 
-		raise "Missing stack_definition: #{stack_file}".red unless File.file? stack_file
-		stack_file
-	end
-
-	# in rails-aws.rb
-	def self.db_type
-		# db_type = ActiveRecord::Base.connection.adapter_name.downcase
-		config_key = "db_type_#{RailsAWS.environment}".to_sym
-		db_type = RailsAWS.config( config_key )
-
-		db_type = case db_type
-          		when /^mysql/
-          			:mysql
-          		when /^sqlite/
-          			:sqlite
-          		else
-          			raise "Unsupported db type: #{db_type}"
-          		end
-		db_type
-	end
-
-	def self.ami_id
-		# from: http://cloud-images.ubuntu.com/locator/ec2/
-		RailsAWS.config( :ami_id )
-	end
 
 	def self.deploy_key( options = {} )
 		File.join( Rails.root, 'config/deploy_key/', "#{RailsAWS.application( options )}_id_rsa" )

@@ -14,6 +14,14 @@ Assign domains to your master or your release branches automatically..
 
 Run it from your computer, a server, or a thumbdrive.
 
+## Development
+
+```
+  source build_ruby_env.rb
+  source load_ruby_env.rb
+  spring rspec
+```
+
 ## Software
 
 * Ubuntu 14.04
