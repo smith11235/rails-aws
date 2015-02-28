@@ -1,25 +1,42 @@
 # Rails Aws
 
 Manage all your projects.
-
 Manage each branch of your project.
-
 Manage them locally for easy key management.
-
 Integrate with Lastpass and 1Password.
-
 Versioned, revision controlled hardware and software.
-
 Local server provides dashboard for management.
-
 Use easy pro stacks for the best modern website possible.
-
 All based on AWS for easy infinite expansion.
-
 Run a development server.
-
 This app is what runs on port 80.
 
+## Priorities
+
+### V1
+
+* multi project settings file
+	* configurable stack definition files
+
+* rails-aws gem can be used in 'development' environment to deploy production
+	* design point:
+		* rake tasks vs generators
+			* generators can be more interactive and guided
+		  * i think rake tasks should be turned to generators
+
+* rspec tests for critical logic
+
+### V2
+
+* rails-aws UI can be used locally (rails server -p 3000)
+	* no user accounts or shared hosted instances
+
+### V3
+
+* with user accounts and real security
+* a hosted and shared instance could be made
+* allowing a team to share simple control
+	
 ## Config File
 
 ```
