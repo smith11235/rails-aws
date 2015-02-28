@@ -7,3 +7,8 @@ en:
     ask: "Please enter '%{prompt}':(%{default_value}) " 
     aws_keys:
       suggested: "Set the aws IAM access key id and secret key"
+    modify:
+      file: "File: %{file}"
+      suggestion: "Note: %{suggested}"
+      check: "Do you wish to modify (y)"
+      confirm: "Are you sure you wish to modify (y)"

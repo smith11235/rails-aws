@@ -48,19 +48,18 @@ module RailsAws
       exists_already = File.file?(file)
       answer = if exists_already
                  puts
-                 puts "---".green
-                 puts "File: #{file}"
-                 puts "Suggested: #{opts[:suggested]}" if opts[:suggested]
-                 ask("Do you wish to modify (y)".yellow)  == 'y'
+                 puts t("generator.modify.file", file: file)
+                 puts t("generator.modify.suggestion",suggested: opts[:suggested]) if opts[:suggested]
+                 ask(t("generator.modify.check")).downcase == 'y'
                else
                  true
                end
       answer = if exists_already && answer && opts[:confirm]
-                 ask( "Are you sure you wish to modify (Y)".red ) == 'Y'
+                 ask(t("generator.modify.confirm")).downcase == 'y'
                else
                  answer
                end
-      return answer
+      answer
     end
   end
 end
