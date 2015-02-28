@@ -1,5 +1,4 @@
 module RailsAws
-	include ActionView::Helpers::TranslationHelper
 
 	require 'rails'
 	require 'colorize'
@@ -16,8 +15,21 @@ module RailsAws
 	require 'rails-aws/key_pair'
 	require 'rails-aws/cloudformation'
 	require 'rails-aws/rds'
+	require 'i18n'
 
+	def t(key, options={})
+		I18n.t(key, options)
+	end
 
+	def l(key, options={})
+		I18n.l(key, options)
+	end
+
+	def self.logger(message)
+		Rails.logger.info "RailsAws: #{message}"
+	end
+
+=begin
 	def self.snapshot_id_file
 		File.join( RailsAWS.branch_dir, 'rds_snapshot_id.yml' )
 	end
@@ -107,6 +119,7 @@ module RailsAws
 			return "~^(.+)$"
 		end
 	end
+=end
 
 	private
 
