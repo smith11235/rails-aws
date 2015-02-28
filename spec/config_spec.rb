@@ -13,7 +13,7 @@ describe RailsAws::Config do
 
   let(:tiered_config) do
     <<-END_OF_CONFIG
-      my_project_name:
+      my_other_project_name:
         git_repo: https://github.com/smith11235/rails-aws.git
         default:
           account_id: 180190769793
@@ -71,7 +71,7 @@ describe RailsAws::Config do
     it "should validate against schema"
 
     it "should override specific default values" do
-      config.set_project("my_project_name")
+      config.set_project("my_other_project_name")
       config.set_branch("master")
       branch = config.branch
       expect(branch['app']['instance_type']).to eq("m3.medium")
@@ -80,6 +80,13 @@ describe RailsAws::Config do
       expect(branch['domain']).to eq("rails-aws.com")
     end
 
+  end
+
+  describe "Multiple project support" do
+    it "should allow multiple projects" do
+      config = RailsAws::Config.new default_config + "\n" + tiered_config
+      expect(config.projects).to eql(["my_other_project_name","my_project_name"])
+    end
   end
 
 end

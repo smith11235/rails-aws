@@ -16,6 +16,10 @@ module RailsAws
 								end
 		end
 
+		def projects
+			@config.keys.sort
+		end
+
 		def set_branch(branch_name)
 			@branch_name = branch_name
 			RailsAws.logger @config.to_yaml
