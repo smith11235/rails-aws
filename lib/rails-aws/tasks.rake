@@ -3,6 +3,7 @@ namespace :aws do
 	desc "Tester"
 	task tester: :environment do 
 		config = RailsAws::Config.new
+		config.set_project "some_pproject"
 	end
 
 

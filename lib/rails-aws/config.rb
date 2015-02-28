@@ -23,9 +23,12 @@ module RailsAws
 	end
 
 	def set_project(project_name)
-		project_names = @config.keys.sort.to_yaml
-		key = "Missing project: %{project_name}, try: %{project_names}"
-		raise t(key, project_name: project_name, project_names: project_names ).red
+		unless project_names.include? project_name
+  		project_names = @config.keys.sort.to_yaml
+  		key = "Missing project: %{project_name}, try: %{project_names}"
+  		raise t(key, project_name: project_name, project_names: project_names ).red
+		end
+		@project_name = project_name
 	end
 
 	def branch
