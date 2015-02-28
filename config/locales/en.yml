@@ -3,3 +3,7 @@ en:
     missing_project_error: "Missing project: %{project_name}, try: %{project_names}"
     loading_config_file: "Loading config file: %{config_file}"
     loading_config_text: "No config file: %{config_file}, Using passed text:\n%{passed_text}"
+  generator:
+    ask: "Please enter '%{prompt}':(%{default_value}) " 
+    aws_keys:
+      suggested: "Set the aws IAM access key id and secret key"

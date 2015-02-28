@@ -8,7 +8,7 @@ module RailsAws
     end
 
 		generators do
-			require 'rails-aws/setup_generator'
+			require 'rails-aws/aws_generator'
 		end
   end
 end
