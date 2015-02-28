@@ -10,12 +10,14 @@
 # PATH
 # export PATH=$(echo $PATH | tr ':' '\n' | grep -v rvm | tr '\n' ':' | sed 's/:$//')
 
-rm -rf .rvm
 export rvm_path=`pwd`/.rvm
+rm -rf $rvm_path
+
+gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
 \curl -sSL https://get.rvm.io | bash -s stable --ruby --gems=bundler --ignore-dotfiles
 
 source $rvm_path/scripts/rvm
-rvm install 2.1.3
-rvm use 2.1.3 --default
+rvm install 2.1.4
+rvm use 2.1.4 --default
 gem install bundler
 bundle install
