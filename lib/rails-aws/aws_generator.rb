@@ -26,6 +26,27 @@ module RailsAws
       end
     end
 
+    def deploy_keys
+      create_keys = ask(t("generator.deploy_keys.create")).downcase == 'y'
+      return unless create_keys
+
+      config = RailsAws::Config.new
+      unless config.valid?
+        puts t('generator.deploy_keys.config_error')
+        return
+      end
+      config.projects.each do |project|
+        next unless ask("- " + t("generator.deploy_keys.for_project", project: project)).downcase == 'y'
+        key_file = File.join(Rails.root, 'config', 'rails-aws', project, 'deploy_id_rsa')
+        if modify? key_file, :suggested => t("generator.deploy_keys.suggested")
+          deploy_dir = File.dirname file
+          FileUtils.mkdir deploy_dir unless File.directory? deploy_dir
+          system( "ssh-keygen -t rsa -f #{key_file}" )
+          puts t("generator.deploy_keys.add_to_repository", key_file: key_file).green
+        end
+      end
+    end
+
     private
 
     def query(key,current_value)

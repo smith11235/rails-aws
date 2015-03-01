@@ -10,15 +10,13 @@ describe RailsAws::AwsGenerator do
     prepare_destination
     run_generator
   end
-  
+
   it "should create a valid config/rails-aws.yml"
+  
+  it "should create an aws iam key file" 
+  it "should create deploy keys"
 
   it "should override the config/database.yml file"
-
-  it "should create an aws iam key file" 
-
-  it "should create a deploy key"
-
   it "should add private files to .gitignore"
 
 end

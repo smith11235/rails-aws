@@ -11,11 +11,18 @@ module RailsAws
 									RailsAws.logger(t("config.loading_config_file", config_file: config_file))
 									YAML.load_file(config_file)
 								else
-									RailsAws.logger(t("config.loading_config_text", config_file: config_file, passed_text: config_text))
-									YAML.load config_text
+									if !config_text
+										false
+									else
+									  RailsAws.logger(t("config.loading_config_text", config_file: config_file, passed_text: config_text))
+									  YAML.load config_text
+									end
 								end
 		end
 
+		def valid?
+			!(@config.nil? || @config == false)
+		end
 		def projects
 			@config.keys.sort
 		end
