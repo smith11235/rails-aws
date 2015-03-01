@@ -14,6 +14,14 @@ describe RailsAws::AwsGenerator do
   it "should create a valid config/rails-aws.yml"
  
   it "should create an aws iam key file" do
+    expect(destination_root).to have_structure do
+      directory "config" do
+        file "rails-aws.yml" do
+          contains ":access_key_id: "
+          contains ":secret_access_key: "
+        end
+      end
+    end
     aws_key_file = "config/aws-keys.yml"
     expect(File.file?(aws_key_file)).to be_true
     aws_key = YAML.load_file aws_key_file
