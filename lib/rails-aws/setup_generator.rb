@@ -9,8 +9,6 @@ module RailsAws
 
     def rails_aws_settings
       file = "config/rails-aws.yml"
-      # defaults = RailsAWS.config_hash( :reset => true )
-
       if modify? file, :confirm => true, :suggested => "Update carefully".yellow
         values = Hash.new
         values[ 'repo_url' ] = ask "What is your rails application git clone 'repo_url'?"
