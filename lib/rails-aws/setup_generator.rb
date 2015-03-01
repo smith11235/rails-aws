@@ -48,7 +48,6 @@ module RailsAws
 
         copy_file File.basename( file ), file
 
-
         RailsAWS.config_hash( :reset => true )
         prod_type = RailsAWS.db_type
         sed_cmd = "sed -i 's/production_type/#{prod_type}/' #{file}"

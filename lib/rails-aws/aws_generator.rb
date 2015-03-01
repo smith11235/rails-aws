@@ -65,7 +65,7 @@ module RailsAws
     end
 
     def yes?(question)
-      true if Rails.env == "test"
+      return true if Rails.env == "test"
       ask(question + "(y)").downcase == 'y'
     end
 
@@ -90,7 +90,7 @@ module RailsAws
 
     def destination(target_file)
       final_path = if Rails.env == "test"
-                     File.join(prefix_path,target_file)
+                     File.join('tmp', target_file)
                    else
                      target_file
                    end
