@@ -8,7 +8,7 @@ en:
     aws_keys:
       suggested: "Set the AWS IAM access key id and secret key"
     deploy_keys:
-      create: "Create/Update ssh deploy keys for your projects (y)"
+      create: "Create/Update ssh deploy keys for your projects"
       for_project: "Create/Update key for project: %{project}"
       suggested: "Safe to replace, but requires updating your respositories known keys"
       add_to_repository: "Add contents of %{key_file} to repository deploy keys"
@@ -16,5 +16,5 @@ en:
     modify:
       file: "File: %{file}"
       suggestion: "Note: %{suggested}"
-      check: "Do you wish to modify (y)"
-      confirm: "Are you sure you wish to modify (y)"
+      check: "Do you wish to modify"
+      confirm: "Are you sure you wish to modify"

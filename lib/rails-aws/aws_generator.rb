@@ -4,11 +4,11 @@ module RailsAws
 
   class AwsGenerator < Rails::Generators::Base
     include RailsAws
-    
+
     source_root File.expand_path("../", __FILE__)
 
     def aws_keys_config_file
-      file = "config/aws-keys.yml"
+      file = destination("config/aws-keys.yml")
       if modify? file, :suggested => t('generator.aws_keys.suggested')
         keys = [:access_key_id, :secret_access_key]
         current_values = current_file_values(file)
@@ -27,7 +27,7 @@ module RailsAws
     end
 
     def deploy_keys
-      create_keys = ask(t("generator.deploy_keys.create")).downcase == 'y'
+      create_keys = yes?(t("generator.deploy_keys.create"))
       return unless create_keys
 
       config = RailsAws::Config.new
@@ -36,8 +36,8 @@ module RailsAws
         return
       end
       config.projects.each do |project|
-        next unless ask("- " + t("generator.deploy_keys.for_project", project: project)).downcase == 'y'
-        key_file = File.join(Rails.root, 'config', 'rails-aws', project, 'deploy_id_rsa')
+        next unless yes?("- " + t("generator.deploy_keys.for_project", project: project))
+        key_file = destination(File.join('config', 'rails-aws', project, 'deploy_id_rsa'))
         if modify? key_file, :suggested => t("generator.deploy_keys.suggested")
           deploy_dir = File.dirname file
           FileUtils.mkdir deploy_dir unless File.directory? deploy_dir
@@ -64,6 +64,11 @@ module RailsAws
       Rails.env == "test" ? "TESTINGvalue" : nil
     end
 
+    def yes?(question)
+      true if Rails.env == "test"
+      ask(question + "(y)").downcase == 'y'
+    end
+
     def modify?(file, opts = {})
       opts = opts.reverse_merge( :confirm => false, :suggested => nil  )
       exists_already = File.file?(file)
@@ -71,16 +76,28 @@ module RailsAws
                  puts
                  puts t("generator.modify.file", file: file)
                  puts t("generator.modify.suggestion",suggested: opts[:suggested]) if opts[:suggested]
-                 ask(t("generator.modify.check")).downcase == 'y'
+                 yes?(t("generator.modify.check"))
                else
                  true
                end
       answer = if exists_already && answer && opts[:confirm]
-                 ask(t("generator.modify.confirm")).downcase == 'y'
+                 yes?(t("generator.modify.confirm"))
                else
                  answer
                end
       answer
     end
+
+    def destination(target_file)
+      final_path = if Rails.env == "test"
+                     File.join(prefix_path,target_file)
+                   else
+                     target_file
+                   end
+      FileUtils.mkdir_p File.dirname(final_path)
+      final_path
+    end
+
   end
+
 end
