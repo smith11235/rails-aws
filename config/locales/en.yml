@@ -8,8 +8,8 @@ en:
     aws_keys:
       suggested: "Set the AWS IAM access key id and secret key"
     deploy_keys:
-      create: "Create ssh deploy keys for your projects (y)"
-      for_project: "Create key for project: %{project}"
+      create: "Create/Update ssh deploy keys for your projects (y)"
+      for_project: "Create/Update key for project: %{project}"
       suggested: "Safe to replace, but requires updating your respositories known keys"
       add_to_repository: "Add contents of %{key_file} to repository deploy keys"
       config_error: "Error: cannot list projects from current config/rails-aws.yml file."
