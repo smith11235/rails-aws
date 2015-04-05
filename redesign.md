@@ -14,15 +14,14 @@ This app is what runs on port 80.
 ## Priorities
 
 #### V1
-* aws:deploy:create:prepare 
-  * [ ] add rds if db_type != sqlite
 
 #### v2: aws:deploy:create:publish
 
 * aws:deploy:delete
-  * [ ] delete cloudformation
+  * [ ] delete cloudformation stack
+  * [ ] delete cloudformation file
   * [ ] delete keypair
-  * [ ] remove files
+  * [ ] delete keypair file
 
 * aws:deploy:create:publish
   * [ ] expect files

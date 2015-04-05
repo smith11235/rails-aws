@@ -10,9 +10,12 @@ module RailsAws
 
 	require 'rails-aws/railtie'
 	require 'rails-aws/config'
+  require 'rails-aws/stack_builder'
+
 	require 'rails-aws/ec2_client'
 	require 'rails-aws/cfm_client'
 	require 'rails-aws/key_pair'
+
 	require 'rails-aws/cloudformation'
 	require 'rails-aws/rds'
 	require 'i18n'
