@@ -110,4 +110,43 @@ Resources:
         Ref: "subnet"
       NetworkAclId: 
         Ref: "NetworkAcl"
-
+  SecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Enable Access to Rails application via port 80, 443, 3000 and SSH access via port 22"
+      VpcId": 
+        Ref: "vpc" 
+      SecurityGroupIngress:
+      - IpProtocol: "tcp"
+        FromPort: "22"
+        ToPort: "22"
+        CidrIp: "0.0.0.0/0"
+      - IpProtocol: "tcp"
+        FromPort: "3000"
+        ToPort: "3000"
+        CidrIp: "0.0.0.0/0"
+      - IpProtocol: "tcp"
+        FromPort: "80"
+        ToPort: "80"
+        CidrIp: "0.0.0.0/0"
+      - IpProtocol: "tcp"
+        FromPort: "443"
+        ToPort: "443"
+        CidrIp: "0.0.0.0/0"
+      Tags:
+       - Key: "Name"
+         Value: "<%= stack_name %>"
+  SecurityGroupIngress:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      IpProtocol: "-1"
+      FromPort: "0"
+      ToPort: "65535"
+      SourceSecurityGroupId: 
+        "Fn::GetAtt": 
+        - "SecurityGroup"
+        - "GroupId"
+      GroupId: 
+        "Fn::GetAtt": 
+        - "SecurityGroup"
+        - "GroupId"
