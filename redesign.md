@@ -13,26 +13,22 @@ This app is what runs on port 80.
 
 ## Priorities
 
-### EB handling
-
-#### v1: aws:deploy:create:prepare
-* aws:deploy:create BRANCH=master
-  * [ ] expects no file: config/aws-stacks/master.json
-  * [ ] expects no key file: config/aws-stacks/master.key
-  * generate json file
-    * vpc, subnets
-    * add rds if db_type != sqlite
+#### V1
+* aws:deploy:create:prepare 
+  * [ ] add rds if db_type != sqlite
 
 #### v2: aws:deploy:create:publish
 
-* aws:deploy:delete CONFIRM=delete
-  * delete cloudformation
-  * delete keypair
-  * remove files
-* create keypair
-* create stack
-  * [ ] expects no cloudformation stack: [project-name-from-repo-name][branch]
+* aws:deploy:delete
+  * [ ] delete cloudformation
+  * [ ] delete keypair
+  * [ ] remove files
 
+* aws:deploy:create:publish
+  * [ ] expect files
+  * [ ] expect no stack
+  * [ ] create keypair
+  * [ ] create stack
 
 #### v3
     * EB Application

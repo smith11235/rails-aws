@@ -1,2 +1,5 @@
 default:
   account_id: 180190769793
+  database: 
+    instance_type: db.t2.micro
+    db_type: postgres

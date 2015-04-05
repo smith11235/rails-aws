@@ -14,8 +14,10 @@ namespace :aws do
         template = base_config
 
         db_type = @config.branch.fetch('database').fetch('db_type')
+
         if db_type != 'sqlite'
-          raise "Add rds_config, set type and instance_type"
+          resources = template.fetch("Resources")
+          resources.merge! rds_config
         end
 
         aws_config_dir = File.dirname(cloudformation_file) 
@@ -32,12 +34,17 @@ namespace :aws do
       end
 
       def base_config
-        YAML.load_file "lib/rails-aws/base_stack_config.yml"
+        content = File.read "lib/rails-aws/base_stack_config.yml"
+
+			  renderer = ERB.new(content, nil, '%')
+				content = renderer.result(binding)
+
+        YAML.load content
       end
 
       def files_dont_exist_yet
         [key_file, cloudformation_file].each do |file|
-          raise t("deploy.errors.file_exists_already", file: file) if File.file? file
+          raise I18n.t("stack_builder.errors.file_exists_already", file: file) if File.file? file
         end
       end
 
