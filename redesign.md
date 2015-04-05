@@ -13,7 +13,41 @@ This app is what runs on port 80.
 
 ## Priorities
 
-### V1
+### EB handling
+
+#### v1
+* aws:deploy:create BRANCH=master
+  * expects no file: config/aws-stacks/master.json
+  * expects no key file: config/aws-stacks/master.key
+  * expects no cloudformation stack: [project-name-from-repo-name][branch]
+
+#### v2
+* creates key file: config/aws-stacks/master.key
+* creates: config/aws-stacks/master.json
+  * vpc, etc
+  * rds 
+
+#### v3
+    * EB Application
+      * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html
+    * EB Application Version
+      * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-version.html
+      * how to create a source bundle?
+    * EB Config
+      * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-beanstalk-configurationtemplate.html
+    * Environment
+      * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html
+#### v4 
+* better options, env config, etc
+* options, scaling, monitoring
+  * http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options.html
+
+* prepare_update[master]
+  * new app version
+  * new eb environment
+
+* publish_update[master]
+  * cname swap
 
 * https://github.com/smith11235/rails-aws/milestones/V1%20-%20Remake%20-%20Production%20Quality
 
