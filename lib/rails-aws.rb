@@ -2,23 +2,32 @@ module RailsAws
 
 	require 'rails'
 	require 'colorize'
-	# require 'haml'
-	# require 'haml-rails'
 	require 'aws-sdk'
-
+	require 'i18n'
 	require 'securerandom'
 
 	require 'rails-aws/railtie'
 	require 'rails-aws/config'
   require 'rails-aws/stack_builder'
-
-	require 'rails-aws/ec2_client'
-	require 'rails-aws/cfm_client'
 	require 'rails-aws/key_pair'
 
-	require 'rails-aws/cloudformation'
-	require 'rails-aws/rds'
-	require 'i18n'
+	require 'rails-aws/cfm_client'
+
+  # TODO: remove me
+	#require 'rails-aws/cloudformation'
+	#require 'rails-aws/rds'
+
+  def self.aws_init
+	  aws_key_info = YAML.load_file('config/aws-keys.yml')
+    aws_key_info.each do |key,value|
+      ENV[key] = value
+    end
+  end
+
+  def self.ec2_client
+    RailsAws.aws_init
+		AWS::EC2.new
+  end
 
 	def t(key, options={})
 		I18n.t(key, options)

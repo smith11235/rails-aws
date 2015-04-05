@@ -4,10 +4,20 @@ module RailsAws
 
     def initialize
       @config = RailsAws::Config.new
+      @key_pair = RailsAws::KeyPair.new
     end
 
     def cloudformation_file
       "config/aws-stacks/#{@config.current_stack_name}.json"
+    end
+
+    def publish_new_stack
+      raise t("stack_builder.errors.file_missing", file: cloudformation_file) unless File.file? cloudformation_file
+      raise t("stack_builder.errors.file_exists_already", file: @key_pair.key_file) unless File.file? @key_pair.key_file
+
+      raise t("stack_builder.errors.keypair_exists_already", key_name: @key_pair.key_name) if @key_pair.exists?
+
+      @key_pair.create
     end
 
     def prepare_new_stack
@@ -29,6 +39,16 @@ module RailsAws
       end
     end
 
+    def delete_stack
+      # DELETE cloudformation
+
+      FileUtils.rm(cloudformation_file) if File.file? cloudformation_file
+
+      @key_pair.delete
+      FileUtils.rm(@key_pair.key_file) if File.file? @key_pair.key_file
+
+    end
+
     private
 
     def stack_name
@@ -45,13 +65,9 @@ module RailsAws
     end
 
     def files_dont_exist_yet
-      [key_file, cloudformation_file].each do |file|
+      [@key_pair.key_file, cloudformation_file].each do |file|
         raise t("stack_builder.errors.file_exists_already", file: file) if File.file? file
       end
-    end
-
-    def key_file
-      "config/aws-stacks/#{@config.current_stack_name}.key"
     end
 
     def rds_config

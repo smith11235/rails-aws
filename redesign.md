@@ -19,12 +19,11 @@ This app is what runs on port 80.
 
 * aws:deploy:delete
   * [ ] delete cloudformation stack
-  * [ ] delete cloudformation file
-  * [ ] delete keypair
-  * [ ] delete keypair file
+  * [/] delete cloudformation file
+  * [/] delete keypair
+  * [/] delete keypair file
 
 * aws:deploy:create:publish
-  * [ ] expect files
   * [ ] expect no stack
   * [ ] create keypair
   * [ ] create stack
@@ -39,8 +38,13 @@ This app is what runs on port 80.
       * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-beanstalk-configurationtemplate.html
     * Environment
       * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html
+
 #### V*
 * domain name setup
+
+#### Review Generator
+* and iam gitignore, keyfile
+
 #### v4 
 * better options, env config, etc
 * options, scaling, monitoring

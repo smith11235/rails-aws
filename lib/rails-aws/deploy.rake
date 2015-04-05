@@ -4,7 +4,7 @@ namespace :aws do
 
 
     namespace :create do
-      desc "Create a new stack for your current repo and branch."
+      desc "Prepare a new stack for review"
       task prepare: :environment do
         stack_builder = RailsAws::StackBuilder.new
 
@@ -13,15 +13,20 @@ namespace :aws do
         system("git status")
         puts "Now execute: $ rake aws:deploy:create:publish".green
       end
+
+      desc "Deploy a new stack"
+      task publish: :environment do
+        stack_builder = RailsAws::StackBuilder.new
+        stack_builder.publish_new_stack
+      end
+
     end
 
     desc "Delete stack and all local resources related to it"
     task delete: :environment do
       stack_builder = RailsAws::StackBuilder.new
+      stack_builder.delete_stack
       
-      cloudformation_file = stack_builder.cloudformation_file
-      FileUtils.rm(cloudformation_file) if File.file? cloudformation_file
-
     end
 
   end

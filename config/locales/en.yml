@@ -6,6 +6,12 @@ en:
   stack_builder:
     errors:
       file_exists_already: "Expected %{file} to not exist yet"
+      file_missing: "Expected %{file} to exist"
+      keypair_exists_already: "KeyPair exists already: %{key_name}"
+  key_pair:
+    errors: 
+      unable_to_set_security: "Error: Unable to set security on %{key_file}, try $ chmod 400 %{key_file}"
+
 
   generator:
     ask: "Please enter '%{prompt}':(%{default_value}) " 
