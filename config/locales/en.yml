@@ -1,8 +1,12 @@
 en:
   config:
-    missing_project_error: "Missing project: %{project_name}, try: %{project_names}"
+    missing_config_file: "Missing config file: %{config_file}" 
     loading_config_file: "Loading config file: %{config_file}"
     loading_config_text: "No config file: %{config_file}, Using passed text:\n%{passed_text}"
+  stack_builder:
+    errors:
+      file_exists_already: "Expected %{file} to not exist yet"
+
   generator:
     ask: "Please enter '%{prompt}':(%{default_value}) " 
     aws_keys:

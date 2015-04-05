@@ -2,33 +2,52 @@ namespace :aws do
 
   namespace :deploy do
 
-    class CfTemplateBuilder
+    class StackBuilder
 
-      def branch
-        @branch ||= `git branch | grep \\* | sed 's/^*\\s//'`.rstrip
+      def initialize
+        @config = RailsAws::Config.new
       end
 
-      def project
-        @project ||= `git remote show origin | grep Fetch | sed 's/^.*github.com.//'`.rstrip
+      def prepare_new_stack
+        files_dont_exist_yet
+
+        puts base_config.to_yaml
       end
+
+      private
 
       def stack_name
-        @stack_name ||= unless @stack_name
-                          [project,branch].collect do |name|
-                            name.gsub! /\.git$/, ''
-                            name.gsub! /(\/|\\)/, '-'
-                            name.gsub! /_/, '-'
-                            name
-                          end.join('-')
-                        end
+        @config.current_stack_name
       end
+
+      def base_config
+        YAML.load_file "lib/rails-aws/base_stack_config.yml"
+      end
+
+      def files_dont_exist_yet
+        [key_file, cloudformation_file].each do |file|
+          raise t("deploy.errors.file_exists_already", file: file) if File.file? file
+        end
+      end
+
+      def cloudformation_file
+        "config/aws-stacks/#{@config.current_stack_name}.json"
+      end
+
+      def key_file
+        "config/aws-stacks/#{@config.current_stack_name}.key"
+      end
+
     end
 
-    desc "Create a new stack for your current repo and branch."
-    task create: :environment do
+    namespace :create do
+      desc "Create a new stack for your current repo and branch."
+      task prepare: :environment do
 
-      cf_template_builder = CfTemplateBuilder.new
-      puts cf_template_builder.stack_name
+        stack_builder = StackBuilder.new
+
+        stack_builder.prepare_new_stack
+
 
 =begin
 
@@ -50,7 +69,8 @@ namespace :aws do
     cloudformation.create!
 
 =end
+      end
     end
-  end
 
+  end
 end
