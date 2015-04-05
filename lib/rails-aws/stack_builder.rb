@@ -13,7 +13,7 @@ module RailsAws
 
     def publish_new_stack
       raise t("stack_builder.errors.file_missing", file: cloudformation_file) unless File.file? cloudformation_file
-      raise t("stack_builder.errors.file_exists_already", file: @key_pair.key_file) unless File.file? @key_pair.key_file
+      raise t("stack_builder.errors.file_exists_already", file: @key_pair.key_file) if File.file? @key_pair.key_file
 
       raise t("stack_builder.errors.keypair_exists_already", key_name: @key_pair.key_name) if @key_pair.exists?
 
