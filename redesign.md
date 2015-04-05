@@ -21,7 +21,7 @@ This app is what runs on port 80.
   * [ ] expects no key file: config/aws-stacks/master.key
   * generate json file
     * vpc, subnets
-    * rds if db_type != sqlite
+    * add rds if db_type != sqlite
 
 #### v2: aws:deploy:create:publish
 
@@ -32,6 +32,7 @@ This app is what runs on port 80.
 * create keypair
 * create stack
   * [ ] expects no cloudformation stack: [project-name-from-repo-name][branch]
+
 
 #### v3
     * EB Application
@@ -58,6 +59,77 @@ This app is what runs on port 80.
   * cname swap
 
 * https://github.com/smith11235/rails-aws/milestones/V1%20-%20Remake%20-%20Production%20Quality
+
+### EC2 server
+
+      "devec2" : {
+        "Type" : "AWS::EC2::Instance",
+        "DependsOn" : [ "attachgateway" ],
+        "Properties" : {
+          "KeyName" : "bw-dev-smith",
+          "InstanceType": "t2.micro",
+          "SubnetId" : { "Ref": "subnet" },
+          "SecurityGroupIds" : [ {"Ref": "SecurityGroup" } ],
+          "ImageId" : "ami-9a562df2",
+          "UserData" : {
+            "Fn::Base64" : {
+              "Fn::Join" : ["",[
+                "#!/bin/bash -v\n"
+                ]]
+            }
+          },
+          "Tags": [ { "Key": "Name", "Value": "smith-dev" } ]
+        }
+      },
+      "dnsname": {
+        "Type": "AWS::Route53::RecordSetGroup",
+        "Properties": {
+          "HostedZoneName": "rails-aws.com.",
+          "Comment": "Subdomain record for ec2 server access",
+          "RecordSets": [
+          {
+            "Name": "dev.rails-aws.com.",
+            "Type": "CNAME",
+            "TTL": "60",
+            "ResourceRecords": [
+            { "Fn::GetAtt" : [ "devec2", "PublicDnsName" ] } 
+            ]
+          },
+          {
+            "Name": "test.rails-aws.com.",
+            "Type": "CNAME",
+            "TTL": "60",
+            "ResourceRecords": [
+            { "Fn::GetAtt" : [ "devec2", "PublicDnsName" ] } 
+            ]
+          },
+          {
+            "Name": "mail.rails-aws.com.",
+            "Type": "CNAME",
+            "TTL": "60",
+            "ResourceRecords": [
+            { "Fn::GetAtt" : [ "devec2", "PublicDnsName" ] } 
+            ]
+          }
+          ]
+        }
+      },
+
+### EIP/vs CNAME swap
+
+      "ec2eip": {
+        "Type" : "AWS::EC2::EIP",
+        "Properties" : {
+          "Domain" : "vpc" 
+        }
+      },
+      "ec2eipassoc" : {
+        "Type" : "AWS::EC2::EIPAssociation",
+        "Properties" : {
+          "AllocationId" : { "Fn::GetAtt" : [ "ec2eip", "AllocationId" ]},
+          "InstanceId" : { "Ref" : "devec2" }
+        }
+      },
 
 ### V2
 

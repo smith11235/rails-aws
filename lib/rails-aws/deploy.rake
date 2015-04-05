@@ -11,7 +11,18 @@ namespace :aws do
       def prepare_new_stack
         files_dont_exist_yet
 
-        puts base_config.to_yaml
+        template = base_config
+
+        db_type = @config.branch.fetch('database').fetch('db_type')
+        if db_type != 'sqlite'
+          raise "Add rds_config, set type and instance_type"
+        end
+
+        aws_config_dir = File.dirname(cloudformation_file) 
+        FileUtils.mkdir_p(aws_config_dir) unless File.directory? aws_config_dir
+        File.open(cloudformation_file, 'w') do |f|
+          f.puts JSON.pretty_generate(template)
+        end
       end
 
       private
@@ -38,6 +49,38 @@ namespace :aws do
         "config/aws-stacks/#{@config.current_stack_name}.key"
       end
 
+      def rds_config
+        {
+          "RDS" => {
+            "Type" => "AWS=>=>RDS=>=>DBInstance",
+            "Properties" =>
+            {
+              "AllocatedStorage" => "50",
+              "AllowMajorVersionUpgrade" => true,
+              "AutoMinorVersionUpgrade" => true,
+              "BackupRetentionPeriod" => "2",
+              "DBInstanceClass" => @config.branch.fetch('database').fetch('instance_type'),
+              "VPCSecurityGroups"=> [ {"Ref"=> "SecurityGroup"} ],
+              "Engine" => @config.branch.fetch('database').fetch('db_type'),
+              "DBName" => "railsapp", 
+              "MasterUsername" => "railsapp",
+              "MasterUserPassword" => "5aed99058d873716ebec7111b2e679dc",
+              "MultiAZ" => false,
+              "PubliclyAccessible" => false,
+              "DBSubnetGroupName"=> { "Ref"=> "RDSSubnet" },
+              "Tags" => [ {"Key"=> "Name", "Value"=> stack_name } ]
+            }
+          },
+          "RDSSubnet"=> {
+            "Type" => "AWS=>=>RDS=>=>DBSubnetGroup",
+            "Properties" => {
+              "DBSubnetGroupDescription" => stack_name,
+              "SubnetIds" => [ {"Ref"=> "subnet" }, { "Ref"=> "subnet2" } ],
+              "Tags" => [ {"Key"=> "Name", "Value"=> stack_name } ]
+            }
+          }
+        }
+      end
     end
 
     namespace :create do
@@ -48,27 +91,8 @@ namespace :aws do
 
         stack_builder.prepare_new_stack
 
-
-=begin
-
-      cloudformation_file = "config/rails-aws/#{branch}.json"
-    key_pair = RailsAWS::KeyPair.new
-
-    if RailsAWS.db_type != :sqlite
-      db_password_file = RailsAWS.dbpassword_file 
-      unless File.file? db_password_file
-        RailsAWS.set_dbpassword
-      else
-        puts "Reusing previously created dbpassword: #{db_password_file}".yellow
-      end
-    end
-
-    cloudformation = RailsAWS::Cloudformation.new
-
-    key_pair.create!
-    cloudformation.create!
-
-=end
+        system("git status")
+        puts "Now execute: $ rake aws:deploy:create:publish".green
       end
     end
 
