@@ -1,37 +1,32 @@
 # Rails Aws
 
-Manage all your projects.
-Manage each branch of your project.
-Manage them locally for easy key management.
-Integrate with Lastpass and 1Password.
-Versioned, revision controlled hardware and software.
-Local server provides dashboard for management.
-Use easy pro stacks for the best modern website possible.
-All based on AWS for easy infinite expansion.
-Run a development server.
-This app is what runs on port 80.
+Publish your 'production' branch and any development branch you want tested like production.
+
+Revision controlled, pull requestable, hardware and software.
+
+All based on AWS with extensible json deployment configuration.
 
 ## Workflow
 
-* production, with database, rails stack
-  * in a private vpc
-  * running on elastic beanstalk
-* commands work on your current git repo and branch
-
+* deploy production setups
+  * for any branch you need
+    * commands operate on your current repo and branch
+  * private VPC
+  * standalone DB
+  * Rails on Elastic Beanstalk
+  * Safe, instant publishing and rollback of application versions.
 
 #### Deploying a test build or production
 
 ```
-  git checkout master
+  git checkout master # pretend master is your production build
   rake aws:deploy:create:prepare
   rake aws:deploy:create:publish
 
   rake aws:deploy:delete
 ```
 
-Updating a deployed test or production build.
-
-# todo:
+#### Deploying an Update
 
 ```
   git checkout master
@@ -49,8 +44,6 @@ Updating a deployed test or production build.
 ```
 
 ## Priorities
-
-* Goal: https://gist.github.com/smith11235/4a97b423cb4186514186
 
 #### v3
 
