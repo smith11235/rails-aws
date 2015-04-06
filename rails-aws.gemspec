@@ -20,12 +20,16 @@ Gem::Specification.new do |s|
   s.add_dependency "aws-sdk"
 	s.add_dependency "rails"
 	s.add_dependency "colorize"
-	s.add_dependency "haml"
-	s.add_dependency "haml-rails"
+	#s.add_dependency "haml"
+	#s.add_dependency "haml-rails"
 	s.add_dependency "capistrano"
 	s.add_dependency "capistrano-bundler"
 	s.add_dependency "capistrano-rails"
 	s.add_dependency "capistrano-rvm"
+
+ s.add_development_dependency 'rspec'
+ s.add_development_dependency 'spring-commands-rspec'
+ s.add_development_dependency 'generator_spec'
 
   s.files        = Dir.glob("{bin,lib}/**/*") + %w(README.md)
   s.executables  = []

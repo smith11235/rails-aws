@@ -1,5 +1,11 @@
 namespace :aws do
 
+	desc "Tester"
+	task tester: :environment do 
+		config = RailsAws::Config.new
+		config.set_project "some_pproject"
+	end
+
 
 	desc "Create a new stack from [branch_name]"
 	task :stack_create, [:branch_name] => :environment do |t,args|
