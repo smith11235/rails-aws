@@ -16,38 +16,64 @@ This app is what runs on port 80.
 * production, with database, rails stack
   * in a private vpc
   * running on elastic beanstalk
+* commands work on your current git repo and branch
+
+
+#### Deploying a test build or production
 
 ```
-  # To manage your current repo + branch
-
+  git checkout master
   rake aws:deploy:create:prepare
   rake aws:deploy:create:publish
 
   rake aws:deploy:delete
 ```
 
+Updating a deployed test or production build.
+
+# todo:
+
+```
+  git checkout master
+  rake aws:deploy:update:prepare
+  # Pull Request and review the platform change
+  rake aws:deploy:update:build_shadow_stack
+  # test your shadow stack at shadow.[yourdomain].com
+  rake aws:deploy:update:publish_shadow_stack
+
+  # if something breaks in production, immediately revert it
+  rake aws:deploy:update:revert_publish
+
+  # when you are happy with your release
+  rake aws:deploy:update:delete_previous_version
+```
+
 ## Priorities
 
-#### V1
+* Goal: https://gist.github.com/smith11235/4a97b423cb4186514186
 
-#### v2: aws:deploy:create:publish
+#### v3
 
+* EB Application
+  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html
+* EB Application Version
+  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-version.html
+  * how to create a source bundle?
+* EB Config
+  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-beanstalk-configurationtemplate.html
+* Environment
+  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html
+
+#### Update commands
+
+#### V* Outputs
+* eb: Fn::GetAtt, ebenvironment, EndpointURL
+  * awseb-myst-myen-132MQC4KRLAMD-1371280482.us-east-1.elb.amazonaws.com
 #### v?
 * add single or multi tenant development environment
   * to master environment
     * single tenant: dev.[domain.com]
     * multi tenant: [user].dev.[domain.com] 
-
-#### v3
-    * EB Application
-      * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html
-    * EB Application Version
-      * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-version.html
-      * how to create a source bundle?
-    * EB Config
-      * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-beanstalk-configurationtemplate.html
-    * Environment
-      * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html
 
 #### V*
 * domain name setup

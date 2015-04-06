@@ -57,11 +57,13 @@ module RailsAws
     end
 
     def base_config
-      content = File.read File.expand_path("../base_stack_config.yml", __FILE__)
+      load_yml_file(:base_stack_config)
+    end
 
+    def load_yml_file(config_file)
+      content = File.read File.expand_path("../#{config_file}.yml", __FILE__)
       renderer = ERB.new(content, nil, '%')
       content = renderer.result(binding)
-
       YAML.load content
     end
 
@@ -72,36 +74,7 @@ module RailsAws
     end
 
     def rds_config
-      {
-        "RDS" => {
-          "Type" => "AWS::RDS::DBInstance",
-          "Properties" =>
-          {
-            "AllocatedStorage" => "50",
-            "AllowMajorVersionUpgrade" => true,
-            "AutoMinorVersionUpgrade" => true,
-            "BackupRetentionPeriod" => "2",
-            "DBInstanceClass" => @config.branch.fetch('database').fetch('instance_type'),
-            "VPCSecurityGroups"=> [ {"Ref"=> "SecurityGroup"} ],
-            "Engine" => @config.branch.fetch('database').fetch('db_type'),
-            "DBName" => "railsapp", 
-            "MasterUsername" => "railsapp",
-            "MasterUserPassword" => "5aed99058d873716ebec7111b2e679dc",
-            "MultiAZ" => false,
-            "PubliclyAccessible" => false,
-            "DBSubnetGroupName"=> { "Ref"=> "RDSSubnet" },
-            "Tags" => [ {"Key"=> "Name", "Value"=> stack_name } ]
-          }
-        },
-        "RDSSubnet"=> {
-          "Type" => "AWS::RDS::DBSubnetGroup",
-          "Properties" => {
-            "DBSubnetGroupDescription" => stack_name,
-            "SubnetIds" => [ {"Ref"=> "subnet1" }, { "Ref"=> "subnet2" } ],
-            "Tags" => [ {"Key"=> "Name", "Value"=> stack_name } ]
-          }
-        }
-      }
+      load_yml_config(:rds_config)
     end
   end
 end
