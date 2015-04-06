@@ -16,6 +16,25 @@ All based on AWS with extensible json deployment configuration.
   * Rails on Elastic Beanstalk
   * Safe, instant publishing and rollback of application versions.
 
+#### Config Files
+
+* **config/aws-keys.yml** 
+  * todo: fix generator command
+  * todo: ensure this is in your gitignore
+
+  ```
+    AWS_ACCESS_KEY_ID: XXXYYYZZZDDDD
+    AWS_SECRET_ACCESS_KEY: LLKJFlwkjeflskjfowiejfljafoweijfalf;kejwfe
+    AWS_REGION: us-east-1
+  ```
+
+* **config/rails-aws.yml** - todo: fix generator
+  * minimally just needs a default hash entry, empty
+
+```
+  default:
+```
+
 #### Deploying a test build or production
 
 ```
@@ -47,15 +66,15 @@ All based on AWS with extensible json deployment configuration.
 
 #### v3
 
-* EB Application
-  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html
-* EB Application Version
-  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-version.html
-  * how to create a source bundle?
-* EB Config
-  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-beanstalk-configurationtemplate.html
-* Environment
-  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html
+* [ ] set options
+  * http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options.html  
+  * vpc id
+  * rds connection settings
+
+* Docs: EB Application
+  * application: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html
+  * version: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-version.html
+  * Environment: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html
 
 #### create railsaws s3 bucket
 
