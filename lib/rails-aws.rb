@@ -10,11 +10,9 @@ module RailsAws
 	require 'rails-aws/config'
   require 'rails-aws/stack_builder'
 	require 'rails-aws/key_pair'
-
-	require 'rails-aws/cfm_client'
+	require 'rails-aws/cloudformation'
 
   # TODO: remove me
-	#require 'rails-aws/cloudformation'
 	#require 'rails-aws/rds'
 
   def self.aws_init
@@ -29,6 +27,11 @@ module RailsAws
 		AWS::EC2.new
   end
 
+  def self.cfm_client
+    RailsAws.aws_init
+	  AWS::CloudFormation.new
+  end
+
 	def t(key, options={})
 		I18n.t(key, options)
 	end
@@ -38,8 +41,13 @@ module RailsAws
 	end
 
 	def self.logger(message)
+    puts message
 		Rails.logger.info "RailsAws: #{message}"
 	end
+
+  def logger(message)
+    RailsAws.logger(message)
+  end
 
 =begin
 	def self.snapshot_id_file

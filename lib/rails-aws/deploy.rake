@@ -1,9 +1,7 @@
 namespace :aws do
-
   namespace :deploy do
-
-
     namespace :create do
+
       desc "Prepare a new stack for review"
       task prepare: :environment do
         stack_builder = RailsAws::StackBuilder.new
@@ -26,7 +24,6 @@ namespace :aws do
     task delete: :environment do
       stack_builder = RailsAws::StackBuilder.new
       stack_builder.delete_stack
-      
     end
 
   end

@@ -5,6 +5,7 @@ module RailsAws
     def initialize
       @config = RailsAws::Config.new
       @key_pair = RailsAws::KeyPair.new
+      @cloudformation = RailsAws::Cloudformation.new
     end
 
     def cloudformation_file
@@ -41,7 +42,7 @@ module RailsAws
 
     def delete_stack
       # DELETE cloudformation
-
+      @cloudformation.delete
       FileUtils.rm(cloudformation_file) if File.file? cloudformation_file
 
       @key_pair.delete

@@ -31,41 +31,6 @@ module RailsAWS
 			@stack = @cfm.stacks[ stack_name ] 
 		end
 
-		def stack?
-			@type == :stack
-		end
-
-		def domain?
-			@type == :domain
-		end
-
-		def template_file 
-			case true 
-			when stack?
-				RailsAWS.stack_definition
-			when domain?
-				File.expand_path( "../route53.json.erb", __FILE__ )
-			end
-		end
-
-		def rendered_file
-			@rendered_file ||= case true
-												 when stack?
-													 File.join( RailsAWS.branch_dir, "cloudformation.json" )
-												 when domain?
-													 File.join( Rails.root, 'config', "#{RailsAWS.application}_domain.json" )
-												 end
-			@rendered_file
-		end
-
-		def ec2_security_group
-			branch + "sg"
-		end
-
-		def rds_security_group
-			branch + "rdssg"
-		end
-
 		def stack_name
 			@stack_name ||= case true
 											when stack?

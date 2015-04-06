@@ -11,6 +11,21 @@ All based on AWS for easy infinite expansion.
 Run a development server.
 This app is what runs on port 80.
 
+## Workflow
+
+* production, with database, rails stack
+  * in a private vpc
+  * running on elastic beanstalk
+
+```
+  # To manage your current repo + branch
+
+  rake aws:deploy:create:prepare
+  rake aws:deploy:create:publish
+
+  rake aws:deploy:delete
+```
+
 ## Priorities
 
 #### V1
@@ -25,7 +40,6 @@ This app is what runs on port 80.
 
 * aws:deploy:create:publish
   * [ ] expect no stack
-  * [ ] create keypair
   * [ ] create stack
 
 #### v3
