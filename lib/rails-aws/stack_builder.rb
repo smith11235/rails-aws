@@ -74,7 +74,7 @@ module RailsAws
     end
 
     def rds_config
-      load_yml_config(:rds_config)
+      load_yml_file(:rds_config)
     end
   end
 end
