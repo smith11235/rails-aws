@@ -28,10 +28,9 @@ module RailsAws
 
       db_type = @config.branch.fetch('database').fetch('db_type')
 
-      if db_type != 'sqlite'
-        resources = template.fetch("Resources")
-        resources.merge! rds_config
-      end
+      resources = template.fetch("Resources")
+      resources.merge!(rds_config) if db_type != 'sqlite'
+      resources.merge!(eb_config)
 
       aws_config_dir = File.dirname(@cloudformation.file) 
       FileUtils.mkdir_p(aws_config_dir) unless File.directory? aws_config_dir
@@ -71,6 +70,10 @@ module RailsAws
       [@key_pair.key_file, @cloudformation.file].each do |file|
         raise t("stack_builder.errors.file_exists_already", file: file) if File.file? file
       end
+    end
+
+    def eb_config
+      load_yml_file(:elastic_beanstalk)
     end
 
     def rds_config

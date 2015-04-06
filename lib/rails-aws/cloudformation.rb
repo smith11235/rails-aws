@@ -7,6 +7,14 @@ module RailsAws
       @config = RailsAws::Config.new
       @cfm = RailsAws.cfm_client
     end
+    
+    def deploy_timestamp
+      @deploy_timestamp ||= DateTime.now.strftime('%Y-%m-%d-%H-%M')
+    end
+
+    def s3_key
+     "#{stack_name}/#{deploy_timestamp}.zip"
+    end
 
     def file
       "config/aws-stacks/#{@config.current_stack_name}.json"
@@ -25,6 +33,8 @@ module RailsAws
     end
 
     def create
+      upload_app_bundle
+
 			@stack = @cfm.stacks.create(stack_name, template)
 
 			track_stack( "CREATE_IN_PROGRESS", "CREATE_COMPLETE" )
@@ -52,6 +62,15 @@ module RailsAws
 		end
 
     private
+
+    def upload_app_bundle
+      deploy_file = "#{deploy_timestamp}.zip"
+      raise "Unable to zip app: #{deploy_file}" unless system("zip -r --exclude=*.rvm* #{deploy_file} .")
+      raise "Missing zip: #{deploy_file}" unless File.file? deploy_file
+      s3_bucket = "railsaws"
+      s3 = AWS::S3.new
+      s3.buckets[s3_bucket].objects[s3_key].write(:file => deploy_file)
+    end
 
 		def show_stack_events
 			current_stack.events.each_with_index do |event|

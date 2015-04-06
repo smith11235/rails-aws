@@ -64,11 +64,16 @@ Updating a deployed test or production build.
 * Environment
   * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html
 
+#### create railsaws s3 bucket
+
 #### Update commands
 
 #### V* Outputs
+
 * eb: Fn::GetAtt, ebenvironment, EndpointURL
   * awseb-myst-myen-132MQC4KRLAMD-1371280482.us-east-1.elb.amazonaws.com
+* add them to an outputs: key in the config files
+
 #### v?
 * add single or multi tenant development environment
   * to master environment

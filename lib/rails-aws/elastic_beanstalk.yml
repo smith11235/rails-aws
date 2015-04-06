@@ -1,10 +1,32 @@
+# http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.platforms.html#concepts.platforms.ruby
+ebapp:
+  Type: "AWS::ElasticBeanstalk::Application"
+  Properties:
+    ApplicationName: "<%= stack_name %>"
+    Description: "<%= stack_name %>"
 
-* EB Application
-  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html
-* EB Application Version
-  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-version.html
-  * how to create a source bundle?
-* EB Config
-  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-beanstalk-configurationtemplate.html
-* Environment
-  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html
+ebversion:
+  Type: "AWS::ElasticBeanstalk::ApplicationVersion"
+  Properties: 
+    ApplicationName: 
+      Ref: "ebapp"
+    Description: "<%= stack_name %>"
+    SourceBundle: 
+      S3Bucket: "railsaws"
+      S3Key: "<%= @cloudformation.s3_key %>"
+
+ebenvironment:
+  Type: "AWS::ElasticBeanstalk::Environment"
+  Properties:
+    ApplicationName: 
+      Ref: "ebapp"
+    Description: "<%= stack_name %>" 
+    OptionSettings: # http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options.html
+    - Namespace: "aws:autoscaling:launchconfiguration"
+      OptionName: "EC2KeyName"
+      Value: "<%= @key_pair.key_name %>"
+    SolutionStackName: "64bit Amazon Linux 2014.09 v1.2.1 running Ruby 2.2 (Puma)"
+    VersionLabel:
+      Ref: "ebversion" 
+  
+
