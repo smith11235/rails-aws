@@ -22,22 +22,23 @@ module RailsAws
 
 		def delete
       return unless exists?
-      logger t("cloudformation.delete.initial", stack_name: stack_name, status: status)
+      logger t("cloudformation.delete.initial", stack_name: stack_name, status: current_stack.status)
 			current_stack.delete
       sleep(2)
 
 			while current_stack.exists? && current_stack.status == "DELETE_IN_PROGRESS"
-				logger "- #{stack_name}: #{current_stack.status}".yellow
+				logger "- #{stack_name}: #{current_stack.status}"
 				sleep(10)
 			end
 
 			if current_stack.exists?
-        msg = "#{stack_name} failed to Delete. Final Status: #{current_stack.status}"
+        msg = t("cloudformation.delete.failed", stack_name: stack_name, status: current_stack.status)
+
 				logger msg 
         raise msg
       end
 
-		  logger "#{stack_name} Deleted".green
+      logger t("cloudformation.delete.complete", stack_name: stack_name)
 		end
   end
 end

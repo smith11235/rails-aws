@@ -31,25 +31,6 @@ module RailsAWS
 			@stack = @cfm.stacks[ stack_name ] 
 		end
 
-		def stack_name
-			@stack_name ||= case true
-											when stack?
-												@application + RailsAWS.branch
-											when domain?
-												@application + "domain"
-											end
-			@stack_name.gsub( special_chars, 'x' )
-		end
-
-		def special_chars
-			/(-|_|\!|\.|\?|\*)/
-		end
-
-		def branch
-			@branch ||= RailsAWS.branch
-			@branch.gsub( special_chars, 'x' )
-		end
-
 		def exists?
 			@cfm.stacks[ stack_name ].exists?
 		end

@@ -19,6 +19,8 @@ module RailsAws
       raise t("stack_builder.errors.keypair_exists_already", key_name: @key_pair.key_name) if @key_pair.exists?
 
       @key_pair.create
+
+      @cloudformation.create
     end
 
     def prepare_new_stack
