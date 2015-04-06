@@ -8,12 +8,10 @@ module RailsAws
       @cloudformation = RailsAws::Cloudformation.new
     end
 
-    def cloudformation_file
-      "config/aws-stacks/#{@config.current_stack_name}.json"
-    end
-
     def publish_new_stack
-      raise t("stack_builder.errors.file_missing", file: cloudformation_file) unless File.file? cloudformation_file
+      raise t("stack_builder.errors.file_missing", file: @cloudformation.file) unless File.file? @cloudformation.file
+      raise t("stack_builder.errors.stack_exists_already", stack_name: @cloudformation.stack_name) if @cloudformation.exists?
+
       raise t("stack_builder.errors.file_exists_already", file: @key_pair.key_file) if File.file? @key_pair.key_file
 
       raise t("stack_builder.errors.keypair_exists_already", key_name: @key_pair.key_name) if @key_pair.exists?
@@ -35,9 +33,9 @@ module RailsAws
         resources.merge! rds_config
       end
 
-      aws_config_dir = File.dirname(cloudformation_file) 
+      aws_config_dir = File.dirname(@cloudformation.file) 
       FileUtils.mkdir_p(aws_config_dir) unless File.directory? aws_config_dir
-      File.open(cloudformation_file, 'w') do |f|
+      File.open(@cloudformation.file, 'w') do |f|
         f.puts JSON.pretty_generate(template)
       end
     end
@@ -45,7 +43,7 @@ module RailsAws
     def delete_stack
       # DELETE cloudformation
       @cloudformation.delete
-      FileUtils.rm(cloudformation_file) if File.file? cloudformation_file
+      FileUtils.rm(@cloudformation.file) if File.file? @cloudformation.file
 
       @key_pair.delete
       FileUtils.rm(@key_pair.key_file) if File.file? @key_pair.key_file
@@ -68,7 +66,7 @@ module RailsAws
     end
 
     def files_dont_exist_yet
-      [@key_pair.key_file, cloudformation_file].each do |file|
+      [@key_pair.key_file, @cloudformation.file].each do |file|
         raise t("stack_builder.errors.file_exists_already", file: file) if File.file? file
       end
     end
@@ -76,7 +74,7 @@ module RailsAws
     def rds_config
       {
         "RDS" => {
-          "Type" => "AWS=>=>RDS=>=>DBInstance",
+          "Type" => "AWS::RDS::DBInstance",
           "Properties" =>
           {
             "AllocatedStorage" => "50",
@@ -96,10 +94,10 @@ module RailsAws
           }
         },
         "RDSSubnet"=> {
-          "Type" => "AWS=>=>RDS=>=>DBSubnetGroup",
+          "Type" => "AWS::RDS::DBSubnetGroup",
           "Properties" => {
             "DBSubnetGroupDescription" => stack_name,
-            "SubnetIds" => [ {"Ref"=> "subnet" }, { "Ref"=> "subnet2" } ],
+            "SubnetIds" => [ {"Ref"=> "subnet1" }, { "Ref"=> "subnet2" } ],
             "Tags" => [ {"Key"=> "Name", "Value"=> stack_name } ]
           }
         }

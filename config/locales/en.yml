@@ -8,6 +8,7 @@ en:
       file_exists_already: "Expected %{file} to not exist yet"
       file_missing: "Expected %{file} to exist"
       keypair_exists_already: "KeyPair exists already: %{key_name}"
+      stack_exists_already: "Cloudformation stack already exists: %{stack_name}"
   key_pair:
     errors: 
       unable_to_set_security: "Error: Unable to set security on %{key_file}, try $ chmod 400 %{key_file}"
@@ -16,6 +17,10 @@ en:
       initial: "Deleting: %{stack_name}, Initial Status: %{status}"
       failed: "%{stack_name} failed to Delete. Final Status: %{current_stack.status}"
       complete: "%{stack_name} Deleted"
+    track_stack:
+      initial: "Stack: %{stack_name}, Initial Status: %{initial}, Expecting: %{expecting}"
+      failed: "Stack: %{stack_name}, Final Status: %{received}, Expected: %{expected}"
+    sleeping: "Waiting for 30 seconds while AWS builds things..."
 
 
   generator:

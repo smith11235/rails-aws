@@ -64,7 +64,7 @@ Resources:
     Type: "AWS::EC2::SubnetRouteTableAssociation"
     Properties: 
       SubnetId: 
-        Ref: "subnet" # this is the public subnet
+        Ref: "subnet1" # this is the public subnet
       RouteTableId: 
         Ref: "RouteTable" 
   NetworkAcl: 
@@ -95,11 +95,11 @@ Resources:
     Properties:
       NetworkAclId: 
         Ref: "NetworkAcl"
-      RuleNumber" : "100"
-      Protocol" : "-1"
-      RuleAction" : "allow"
-      Egress" : "true"
-      CidrBlock" : "0.0.0.0/0"
+      RuleNumber: "100"
+      Protocol: "-1"
+      RuleAction: "allow"
+      Egress: "true"
+      CidrBlock: "0.0.0.0/0"
       PortRange: 
         From: "0"
         To: "65535"
@@ -107,14 +107,14 @@ Resources:
     Type: "AWS::EC2::SubnetNetworkAclAssociation"
     Properties:
       SubnetId: 
-        Ref: "subnet"
+        Ref: "subnet1"
       NetworkAclId: 
         Ref: "NetworkAcl"
   SecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
       GroupDescription: "Enable Access to Rails application via port 80, 443, 3000 and SSH access via port 22"
-      VpcId": 
+      VpcId: 
         Ref: "vpc" 
       SecurityGroupIngress:
       - IpProtocol: "tcp"

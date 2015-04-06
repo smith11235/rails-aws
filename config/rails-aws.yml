@@ -1,5 +1,10 @@
 default:
   account_id: 180190769793
+redesign:
+  database: 
+    instance_type: db.t2.micro
+    db_type: postgres
+master:
   database: 
     instance_type: db.t2.micro
     db_type: postgres

@@ -32,13 +32,6 @@ This app is what runs on port 80.
 
 #### v2: aws:deploy:create:publish
 
-* aws:deploy:delete
-  * [/] delete cloudformation stack
-
-* aws:deploy:create:publish
-  * [ ] expect no stack
-  * [ ] create stack
-
 #### v?
 * add single or multi tenant development environment
   * to master environment

@@ -8,6 +8,10 @@ module RailsAws
       @cfm = RailsAws.cfm_client
     end
 
+    def file
+      "config/aws-stacks/#{@config.current_stack_name}.json"
+    end
+
     def stack_name
       @config.current_stack_name
     end
@@ -18,6 +22,12 @@ module RailsAws
 
     def current_stack
       @cfm.stacks[stack_name]
+    end
+
+    def create
+			@stack = @cfm.stacks.create(stack_name, template)
+
+			track_stack( "CREATE_IN_PROGRESS", "CREATE_COMPLETE" )
     end
 
 		def delete
@@ -40,5 +50,45 @@ module RailsAws
 
       logger t("cloudformation.delete.complete", stack_name: stack_name)
 		end
+
+    private
+
+		def show_stack_events
+			current_stack.events.each_with_index do |event|
+				logger "  - Event: #{event.logical_resource_id} - #{event.resource_status} - #{event.resource_status_reason}"
+			end
+		end
+
+		def show_stack_status
+			logger "- #{stack_name} - #{current_stack.status}"
+
+			current_stack.resources.each do |resource|
+				logger "  - Resource: #{resource.resource_type}: #{resource.resource_status} # #{resource.resource_status_reason}"
+			end
+		end
+
+		def track_stack( starting_status, ending_status )
+      sleep(2)
+      logger t("cloudformation.track_stack.initial", stack_name: stack_name, initial: starting_status, expecting: ending_status)
+
+			while current_stack.status == starting_status
+				show_stack_status
+        puts "#{l(DateTime.now)} - #{t("cloudformation.sleeping")}"
+				sleep(30)
+			end
+
+			show_stack_status
+			show_stack_events
+
+			unless received_status = current_stack.status == ending_status
+        msg = t("cloudformation.track_stack.failed", stack_name: stack_name, expected: ending_status, received: received_status)
+				logger msg
+				raise msg
+			end
+    end
+
+    def template
+      File.read self.file
+    end
   end
 end
