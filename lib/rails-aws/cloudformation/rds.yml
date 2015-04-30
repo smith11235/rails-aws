@@ -5,10 +5,10 @@ RDS:
     AllowMajorVersionUpgrade: true
     AutoMinorVersionUpgrade: true
     BackupRetentionPeriod: "2"
-    DBInstanceClass: "<%= @config.branch.fetch('database').fetch('instance_type') %>"
+    DBInstanceClass: "<%= db_instance_type %>"
     VPCSecurityGroups:
     - Ref: "SecurityGroup"
-    Engine: "<%= @config.branch.fetch('database').fetch('db_type') %>"
+    Engine: "<%= db_type %>"
     DBName: "railsapp"
     MasterUsername: "railsapp"
     MasterUserPassword: "5aed99058d873716ebec7111b2e679dc"

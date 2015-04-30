@@ -26,10 +26,13 @@ module RailsAws
 
       template = base_config
 
-      db_type = @config.branch.fetch('database').fetch('db_type')
+      db_type(@config.branch.fetch('database').fetch('db_type'))
 
       resources = template.fetch("Resources")
-      resources.merge!(rds_config) if db_type != 'sqlite'
+      if db_type != 'sqlite'
+        db_instance_type(@config.branch.fetch('database').fetch('instance_type'))
+        resources.merge!(rds_config) 
+      end
       resources.merge!(eb_config)
 
       print_file(template, @cloudformation.file)
@@ -54,14 +57,25 @@ module RailsAws
 
     end
 
+    def db_instance_type(type = nil)
+      @db_instance_type ||= type
+    end
+
+    def db_type(type = nil)
+      @db_type ||= type
+    end
+
     def prepare_developer_stack
       @developer_name = @config.developer.fetch('name')
 
       template = base_config
       resources = template.fetch("Resources")
 
-      db_type = @config.developer.fetch('database').fetch('db_type')
-      resources.merge!(rds_config) if db_type != 'sqlite'
+      db_type(@config.developer.fetch('database').fetch('db_type'))
+      if db_type != 'sqlite'
+        db_instance_type(@config.developer.fetch('database').fetch('instance_type'))
+        resources.merge!(rds_config) 
+      end
 
       resources.merge!(developer_config)
 

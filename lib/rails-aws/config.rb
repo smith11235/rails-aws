@@ -49,6 +49,7 @@ module RailsAws
 
     def developer
       return @developer if @developer
+
       developer_name = ENV["DEVELOPER"]
       raise "environment var DEVELOPER= must be set" if developer_name.blank?
       raise "developer hash must exist" unless @config.has_key? "developer"
