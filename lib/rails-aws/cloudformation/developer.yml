@@ -1,0 +1,36 @@
+developerec2:
+  Type: "AWS::EC2::Instance"
+  DependsOn: 
+  - "attachgateway"
+  Properties:
+    KeyName: "<%= @key_pair.key_name %>"
+    InstanceType: "<%= @config.developer.fetch('instance_type') %>"
+    SubnetId: 
+      Ref: "subnet1"
+    SecurityGroupIds:
+    - Ref: "SecurityGroup"
+    ImageId: "<%= @config.developer.fetch('image_id') %>" 
+    Tags:
+    - Key: "Name"
+      Value: "<%= stack_name %>"
+
+<% root_dev_domain = "#{@config.developer.fetch('name')}.#{@config.hosted_zone_name}" %>
+developerdns:
+  Type: "AWS::Route53::RecordSetGroup"
+  Properties:
+    HostedZoneName: "<%= @config.hosted_zone_name %>."
+    Comment: "Subdomain records for ec2 access and development."
+    RecordSets:
+    - Name: "<%= root_dev_domain %>."
+      Type: "CNAME"
+      TTL: "60"
+      ResourceRecords: 
+      - 'Fn::GetAtt': 
+        - developerec2
+        - PublicDnsName
+    - Name: "mail.<%= root_dev_domain %>."
+      Type: "CNAME"
+      TTL: "60"
+      ResourceRecords: 
+      - "<%= root_dev_domain %>"
+

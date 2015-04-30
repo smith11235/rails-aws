@@ -34,7 +34,7 @@ module RailsAws
                 else
                   config_file = File.join(Rails.root, 'config/rails-aws.yml')
                   raise t("config.missing_config_file", config_file: config_file) unless File.file?(config_file)
-                  RailsAws.logger(t("config.loading_config_file", config_file: config_file))
+                  #RailsAws.logger(t("config.loading_config_file", config_file: config_file))
                   YAML.load_file(config_file)
                 end
 

@@ -73,6 +73,15 @@ module RailsAws
       @cloudformation.create
     end
 
+    def delete_developer_stack
+      # DELETE cloudformation
+      @cloudformation.delete
+      FileUtils.rm(@cloudformation.file) if File.file? @cloudformation.file
+
+      @key_pair.delete
+      FileUtils.rm(@key_pair.key_file) if File.file? @key_pair.key_file
+    end
+
     private
 
     def stack_name
@@ -87,10 +96,8 @@ module RailsAws
       full_file_path = config_file
       ['', 'cloudformation/'].each do |prefix| # TODO: move everything to subfolder
         file_path = File.expand_path(File.join("../#{prefix}", "#{config_file}.yml"), __FILE__)
-        puts "Checking #{file_path}"
         full_file_path = file_path if File.file? file_path
       end
-      puts "Loading: #{full_file_path}"
       content = File.read full_file_path
       renderer = ERB.new(content, nil, '%')
       content = renderer.result(binding)
