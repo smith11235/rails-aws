@@ -33,7 +33,7 @@ module RailsAws
     end
 
     def create
-      upload_app_bundle
+      puts "Skipping upload_app_bundle"
 
       @stack = @cfm.stacks.create(stack_name, template)
 

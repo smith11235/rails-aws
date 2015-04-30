@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "developer-smith"
+            "Value": "developer-johnny"
           }
         ]
       }
@@ -21,7 +21,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "developer-smith"
+            "Value": "developer-johnny"
           }
         ]
       }
@@ -48,7 +48,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "developer-smith-1"
+            "Value": "developer-johnny-1"
           }
         ]
       }
@@ -64,7 +64,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "developer-smith-2"
+            "Value": "developer-johnny-2"
           }
         ]
       }
@@ -78,7 +78,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "developer-smith"
+            "Value": "developer-johnny"
           }
         ]
       }
@@ -116,7 +116,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "developer-smith"
+            "Value": "developer-johnny"
           }
         ]
       }
@@ -196,7 +196,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "developer-smith"
+            "Value": "developer-johnny"
           }
         ]
       }
@@ -246,7 +246,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "developer-smith"
+            "Value": "developer-johnny"
           }
         ]
       }
@@ -254,7 +254,7 @@
     "RDSSubnet": {
       "Type": "AWS::RDS::DBSubnetGroup",
       "Properties": {
-        "DBSubnetGroupDescription": "developer-smith",
+        "DBSubnetGroupDescription": "developer-johnny",
         "SubnetIds": [
           {
             "Ref": "subnet1"
@@ -266,7 +266,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "developer-smith"
+            "Value": "developer-johnny"
           }
         ]
       }
@@ -277,7 +277,7 @@
         "attachgateway"
       ],
       "Properties": {
-        "KeyName": "developer-smith",
+        "KeyName": "developer-johnny",
         "InstanceType": "t2.micro",
         "SubnetId": {
           "Ref": "subnet1"
@@ -291,7 +291,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "developer-smith"
+            "Value": "developer-johnny"
           }
         ]
       }
@@ -326,7 +326,7 @@
         "Comment": "Subdomain records for ec2 access and development.",
         "RecordSets": [
           {
-            "Name": "smith.brickworksoftware.com.",
+            "Name": "johnny.brickworksoftware.com.",
             "Type": "CNAME",
             "TTL": "60",
             "ResourceRecords": [
@@ -339,11 +339,11 @@
             ]
           },
           {
-            "Name": "mail.smith.brickworksoftware.com.",
+            "Name": "mail.johnny.brickworksoftware.com.",
             "Type": "CNAME",
             "TTL": "60",
             "ResourceRecords": [
-              "smith.brickworksoftware.com"
+              "johnny.brickworksoftware.com"
             ]
           }
         ]
