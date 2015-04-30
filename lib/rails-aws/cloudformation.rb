@@ -24,9 +24,9 @@ module RailsAws
       @config.current_stack_name
     end
 
-		def exists?
-			@cfm.stacks[stack_name].exists?
-		end
+    def exists?
+      @cfm.stacks[stack_name].exists?
+    end
 
     def current_stack
       @cfm.stacks[stack_name]
@@ -35,31 +35,31 @@ module RailsAws
     def create
       upload_app_bundle
 
-			@stack = @cfm.stacks.create(stack_name, template)
+      @stack = @cfm.stacks.create(stack_name, template)
 
-			track_stack( "CREATE_IN_PROGRESS", "CREATE_COMPLETE" )
+      track_stack( "CREATE_IN_PROGRESS", "CREATE_COMPLETE" )
     end
 
-		def delete
+    def delete
       return unless exists?
       logger t("cloudformation.delete.initial", stack_name: stack_name, status: current_stack.status)
-			current_stack.delete
+      current_stack.delete
       sleep(2)
 
-			while current_stack.exists? && current_stack.status == "DELETE_IN_PROGRESS"
-				logger "- #{stack_name}: #{current_stack.status}"
-				sleep(10)
-			end
+      while current_stack.exists? && current_stack.status == "DELETE_IN_PROGRESS"
+        logger "- #{stack_name}: #{current_stack.status}"
+        sleep(10)
+      end
 
-			if current_stack.exists?
+      if current_stack.exists?
         msg = t("cloudformation.delete.failed", stack_name: stack_name, status: current_stack.status)
 
-				logger msg 
+        logger msg 
         raise msg
       end
 
       logger t("cloudformation.delete.complete", stack_name: stack_name)
-		end
+    end
 
     private
 
@@ -72,38 +72,40 @@ module RailsAws
       s3.buckets[s3_bucket].objects[s3_key].write(:file => deploy_file)
     end
 
-		def show_stack_events
-			current_stack.events.each_with_index do |event|
-				logger "  - Event: #{event.logical_resource_id} - #{event.resource_status} - #{event.resource_status_reason}"
-			end
-		end
+    def show_stack_events
+      current_stack.events.each_with_index do |event|
+        logger "  - Event: #{event.logical_resource_id} - #{event.resource_status} - #{event.resource_status_reason}"
+      end
+    end
 
-		def show_stack_status
-			logger "- #{stack_name} - #{current_stack.status}"
+    def show_stack_status
+      logger "- #{stack_name} - #{current_stack.status}"
 
-			current_stack.resources.each do |resource|
-				logger "  - Resource: #{resource.resource_type}: #{resource.resource_status} # #{resource.resource_status_reason}"
-			end
-		end
+=begin
+      current_stack.resources.each do |resource|
+        logger "  - Resource: #{resource.resource_type}: #{resource.resource_status} # #{resource.resource_status_reason}"
+      end
+=end
+    end
 
-		def track_stack( starting_status, ending_status )
+    def track_stack( starting_status, ending_status )
       sleep(2)
       logger t("cloudformation.track_stack.initial", stack_name: stack_name, initial: starting_status, expecting: ending_status)
 
-			while current_stack.status == starting_status
-				show_stack_status
+      while current_stack.status == starting_status
+        show_stack_status
         puts "#{l(DateTime.now)} - #{t("cloudformation.sleeping")}"
-				sleep(30)
-			end
+        sleep(30)
+      end
 
-			show_stack_status
-			show_stack_events
+      show_stack_status
+      show_stack_events
 
-			unless received_status = current_stack.status == ending_status
+      unless received_status = current_stack.status == ending_status
         msg = t("cloudformation.track_stack.failed", stack_name: stack_name, expected: ending_status, received: received_status)
-				logger msg
-				raise msg
-			end
+        logger msg
+        raise msg
+      end
     end
 
     def template
