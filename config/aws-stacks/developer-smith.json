@@ -182,12 +182,6 @@
           },
           {
             "IpProtocol": "tcp",
-            "FromPort": "3000",
-            "ToPort": "3000",
-            "CidrIp": "0.0.0.0/0"
-          },
-          {
-            "IpProtocol": "tcp",
             "FromPort": "80",
             "ToPort": "80",
             "CidrIp": "0.0.0.0/0"
@@ -304,6 +298,9 @@
     },
     "developerdns": {
       "Type": "AWS::Route53::RecordSetGroup",
+      "DependsOn": [
+        "developerec2"
+      ],
       "Properties": {
         "HostedZoneName": "rails-aws.com.",
         "Comment": "Subdomain records for ec2 access and development.",

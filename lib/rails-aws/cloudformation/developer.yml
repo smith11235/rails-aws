@@ -17,6 +17,8 @@ developerec2:
 <% root_dev_domain = "#{@config.developer.fetch('name')}.#{@config.hosted_zone_name}" %>
 developerdns:
   Type: "AWS::Route53::RecordSetGroup"
+  DependsOn: 
+  - "developerec2"
   Properties:
     HostedZoneName: "<%= @config.hosted_zone_name %>."
     Comment: "Subdomain records for ec2 access and development."
@@ -26,8 +28,8 @@ developerdns:
       TTL: "60"
       ResourceRecords: 
       - 'Fn::GetAtt': 
-        - developerec2
-        - PublicDnsName
+        - "developerec2"
+        - "PublicDnsName"
     - Name: "mail.<%= root_dev_domain %>."
       Type: "CNAME"
       TTL: "60"
