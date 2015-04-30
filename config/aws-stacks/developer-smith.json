@@ -234,13 +234,13 @@
         "AllowMajorVersionUpgrade": true,
         "AutoMinorVersionUpgrade": true,
         "BackupRetentionPeriod": "2",
-        "DBInstanceClass": "db.t2.micro",
+        "DBInstanceClass": "local",
         "VPCSecurityGroups": [
           {
             "Ref": "SecurityGroup"
           }
         ],
-        "Engine": "postgres",
+        "Engine": "sqlite",
         "DBName": "railsapp",
         "MasterUsername": "railsapp",
         "MasterUserPassword": "5aed99058d873716ebec7111b2e679dc",

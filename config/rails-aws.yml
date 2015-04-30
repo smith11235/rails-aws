@@ -1,7 +1,6 @@
 # For different named developers
 developer:
   default:
-    instance_type: "t2.micro"
     database: 
       instance_type: "db.t2.micro"
       db_type: "postgres"
