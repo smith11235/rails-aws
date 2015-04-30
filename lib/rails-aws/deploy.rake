@@ -1,23 +1,36 @@
 namespace :aws do
-  namespace :deploy do
-    namespace :create do
+  namespace :developer do
+    desc "Prepare a new developer environment"
+    task prepare: :environment do
+      stack_builder = RailsAws::StackBuilder.new
+      stack_builder.prepare_developer_stack
+    end
 
-      desc "Prepare a new stack for review"
-      task prepare: :environment do
-        stack_builder = RailsAws::StackBuilder.new
+    desc "Publish a new developer environment"
+    task publish: :environment do
+      stack_builder = RailsAws::StackBuilder.new
+      stack_builder.publish_developer_stack
+    end
 
-        stack_builder.prepare_new_stack
+    desc "Delete a new developer environment"
+    task delete: :environment do
+      stack_builder = RailsAws::StackBuilder.new
+      stack_builder.delete_developer_stack
+    end
+  end
 
-        system("git status")
-        puts "Now execute: $ rake aws:deploy:create:publish".green
-      end
+  namespace :stack do # unique to repo + branch
 
-      desc "Deploy a new stack"
-      task publish: :environment do
-        stack_builder = RailsAws::StackBuilder.new
-        stack_builder.publish_new_stack
-      end
+    desc "Prepare a new stack for review"
+    task prepare: :environment do
+      stack_builder = RailsAws::StackBuilder.new
+      stack_builder.prepare_new_stack
+    end
 
+    desc "Deploy a new stack"
+    task publish: :environment do
+      stack_builder = RailsAws::StackBuilder.new
+      stack_builder.publish_new_stack
     end
 
     desc "Delete stack and all local resources related to it"
