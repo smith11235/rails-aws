@@ -88,10 +88,6 @@ module RailsAws
       @config.current_stack_name
     end
 
-    def base_config
-      load_yml_file(:base_stack_config)
-    end
-
     def load_yml_file(config_file)
       full_file_path = config_file
       ['', 'cloudformation/'].each do |prefix| # TODO: move everything to subfolder
@@ -110,6 +106,10 @@ module RailsAws
       end
     end
 
+    def base_config
+      load_yml_file(:base_stack)
+    end
+
     def developer_config
       load_yml_file(:developer)
     end
@@ -123,7 +123,7 @@ module RailsAws
     end
 
     def rds_config
-      load_yml_file(:rds_config)
+      load_yml_file(:rds)
     end
   end
 end
