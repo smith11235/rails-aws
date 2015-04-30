@@ -318,6 +318,9 @@
     },
     "developerdns": {
       "Type": "AWS::Route53::RecordSetGroup",
+      "DependsOn": [
+        "developerec2eipassoc"
+      ],
       "Properties": {
         "HostedZoneName": "rails-aws.com.",
         "Comment": "Subdomain records for ec2 access and development.",
