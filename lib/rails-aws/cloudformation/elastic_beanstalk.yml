@@ -1,0 +1,32 @@
+# http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.platforms.html#concepts.platforms.ruby
+ebapp:
+  Type: "AWS::ElasticBeanstalk::Application"
+  Properties:
+    ApplicationName: "<%= stack_name %>"
+    Description: "<%= stack_name %>"
+
+ebversion:
+  Type: "AWS::ElasticBeanstalk::ApplicationVersion"
+  Properties: 
+    ApplicationName: 
+      Ref: "ebapp"
+    Description: "<%= stack_name %>"
+    SourceBundle: 
+      S3Bucket: "railsaws"
+      S3Key: "<%= @cloudformation.s3_key %>"
+
+ebenvironment:
+  Type: "AWS::ElasticBeanstalk::Environment"
+  Properties:
+    ApplicationName: 
+      Ref: "ebapp"
+    Description: "<%= stack_name %>" 
+    OptionSettings: # http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options.html
+    - Namespace: "aws:autoscaling:launchconfiguration"
+      OptionName: "EC2KeyName"
+      Value: "<%= @key_pair.key_name %>"
+    SolutionStackName: "64bit Amazon Linux 2014.09 v1.2.1 running Ruby 2.2 (Puma)"
+    VersionLabel:
+      Ref: "ebversion" 
+  
+

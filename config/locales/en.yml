@@ -1,23 +1,48 @@
-# Files in the config/locales directory are used for internationalization
-# and are automatically loaded by Rails. If you want to use locales other
-# than English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t 'hello'
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t('hello') %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more, please read the Rails Internationalization guide
-# available at http://guides.rubyonrails.org/i18n.html.
-
 en:
-  hello: "Hello world"
+  config:
+    missing_config_file: "Missing config file: %{config_file}" 
+    loading_config_file: "Loading config file: %{config_file}"
+    loading_config_text: "No config file: %{config_file}, Using passed text:\n%{passed_text}"
+  stack_builder:
+    errors:
+      file_exists_already: "Expected %{file} to not exist yet"
+      file_missing: "Expected %{file} to exist"
+      keypair_exists_already: "KeyPair exists already: %{key_name}"
+      stack_exists_already: "Cloudformation stack already exists: %{stack_name}"
+  key_pair:
+    errors: 
+      unable_to_set_security: "Error: Unable to set security on %{key_file}, try $ chmod 400 %{key_file}"
+  cloudformation:
+    delete:
+      initial: "Deleting: %{stack_name}, Initial Status: %{status}"
+      failed: "%{stack_name} failed to Delete. Final Status: %{current_stack.status}"
+      complete: "%{stack_name} Deleted"
+    track_stack:
+      initial: "Stack: %{stack_name}, Initial Status: %{initial}, Expecting: %{expecting}"
+      failed: "Stack: %{stack_name}, Final Status: %{received}, Expected: %{expected}"
+    sleeping: "Waiting for 30 seconds while AWS builds things..."
+
+
+  generator:
+    ask: "Please enter '%{prompt}':(%{default_value}) " 
+    aws_keys:
+      suggested: "Set the AWS IAM access key id and secret key"
+    deploy_keys:
+      create: "Create/Update ssh deploy keys for your projects"
+      for_project: "Create/Update key for project: %{project}"
+      suggested: "Safe to replace, but requires updating your respositories known keys"
+      add_to_repository: "Add contents of %{key_file} to repository deploy keys"
+      config_error: "Error: cannot list projects from current config/rails-aws.yml file."
+    rails_aws: 
+      suggested: "Add/Update Projects.  Update carefully."
+      repo_url: "What is your rails application git clone 'repo_url'?"
+      account_id: "What is your amazon web services 'account_id'?"
+      add_project: "Add a project to your config/rails-aws.yml"
+      project_name: "Project Name"
+      project_exists_already: "Sorry, this project name exists already."
+      settings_note: "You can view different settings at github.com/smith11235/rails-aws"
+    modify:
+      file: "File: %{file}"
+      suggestion: "Note: %{suggested}"
+      check: "Do you wish to modify"
+      confirm: "Are you sure you wish to modify"

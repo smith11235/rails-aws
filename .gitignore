@@ -1,3 +1,4 @@
+/cloudformation
 *.rbc
 capybara-*.html
 .rspec
@@ -29,7 +30,7 @@ pickle-email-*.html
 /**/*.sw*
 
 /config/aws-keys.yml
-/config/branch/*/private.key
+/config/aws-stacks/*.private_key
 /config/deploy_key
 /config/aws-keys.yml
 /config/branch/*/private.key
