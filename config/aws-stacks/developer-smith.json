@@ -296,11 +296,28 @@
         ]
       }
     },
+    "developerec2eip": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc"
+      }
+    },
+    "developerec2eipassoc": {
+      "Type": "AWS::EC2::EIPAssociation",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "developerec2eip",
+            "AllocationId"
+          ]
+        },
+        "InstanceId": {
+          "Ref": "developerec2"
+        }
+      }
+    },
     "developerdns": {
       "Type": "AWS::Route53::RecordSetGroup",
-      "DependsOn": [
-        "developerec2"
-      ],
       "Properties": {
         "HostedZoneName": "rails-aws.com.",
         "Comment": "Subdomain records for ec2 access and development.",
