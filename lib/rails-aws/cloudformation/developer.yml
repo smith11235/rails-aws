@@ -18,6 +18,7 @@ developerec2eip:
   Type: "AWS::EC2::EIP"
   Properties:
     Domain: "vpc" 
+
 developerec2eipassoc:
   Type: "AWS::EC2::EIPAssociation"
   Properties:
@@ -31,6 +32,8 @@ developerec2eipassoc:
 <% root_dev_domain = "#{@config.developer.fetch('name')}.#{@config.hosted_zone_name}" %>
 developerdns:
   Type: "AWS::Route53::RecordSetGroup"
+  DependsOn: 
+  - "developerec2eipassoc"
   Properties:
     HostedZoneName: "<%= @config.hosted_zone_name %>."
     Comment: "Subdomain records for ec2 access and development."
