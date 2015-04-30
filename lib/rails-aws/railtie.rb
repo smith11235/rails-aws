@@ -1,9 +1,9 @@
 module RailsAws
   class Railtie < Rails::Railtie
   	rake_tasks do
-			load 'rails-aws/tasks.rake'
+			load 'rails-aws/tasks.rake' # TODO: remove me
 
-			load 'rails-aws/deploy.rake'
+			load 'rails-aws/aws.rake'
   	end
 
     initializer "rails_aws" do

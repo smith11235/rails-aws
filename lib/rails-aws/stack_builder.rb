@@ -32,11 +32,16 @@ module RailsAws
       resources.merge!(rds_config) if db_type != 'sqlite'
       resources.merge!(eb_config)
 
-      aws_config_dir = File.dirname(@cloudformation.file) 
+      print_file(template, @cloudformation.file)
+    end
+
+    def print_file(template, output_file)
+      aws_config_dir = File.dirname(output_file) 
       FileUtils.mkdir_p(aws_config_dir) unless File.directory? aws_config_dir
-      File.open(@cloudformation.file, 'w') do |f|
+      File.open(output_file, 'w') do |f|
         f.puts JSON.pretty_generate(template)
       end
+      puts "Generated: #{output_file}"
     end
 
     def delete_stack
@@ -47,6 +52,25 @@ module RailsAws
       @key_pair.delete
       FileUtils.rm(@key_pair.key_file) if File.file? @key_pair.key_file
 
+    end
+
+    def prepare_developer_stack
+      @developer_name = @config.developer.fetch('name')
+
+      template = base_config
+      resources = template.fetch("Resources")
+
+      db_type = @config.developer.fetch('database').fetch('db_type')
+      resources.merge!(rds_config) if db_type != 'sqlite'
+
+      resources.merge!(developer_config)
+
+      print_file(template, "config/aws-stacks/developer-#{@developer_name}.json")
+    end
+
+    def publish_developer_stack
+      @key_pair.create
+      @cloudformation.create
     end
 
     private
@@ -60,7 +84,14 @@ module RailsAws
     end
 
     def load_yml_file(config_file)
-      content = File.read File.expand_path("../#{config_file}.yml", __FILE__)
+      full_file_path = config_file
+      ['', 'cloudformation/'].each do |prefix| # TODO: move everything to subfolder
+        file_path = File.expand_path(File.join("../#{prefix}", "#{config_file}.yml"), __FILE__)
+        puts "Checking #{file_path}"
+        full_file_path = file_path if File.file? file_path
+      end
+      puts "Loading: #{full_file_path}"
+      content = File.read full_file_path
       renderer = ERB.new(content, nil, '%')
       content = renderer.result(binding)
       YAML.load content
@@ -72,8 +103,16 @@ module RailsAws
       end
     end
 
+    def developer_config
+      load_yml_file(:developer)
+    end
+
     def eb_config
       load_yml_file(:elastic_beanstalk)
+    end
+
+    def rds_config
+      load_yml_file(:developer)
     end
 
     def rds_config
