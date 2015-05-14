@@ -40,7 +40,7 @@
       "subnet1": {
         "Type": "AWS::EC2::Subnet",
         "Properties": {
-          "AvailabilityZone": "us-east-1b",
+          "AvailabilityZone": "us-east-1a",
           "VpcId": {
             "Ref": "vpc"
           },
@@ -311,7 +311,7 @@
           "VolumeId"  : { "Ref" : "OptVolume" },
           "Device" : "/dev/sdh"
         }
-      }
+      },
       "developerdns": {
         "Type": "AWS::Route53::RecordSetGroup",
         "DependsOn": [
