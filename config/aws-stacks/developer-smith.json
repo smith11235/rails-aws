@@ -278,7 +278,7 @@
       ],
       "Properties": {
         "KeyName": "developer-smith",
-        "InstanceType": "t2.micro",
+        "InstanceType": "t2.medium",
         "SubnetId": {
           "Ref": "subnet1"
         },
@@ -340,6 +340,14 @@
           },
           {
             "Name": "mail.smith.brickworksoftware.com.",
+            "Type": "CNAME",
+            "TTL": "60",
+            "ResourceRecords": [
+              "smith.brickworksoftware.com"
+            ]
+          },
+          {
+            "Name": "whats_in.brickworksoftware.com.",
             "Type": "CNAME",
             "TTL": "60",
             "ResourceRecords": [
