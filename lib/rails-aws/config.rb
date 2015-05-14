@@ -1,8 +1,9 @@
 module RailsAws
 
+
   class Config
     include RailsAws
-    attr_reader :branch, :current_branch_name, :current_project_name, :current_stack_name
+    attr_reader :branch, :current_branch_name, :current_project_name, :current_stack_name, :hosted_zone_name
 
     def self.current_branch_name
       `git branch | grep \\* | sed 's/^*\\s//'`.rstrip
@@ -13,7 +14,12 @@ module RailsAws
     end
 
     def self.current_stack_name
-      [Config.current_project_name,Config.current_branch_name].collect do |name|
+      parts = if ENV["DEVELOPER"] 
+        ["developer", "#{ENV["DEVELOPER"]}"]
+      else
+        [Config.current_project_name,Config.current_branch_name]
+      end
+      parts.collect do |name|
         name.gsub! /\.git$/, ''
         name.gsub! /(\/|\\)/, '-'
         name.gsub! /_/, '-'
@@ -28,7 +34,7 @@ module RailsAws
                 else
                   config_file = File.join(Rails.root, 'config/rails-aws.yml')
                   raise t("config.missing_config_file", config_file: config_file) unless File.file?(config_file)
-                  RailsAws.logger(t("config.loading_config_file", config_file: config_file))
+                  #RailsAws.logger(t("config.loading_config_file", config_file: config_file))
                   YAML.load_file(config_file)
                 end
 
@@ -36,7 +42,25 @@ module RailsAws
       @current_project_name = Config.current_project_name
       @current_stack_name = Config.current_stack_name
 
+      @hosted_zone_name = @config.fetch("hosted_zone_name")
+
       set_branch_config
+    end
+
+    def developer
+      return @developer if @developer
+
+      developer_name = ENV["DEVELOPER"]
+      raise "environment var DEVELOPER= must be set" if developer_name.blank?
+      raise "developer hash must exist" unless @config.has_key? "developer"
+
+      @developer = @config.fetch('developer')[developer_name] || Hash.new
+      if @config.fetch('developer').has_key? 'default'
+        add_defaults(@developer, @config['developer']['default'])
+      end
+      add_defaults(@developer, default_developer_settings)
+
+      @developer
     end
 
     def valid?
@@ -47,23 +71,30 @@ module RailsAws
       # Use branch specific values if available
       @branch = @config[@current_branch_name] || Hash.new
 
-      # Then use default values if available
+      # Then use user-default values if available
       if @config.has_key? 'default'
-        @config['default'].each do |key,value|
-          @branch[key] ||= value
-          if value.is_a? Hash
-            @branch[key].reverse_merge value
-          end
-        end
+        add_defaults(@branch, @config['default'])
       end
 
-      # Then gem defaults 
-      default_branch_settings.each do |key,value|
-        @branch[key] ||= value
+      # Then gem-defaults 
+      add_defaults(@branch, default_branch_settings)
+    end
+
+    def add_defaults(config,defaults)
+      defaults.each do |key,value|
+        config[key] ||= value
         if value.is_a? Hash
-          @branch[key].reverse_merge value
+          config[key].reverse_merge value
         end
       end
+    end
+
+    def default_developer_settings
+      {
+        'instance_type' => "t2.micro",
+        'image_id' => "ami-9a562df2",
+        'name' => ENV["DEVELOPER"]
+      }
     end
 
     def default_branch_settings

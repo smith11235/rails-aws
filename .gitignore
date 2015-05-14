@@ -1,3 +1,4 @@
+/cloudformation
 *.rbc
 capybara-*.html
 .rspec
