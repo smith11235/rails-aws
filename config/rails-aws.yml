@@ -4,11 +4,12 @@ developer:
     database: 
       instance_type: "db.t2.micro"
       db_type: "postgres"
-  smith:
-    instance_type: "t2.medium"
+  # smith:
+    # instance_type: "t2.medium"
 
 # Your top level domain
-hosted_zone_name: "rails-aws.com"
+#hosted_zone_name: "rails-aws.com"
+hosted_zone_name: "brickworksoftware.com"
 
 # For Repo/Branch builds
 default:

@@ -14,11 +14,26 @@ developerec2:
     - Key: "Name"
       Value: "<%= stack_name %>"
 
+developerec2eip:
+  Type: "AWS::EC2::EIP"
+  Properties:
+    Domain: "vpc" 
+
+developerec2eipassoc:
+  Type: "AWS::EC2::EIPAssociation"
+  Properties:
+    AllocationId: 
+      "Fn::GetAtt": 
+      - "developerec2eip"
+      - "AllocationId"
+    InstanceId: 
+      Ref: "developerec2"
+
 <% root_dev_domain = "#{@config.developer.fetch('name')}.#{@config.hosted_zone_name}" %>
 developerdns:
   Type: "AWS::Route53::RecordSetGroup"
   DependsOn: 
-  - "developerec2"
+  - "developerec2eipassoc"
   Properties:
     HostedZoneName: "<%= @config.hosted_zone_name %>."
     Comment: "Subdomain records for ec2 access and development."
@@ -35,4 +50,3 @@ developerdns:
       TTL: "60"
       ResourceRecords: 
       - "<%= root_dev_domain %>"
-
