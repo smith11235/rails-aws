@@ -353,6 +353,14 @@
             "ResourceRecords": [
               "smith.brickworksoftware.com"
             ]
+          },
+          {
+            "Name": "warden.brickworksoftware.com.",
+            "Type": "CNAME",
+            "TTL": "60",
+            "ResourceRecords": [
+              "smith.brickworksoftware.com"
+            ]
           }
         ]
       }
